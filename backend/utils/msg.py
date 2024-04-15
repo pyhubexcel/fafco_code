@@ -1,0 +1,1 @@
+FORGOT_PASSWORD_URL = "Hi..., please click on the link to change your password. <a href=http://{FRONTEND_IP}/api/auth/change_password/?uid={user_id}&token={user_object}>CLICK HERE </a>"
