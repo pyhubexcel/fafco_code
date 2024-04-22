@@ -10,10 +10,8 @@ class CommonResponseMiddleware:
             return self.get_response(request)
         if request.path.startswith('/media'):
             return self.get_response(request)
-        # Get the response object from the view
         response = self.get_response(request)
-
-        # Modify the response object as necessary
+        
         if response.status_code == 404:
             response = JsonResponse(
                 {
@@ -52,11 +50,13 @@ class CommonResponseMiddleware:
                 'success_message',
                 'Successfull'
             )
+            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", response.__dict__)
+            response_data = getattr(response, 'data', None)
             response = JsonResponse(
                 {
                   "status": "success",
                   "message": success_message,
-                  "data": response.data
+                  "data": response_data
                 },
                 status=200
             )

@@ -5,7 +5,7 @@ from .models import Customer, Profile
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ("username", "email", "notify_email", "customer_type", "password")
+        fields = ("username","name", "email", "phone", "customer_type", "password")
     
     def create(self, validated_data):
         user = Customer.objects.create_user(**validated_data)
@@ -24,4 +24,3 @@ class UpdatePasswordSerializer(serializers.Serializer):
 class PasswordSerializer(serializers.Serializer):
     password = serializers.CharField()  
     confirm_password = serializers.CharField()  
-  

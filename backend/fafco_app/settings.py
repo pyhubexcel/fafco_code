@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-cd1%=o(27opt&nhs!r3!-_73u2&q_yp9(mp6e(58y5+34ylk%x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework_simplejwt',
     'rest_framework',
+    'phonenumber_field',
     'corsheaders',
     'user',
     'part',
@@ -57,7 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'utils.middleware.CommonResponseMiddleware',
+    # 'utils.middleware.CommonResponseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 
