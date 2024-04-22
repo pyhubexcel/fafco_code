@@ -29,7 +29,7 @@ class Customer(AbstractUser):
 
 class Profile(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer_profile")
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, unique=True)
     zip_code = models.CharField(max_length=20)
     country = models.CharField(max_length=255, default='USA')
     created_at = models.DateField(auto_now_add=True)

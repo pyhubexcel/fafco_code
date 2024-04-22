@@ -7,12 +7,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ("username", "email", "notify_email", "customer_type", "password")
     
-    # Override create method to create a new User instance
     def create(self, validated_data):
-        # Create a new user using validated_data
         user = Customer.objects.create_user(**validated_data)
-
-        # Return the created user instance
         return user
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -26,7 +22,6 @@ class UpdatePasswordSerializer(serializers.Serializer):
     re_password = serializers.CharField()
 
 class PasswordSerializer(serializers.Serializer):
-    password = serializers.CharField()  # Field for the new password
-    confirm_password = serializers.CharField()  # Field for the confirmation of the new password
-    # token = serializers.CharField()
-    # uid = serializers.CharField()
+    password = serializers.CharField()  
+    confirm_password = serializers.CharField()  
+  

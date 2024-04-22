@@ -12,17 +12,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import (urlsafe_base64_encode, urlsafe_base64_decode)
 from .custom_token import account_activation_token
 from django.utils.encoding import force_bytes, force_str
 from utils.msg import FORGOT_PASSWORD_URL
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import logout
 from dotenv import load_dotenv
+from utils.search_location import autocomplete
+from utils.search_location import autocomplete
+from utils.single_address_validation import singleaddressvalidation
 import os
-
-load_dotenv()
-
 
 class RegisterAPI(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -50,7 +50,7 @@ class RegisterAPI(APIView):
             send_mail(
                 subject=subject,
                 message='',
-                from_email=settings.EMAIL_HOST_USER,
+             from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[data["notify_email"]],
                 fail_silently=False,
                 html_message=html_message
@@ -161,43 +161,69 @@ class PasswordChangeAPI(APIView):
 
 class ProfileAPI(APIView):
     permission_classes = (IsAuthenticated,)
+    
+    def get(self, request):
+        Profiles = Profile.objects.all()
+        serializer = ProfileSerializer(Profiles, many=True)
+        response = Response(serializer.data, status=200)
+        response.success_message = "Fetched Data."
+        return response
 
     def post(self, request):
         data = request.data
         data["customer"] = request.user.id
         serializer = ProfileSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        
+        serializer.save()     
         response = Response(status=200)
         response.success_message = "Profile changed successfully."
         return response
-    
-    def get(self, request):
-        user_profile = get_object_or_404(Profile, customer=request.user.id)
+
+
+class ProfileDetailAPI(APIView):
+
+    def get(self, request,pk):
+        user_profile = get_object_or_404(Profile, customer=request.user.id,pk=pk)
 
         serializer = ProfileSerializer(user_profile)
         response = Response(serializer.data, status=200)
-        response.success_message = "User Profile."
-        return response
+        response.success_message = "User Profile"
+        return response 
+        
 
     def patch(self, request, pk=None):
-        user_profile = get_object_or_404(Profile, customer=request.user.id)
+        user_profile = get_object_or_404(Profile, customer=request.user.id,pk=pk)
 
         serializer = ProfileSerializer(
             user_profile, data=request.data,
             partial=True
         )
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=False)
         serializer.save()
         response = Response(serializer.data, status=200)
         response.success_message = "Updated."
         return response
 
-    def delete(self, request, pk=None):
+    def delete(self, request, pk):
         user = get_object_or_404(Profile, pk=pk)
         user.is_active = False
         user.save()
         response = Response(status=200)
         response.success_message = "User disabled Successfully."
-        return response
+        return response 
+    
+      
+class AutocompleteAPIView(APIView):
+    def get(self, request):
+        search_term = request.GET.get('search_term', '')
+        if not search_term:
+            return Response({'error': 'Please provide a search term'}, status=status.HTTP_400_BAD_REQUEST)       
+        results = autocomplete(search_term)
+        return Response(results)
+       
+       
+class SingleAddressValidationAPIView(APIView):
+    def post(self, request):
+        address_data = request.data     
+        validation_result = singleaddressvalidation(address_data)  
+        return Response(validation_result)  

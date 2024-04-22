@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -85,16 +84,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fafco_app.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -156,7 +145,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'user.Customer'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=50),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
@@ -168,3 +157,6 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 BACKEND_IP = os.getenv('BACKEND_IP')
 FE_DOMAIN = os.getenv('FE_DOMAIN')
+
+KEY = os.getenv('KEY')
+HOSTNAME ='localhost'

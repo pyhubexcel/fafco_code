@@ -10,15 +10,15 @@ class ClaimAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        parts = Claim.objects.all()
-        serializer = ClaimSerializer(parts, many=True)
+        claims = Claim.objects.all()
+        serializer = ClaimSerializer(claims, many=True)
         response = Response(serializer.data, status=200)
         response.success_message = "Fetched Data."
         return response
 
     def post(self, request):
         data = request.data
-        profile = get_object_or_404(Profile, customer=request.user.id)
+        profile = get_object_or_404(Profile, customer=request.user.id,pk=data["profile_id"])
         data["registration"] = profile.id
         serializer = ClaimSerializer(data=data)
         if serializer.is_valid():
@@ -34,20 +34,18 @@ class ClaimAPI(APIView):
 class ClaimDetailAPI(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, pk):
         user = request.user.id
-        profile = get_object_or_404(Profile, customer=user)
-        part = get_object_or_404(Claim, registration=profile.id)
-        serializer = ClaimSerializer(part)
+        claims = get_object_or_404(Claim,pk=pk)
+        serializer = ClaimSerializer(claims)
         response = Response(serializer.data, status=200)
         response.success_message = "Fetched Data."
         return response
 
     def patch(self, request):
         user = request.user.id
-        profile = get_object_or_404(Profile, customer=user)
-        part = get_object_or_404(Claim, registration=profile.id)
-        serializer = ClaimSerializer(part, data=request.data, partial=True)
+        claims = get_object_or_404(Claim,pk=pk)
+        serializer = ClaimSerializer(claims, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             response = Response(serializer.data, status=200)
@@ -57,11 +55,10 @@ class ClaimDetailAPI(APIView):
         response.success_message = "Error Occured."
         return response
 
-    def delete(self, request):
+    def delete(self, request,pk):
         user = request.user.id
-        profile = get_object_or_404(Profile, customer=user)
-        part = get_object_or_404(Claim, registration=profile.id)
-        part.delete()
+        claims = get_object_or_404(Claim,pk=pk)
+        claims.delete()
         response = Response(status=200)
         response.success_message = "Deleted Successfully."
         return response

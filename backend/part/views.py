@@ -18,8 +18,8 @@ class PartAPI(APIView):
 
     def post(self, request):
         data = request.data
-        profile = get_object_or_404(Profile, customer=request.user.id)
-        data["registration"] = profile.id
+        parts = get_object_or_404(Profile, customer=request.user.id, pk=data["profile_id"])
+        data["registration"] = parts.id
         serializer = PartSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -34,19 +34,17 @@ class PartAPI(APIView):
 class PartDetailAPI(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request,part_id):
         user = request.user.id
-        profile = get_object_or_404(Profile, customer=user)
-        part = get_object_or_404(Part, registration=profile.id)
+        part = get_object_or_404(Part,pk=part_id)
         serializer = PartSerializer(part)
         response = Response(serializer.data, status=200)
         response.success_message = "Fetched Data."
         return response
 
-    def patch(self, request):
+    def patch(self, request,part_id):
         user = request.user.id
-        profile = get_object_or_404(Profile, customer=user)
-        part = get_object_or_404(Part, registration=profile.id)
+        part = get_object_or_404(Part,pk=part_id)
         serializer = PartSerializer(part, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -57,10 +55,9 @@ class PartDetailAPI(APIView):
         response.success_message = "Error Occured."
         return response
 
-    def delete(self, request):
+    def delete(self, request,part_id):
         user = request.user.id
-        profile = get_object_or_404(Profile, customer=user)
-        part = get_object_or_404(Part, registration=profile.id)
+        part = get_object_or_404(Part,pk=part_id)
         part.delete()
         response = Response(status=200)
         response.success_message = "Deleted Successfully."
