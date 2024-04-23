@@ -8,6 +8,7 @@ from .models import Customer, Profile
 from rest_framework import permissions, status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
@@ -16,28 +17,29 @@ from django.utils.http import (urlsafe_base64_encode, urlsafe_base64_decode)
 from .custom_token import account_activation_token
 from django.utils.encoding import force_bytes, force_str
 from utils.msg import FORGOT_PASSWORD_URL
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import logout
-from dotenv import load_dotenv
-from utils.search_location import autocomplete
 from utils.search_location import autocomplete
 from utils.single_address_validation import singleaddressvalidation
 import os
+
 
 class RegisterAPI(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         data = request.data
+        print(data)
         data["username"] = data["email"]
         data["password"] = os.getenv("DEFAULT_PASSWORD")
         serializer = CustomerSerializer(data=data)
-
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            return Response({"error": e.detail},
+                            status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
-
         user = Customer.objects.get(username=data["username"])
-
         subject = 'welcome,'
         html_message = FORGOT_PASSWORD_URL.format(
             name=user.first_name + ' ' + user.last_name,
@@ -50,19 +52,21 @@ class RegisterAPI(APIView):
             send_mail(
                 subject=subject,
                 message='',
-             from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[data["notify_email"]],
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[data["email"]],
                 fail_silently=False,
                 html_message=html_message
             )
         except Exception as e:
-            response = Response(status=400)
-            response.success_message = "Failed to send email."
-            return response
+            return Response(str(e))
 
-        response = Response(status=200)
-        response.success_message = "User Created, please check your mail to change the password."
-        return response
+        response_data = {
+         "status": "Successfull",
+         "message": "User Created please check your" +
+                    "mail to change the password",
+         "data": serializer.data,
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class LoginAPI(APIView):
@@ -85,13 +89,17 @@ class LoginAPI(APIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }
-            response = Response(data, status=200)
-            response.success_message = "Login successfully."
-            return response
+            response_data = {
+                "status": "Successfull",
+                "message": "Login successfully by user",
+                "data": data,
+                }
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
-            response = Response(status=200)
-            response.error_message = "Your account is Disabled."
-            return response
+            response_data = {
+             "message": "Your account is Disabled."
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
 
 
 class LogoutAPI(APIView):
@@ -99,9 +107,11 @@ class LogoutAPI(APIView):
 
     def get(self, request, *args):
         logout(request)
-        response = Response(status=200)
-        response.success_message = "Logout successfully."
-        return response
+        response_data = {
+         "status": "Successfull",
+         "message": "Logout successfully by user",
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class UpdatePasswordAPIView(APIView):
@@ -143,15 +153,23 @@ class PasswordChangeAPI(APIView):
                     if password == re_password:
                         user.password = make_password(password)
                         user.save()
-                        response = Response(status=200)
-                        response.success_message = "Password changed."
-                        return response
-
-                    response = Response(status=400)
-                    response.success_message = "Password mismatched."
-                    return response
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+                        response_data = {
+                         "status": "Successfull",
+                         "message": "Password changed.",
+                         "data": serializer.data,
+                        }
+                        return Response(response_data,
+                                        status=status.HTTP_200_OK)
+                    response_data = {
+                     "status": "Faild",
+                     "message": "Password mismatched.",
+                    }
+                    return Response(response_data,
+                                    status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "UNAUTHORIZED"},
+                                status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"message": "BAD REQUEST"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             response = Response(status=400)
@@ -161,38 +179,44 @@ class PasswordChangeAPI(APIView):
 
 class ProfileAPI(APIView):
     permission_classes = (IsAuthenticated,)
-    
+
     def get(self, request):
         Profiles = Profile.objects.all()
         serializer = ProfileSerializer(Profiles, many=True)
-        response = Response(serializer.data, status=200)
-        response.success_message = "Fetched Data."
-        return response
+        response_data = {
+            "message": "Fetched Data.",
+            "data": serializer.data
+            }
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
         data["customer"] = request.user.id
         serializer = ProfileSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()     
-        response = Response(status=200)
-        response.success_message = "Profile changed successfully."
-        return response
+        serializer.save()
+        return Response({"message": "Profile created successfully"},
+                        status=status.HTTP_200_OK)
 
 
 class ProfileDetailAPI(APIView):
 
-    def get(self, request,pk):
-        user_profile = get_object_or_404(Profile, customer=request.user.id,pk=pk)
+    def get(self, request, pk):
+
+        user_profile = get_object_or_404(Profile,
+                                         customer=request.user.id, pk=pk)
 
         serializer = ProfileSerializer(user_profile)
-        response = Response(serializer.data, status=200)
-        response.success_message = "User Profile"
-        return response 
-        
 
-    def patch(self, request, pk=None):
-        user_profile = get_object_or_404(Profile, customer=request.user.id,pk=pk)
+        response_data = {
+         "message": "User Profile",
+         "data": serializer.data,
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    def patch(self, request, pk):
+        user_profile = get_object_or_404(Profile,
+                                         customer=request.user.id, pk=pk)
 
         serializer = ProfileSerializer(
             user_profile, data=request.data,
@@ -200,30 +224,32 @@ class ProfileDetailAPI(APIView):
         )
         serializer.is_valid(raise_exception=False)
         serializer.save()
-        response = Response(serializer.data, status=200)
-        response.success_message = "Updated."
-        return response
+        response_data = {
+         "message": "Updated Successfully",
+         "data": serializer.data,
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
         user = get_object_or_404(Profile, pk=pk)
         user.is_active = False
         user.save()
-        response = Response(status=200)
-        response.success_message = "User disabled Successfully."
-        return response 
-    
-      
+        return Response({"message": "User disabled Successfully"},
+                        status=status.HTTP_200_OK)
+
+
 class AutocompleteAPIView(APIView):
     def get(self, request):
         search_term = request.GET.get('search_term', '')
         if not search_term:
-            return Response({'error': 'Please provide a search term'}, status=status.HTTP_400_BAD_REQUEST)       
+            return Response({'error': 'Please provide a search term'},
+                            status=status.HTTP_400_BAD_REQUEST)
         results = autocomplete(search_term)
         return Response(results)
-       
-       
+
+
 class SingleAddressValidationAPIView(APIView):
     def post(self, request):
-        address_data = request.data     
-        validation_result = singleaddressvalidation(address_data)  
-        return Response(validation_result)  
+        address_data = request.data
+        validation_result = singleaddressvalidation(address_data)
+        return Response(validation_result)

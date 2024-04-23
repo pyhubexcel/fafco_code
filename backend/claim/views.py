@@ -18,7 +18,8 @@ class ClaimAPI(APIView):
 
     def post(self, request):
         data = request.data
-        profile = get_object_or_404(Profile, customer=request.user.id,pk=data["profile_id"])
+        profile = get_object_or_404(Profile, customer=request.user.id,
+                                    pk=data["profile_id"])
         data["registration"] = profile.id
         serializer = ClaimSerializer(data=data)
         if serializer.is_valid():
@@ -35,16 +36,14 @@ class ClaimDetailAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        user = request.user.id
-        claims = get_object_or_404(Claim,pk=pk)
+        claims = get_object_or_404(Claim, pk=pk)
         serializer = ClaimSerializer(claims)
         response = Response(serializer.data, status=200)
         response.success_message = "Fetched Data."
         return response
 
-    def patch(self, request):
-        user = request.user.id
-        claims = get_object_or_404(Claim,pk=pk)
+    def patch(self, request, pk):
+        claims = get_object_or_404(Claim, pk=pk)
         serializer = ClaimSerializer(claims, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -55,10 +54,7 @@ class ClaimDetailAPI(APIView):
         response.success_message = "Error Occured."
         return response
 
-    def delete(self, request,pk):
-        user = request.user.id
-        claims = get_object_or_404(Claim,pk=pk)
+    def delete(self, request, pk):
+        claims = get_object_or_404(Claim, pk=pk)
         claims.delete()
-        response = Response(status=200)
-        response.success_message = "Deleted Successfully."
-        return response
+        return Response({"message": "Deleted Successfully"})
