@@ -1,13 +1,13 @@
 from smartystreets_python_sdk.us_street import Lookup as StreetLookup
-from smartystreets_python_sdk.us_street.match_type import MatchType
-from smartystreets_python_sdk import SharedCredentials, StaticCredentials, ClientBuilder,exceptions
-from smartystreets_python_sdk.us_autocomplete_pro import Lookup as AutocompleteProLookup, geolocation_type
+from smartystreets_python_sdk import (SharedCredentials,
+                                      ClientBuilder,
+                                      exceptions)
 from django.conf import settings
 
 
 def singleaddressvalidation(address_data):
-    key= settings.KEY
-    hostname=settings.HOSTNAME
+    key = settings.KEY
+    hostname = settings.HOSTNAME
 
     credentials = SharedCredentials(key, hostname)
     client = ClientBuilder(credentials).build_us_street_api_client()
@@ -19,8 +19,8 @@ def singleaddressvalidation(address_data):
 
     try:
         client.send_lookup(lookup)
-    except exceptions.SmartyException as err:
-        return {"error": "An error occurred during address validation."}
+    except exceptions.SmartyException as error:
+        return {error: "An error occurred during address validation."}
 
     result = lookup.result
 
@@ -40,11 +40,13 @@ def singleaddressvalidation(address_data):
             "street_suffix": first_candidate.components.street_suffix,
             "city_name": first_candidate.components.city_name,
             "default_city_name": first_candidate.components.default_city_name,
-            "state_abbreviation": first_candidate.components.state_abbreviation,
+            "state_abbreviation":
+                first_candidate.components.state_abbreviation,
             "zipcode": first_candidate.components.zipcode,
             "plus4_code": first_candidate.components.plus4_code,
             "delivery_point": first_candidate.components.delivery_point,
-            "delivery_point_check_digit": first_candidate.components.delivery_point_check_digit
+            "delivery_point_check_digit":
+                first_candidate.components.delivery_point_check_digit
         },
         "metadata": {
             "record_type": first_candidate.metadata.record_type,
@@ -52,7 +54,8 @@ def singleaddressvalidation(address_data):
             "county_fips": first_candidate.metadata.county_fips,
             "county_name": first_candidate.metadata.county_name,
             "carrier_route": first_candidate.metadata.carrier_route,
-            "congressional_district": first_candidate.metadata.congressional_district,
+            "congressional_district":
+                first_candidate.metadata.congressional_district,
             "rdi": first_candidate.metadata.rdi,
             "elot_sequence": first_candidate.metadata.elot_sequence,
             "elot_sort": first_candidate.metadata.elot_sort,
@@ -60,7 +63,7 @@ def singleaddressvalidation(address_data):
             "longitude": first_candidate.metadata.longitude,
             "precision": first_candidate.metadata.precision,
             "time_zone": first_candidate.metadata.time_zone,
-            "utc_offset": first_candidate.metadata.utc_offset,            
+            "utc_offset": first_candidate.metadata.utc_offset,
         },
         "analysis": {
             "dpv_match_code": first_candidate.analysis.dpv_match_code,
