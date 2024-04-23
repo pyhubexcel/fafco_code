@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dx-texteditor-container {
+  cursor: pointer;
+  border: 1px solid black
+}
+
+.dx-button-has-text .dx-button-content {
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+.dx-checkbox-icon {
+  border: 1px solid black;
+}
+
+
+.dx-theme-generic-typography a {
+  color: #ffffff;
+}
+
+.MuiBox-root .css-1tbggly{
+  /* border:1px solid black; */
+  /* display: none; */
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* .MuiBox-root .css-di3982{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+} */
+.MuiBox-root .css-wsew38{
+justify-content: start !important;
+}
+/* .css-1eqt7o7-MuiInputBase-root-MuiOutlinedInput-root .MuiInputBase-input{
+ color: rgba(0, 0, 0, 0.6)
+} */
