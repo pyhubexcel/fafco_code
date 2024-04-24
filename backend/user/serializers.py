@@ -7,6 +7,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ("username", "name", "email", "phone",
                   "customer_type", "password")
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
         user = Customer.objects.create_user(**validated_data)
@@ -28,3 +29,7 @@ class UpdatePasswordSerializer(serializers.Serializer):
 class PasswordSerializer(serializers.Serializer):
     password = serializers.CharField()
     confirm_password = serializers.CharField()
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
