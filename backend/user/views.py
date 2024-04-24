@@ -256,8 +256,9 @@ class ProfileDetailAPI(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
-        user = get_object_or_404(Profile, pk=pk)
-        user.is_active = False
+        user = get_object_or_404(Profile, customer=request.user.id, pk=pk)
+        print('delete', user)
+        user.is_active = True
         user.save()
         return Response({"message": "User disabled Successfully"},
                         status=status.HTTP_200_OK)
