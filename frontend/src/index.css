@@ -46,8 +46,3 @@ justify-content: start !important;
 /* .css-1eqt7o7-MuiInputBase-root-MuiOutlinedInput-root .MuiInputBase-input{
  color: rgba(0, 0, 0, 0.6)
 } */
-
-.Mui-TableHeadCell-Content-Wrapper .MuiBox-root .css-bbxzxe{
-  display: none;
-  visibility: hidden;
-}

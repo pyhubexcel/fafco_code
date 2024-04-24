@@ -13,14 +13,8 @@ import cookie from 'react-cookies'
 export default function Login() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [apiResponse,setApiResponse] = useState('');
     const navigate = useNavigate();
 
-    useEffect(()=>{
-        cookie.remove('token');
-        cookie.remove('role');
-    },[])
-    
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
             initialValues: {
@@ -42,19 +36,15 @@ export default function Login() {
                         }
                     });
                     console.log("res ===", res.data);
-                    setApiResponse(res)
                     if (res.status === 200) {
                         cookie.save('token', res?.data?.data?.refresh)
-                        // cookie.save('name', res?.data?.data?.email)
                         cookie.save('role', res?.data?.data?.customer_type)
                         toast.success('Login Successfully!')
-                        navigate('/home');
+                        navigate('/');
                     }
                 } catch (error) {
-                    if (error.response.data.non_field_errors) {
-                        toast.error(error.response.data.non_field_errors[0])
-                        // console.log("Error:", error.response.data.non_field_errors[0]);
-                    }
+                    toast.error("Login Failed!")
+                    console.error("Error:", error);
                 } finally {
                     setLoading(false)
                 }

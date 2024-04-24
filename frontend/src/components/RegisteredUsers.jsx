@@ -96,9 +96,9 @@ const RegisteredUsers = () => {
         enableGlobalFilter: true,
         // enableColumnFilters:false,
         enableHiding: false,
-        enableColumnActions: false,
-         enableSorting: false,
-        initialState: { showColumnFilters: true, showGlobalFilter: true },
+        
+        enableColumnActions: false, enableSorting: false,
+        initialState: { showColumnFilters: true,showGlobalFilter:true }, 
         filterFns: {
             customFilterFn: (row, id, filterValue) => {
                 return row.getValue(id) === filterValue;

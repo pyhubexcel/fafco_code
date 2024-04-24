@@ -9,9 +9,8 @@ import cookie from 'react-cookies'
 const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
-    // const [token, setToken] = useState('');
     const navigate = useNavigate()
-const token=cookie.load('token')
+    const token = cookie.load('token')
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -30,9 +29,6 @@ const token=cookie.load('token')
     const toggleNavbar = () => {
         setIsOpen(!isOpen);
     };
-    // useEffect(() => {
-    //     setToken();
-    // }, [])
     return (
         <div className=" px-7 py-2 shadow-xl">
             <nav className="bg-white">
