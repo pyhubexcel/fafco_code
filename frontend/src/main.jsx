@@ -16,6 +16,7 @@ import RegisterLink from './pages/registerLink/RegisterLink.jsx';
 import RegistrationLookup from './pages/registrationLookup/RegistrationLookup.jsx';
 import Home from './pages/Home/Home.jsx';
 import cookie from 'react-cookies'
+import HomeownerRegistration from './pages/homeownerRegistration/HomeownerRegistration.jsx';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
+      },
+      {
+        path: "/homeownerRegistration",
+        element: <HomeownerRegistration />,
       },
     ]
   },

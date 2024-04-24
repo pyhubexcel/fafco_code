@@ -71,13 +71,20 @@ export default function Signup() {
                         }
                     });
                     console.log("res ===", res.data);
-                    if(res.status === 200){
+                    if (res.status === 200) {
                         toast.success('Registration Successfully!')
                         navigate('/home');
                     }
                 } catch (error) {
-                    toast.error("Registration Failed!")
-                    console.error("Error:", error);
+                    // toast.error("Registration Failed!")
+                    if (error.response.data.phone) {
+                        toast.error(error.response.data.phone[0])
+                        // console.log("Error:", error.response.data.phone[0]);
+                    }
+                    if (error.response.data.email) {
+                        toast.error(error.response.data.email[0])
+                        // console.log("Error:", error.response.data.email[0]);
+                    }
                 } finally {
                     setLoading(false)
                 }

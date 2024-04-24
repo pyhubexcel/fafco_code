@@ -13,6 +13,7 @@ import cookie from 'react-cookies'
 export default function Login() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [apiResponse,setApiResponse] = useState('');
     const navigate = useNavigate();
 
     useEffect(()=>{
@@ -41,6 +42,7 @@ export default function Login() {
                         }
                     });
                     console.log("res ===", res.data);
+                    setApiResponse(res)
                     if (res.status === 200) {
                         cookie.save('token', res?.data?.data?.refresh)
                         // cookie.save('name', res?.data?.data?.email)
@@ -49,8 +51,10 @@ export default function Login() {
                         navigate('/home');
                     }
                 } catch (error) {
-                    toast.error("Login Failed!")
-                    console.error("Error:", error);
+                    if (error.response.data.non_field_errors) {
+                        toast.error(error.response.data.non_field_errors[0])
+                        // console.log("Error:", error.response.data.non_field_errors[0]);
+                    }
                 } finally {
                     setLoading(false)
                 }
