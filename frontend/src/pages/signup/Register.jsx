@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import { signupSchema } from "../../schema";
 import { useFormik } from "formik";
 import axiosInstance from "../../utils/axios";
-import { IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
+import { Autocomplete, Box, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
 import { useState } from "react";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
@@ -36,11 +36,34 @@ const signupElements = [
     }
 ]
 
+const countries = [
+    {
+        code: 'CA',
+        label: '+1',
+        name: "United States",
+        phone: '11111'
+    },
+    {
+        code: 'IN',
+        label: '+91',
+        name: "India",
+        phone: '0000'
+    },
+    {
+        code: 'AU',
+        label: '+61',
+        name: "Australia",
+        phone: '222'
+    },
+]
+
 export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
     const [showPassword2, setShowPassword2] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [countryCode, setCountryCode] = useState(null);
+
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
@@ -59,7 +82,7 @@ export default function Signup() {
                 setLoading(true);
                 const payload = {
                     name: values.name,
-                    phone: values.phone,
+                    phone: ` ${countryCode} ` + values.phone,
                     email: values.email,
                     password: values.password,
                     customer_type: values.role
@@ -73,16 +96,26 @@ export default function Signup() {
                     console.log("res ===", res.data);
                     if (res.status === 200) {
                         toast.success('Registration Successfully!')
-                        navigate('/home');
+                        navigate('/login');
                     }
                 } catch (error) {
-                    toast.error("Registration Failed!")
-                    console.error("Error:", error);
+                    if (error.response.data.phone) {
+                        toast.error(error.response.data.phone[0])
+                    }
+                    if (error.response.data.email) {
+
+                        toast.error(error.response.data.email[0])
+                    }
+                    console.log("Error:", error.response.data);
                 } finally {
                     setLoading(false)
                 }
             },
         });
+
+    const handleChangeCountry = (event, countryCode) => {
+        setCountryCode(countryCode?.label)
+    };
     // console.log('formik===', errors, touched, handleChange, handleBlur, handleSubmit)
     return (
         <div className="flex w-full p-5 ">
@@ -91,25 +124,70 @@ export default function Signup() {
                 <form className="space-y-4" onSubmit={handleSubmit}>
 
                     {signupElements.map((item, i) => (
-                        <div key={i} className="space-y-1">
-                            <TextField
-                                type={item.type}
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values[item.name]}
-                                name={item.name}
-                                // id="outlined-size-small"
-                                className="w-full"
-                                label={item.placeHolder}
-                                size="small"
-                                required
+                        item?.name == "phone" ?
+                            <div key={i} className="flex gap-5">
+                                <Autocomplete
+                                    id="country-select-demo"
+                                    sx={{ width: 150 }}
+                                    options={countries}
+                                    size="small"
+                                    onChange={handleChangeCountry}
+                                    getOptionLabel={(option) => option.label}
+                                    renderOption={(props, option) => (
+                                        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                            <img
+                                                loading="lazy"
+                                                width="20"
+                                                srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                                                src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                                                alt=""
+                                            />  {option.name}
+                                        </Box>
+                                    )}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="country"
+                                            inputProps={{
+                                                ...params.inputProps,
+                                                autoComplete: 'new-password',
+                                            }}
+                                        />
+                                    )} />
 
-                            />
-                            {errors[item.name] && touched[item.name] ? (
-                                <div className="text-red-500 text-[12px] italic">{errors[item.name]}</div>
-                            ) : null}
-                        </div>
-                    ))}
+
+
+
+                                <TextField
+                                    type={item.type}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values[item.name]}
+                                    name={item.name}
+                                    className="w-full"
+                                    label={item.placeHolder}
+                                    size="small"
+                                    required
+                                />
+
+                            </div>
+                            :
+                            <div key={i} className="space-y-1">
+                                <TextField
+                                    type={item.type}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values[item.name]}
+                                    name={item.name}
+                                    className="w-full"
+                                    label={item.placeHolder}
+                                    size="small"
+                                    required
+                                />
+                                {errors[item.name] && touched[item.name] ? (
+                                    <div className="text-red-500 text-[12px] italic">{errors[item.name]}</div>
+                                ) : null}
+                            </div>))}
                     <div className="space-y-1">
                         <FormControl fullWidth variant="outlined"  >
                             <InputLabel size="small" htmlFor="outlined-adornment-password">Password</InputLabel>

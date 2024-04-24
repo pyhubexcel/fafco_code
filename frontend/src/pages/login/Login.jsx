@@ -6,7 +6,7 @@ import axiosInstance from "../../utils/axios";
 import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import cookie from 'react-cookies'
 
@@ -41,10 +41,11 @@ export default function Login() {
                         cookie.save('role', res?.data?.data?.customer_type)
                         toast.success('Login Successfully!')
                         navigate('/');
+                        window.top.location.reload();
                     }
                 } catch (error) {
-                    toast.error("Login Failed!")
-                    console.error("Error:", error);
+                    toast.error( error.response.data.non_field_errors[0])
+                    console.log("Error:", error.response.data.non_field_errors[0]);
                 } finally {
                     setLoading(false)
                 }
@@ -59,7 +60,7 @@ export default function Login() {
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div className="space-y-1">
                         <TextField
-                            type='text'
+                            type='email'
                             onBlur={handleBlur}
                             onChange={handleChange}
                             value={values.email}
@@ -106,7 +107,7 @@ export default function Login() {
                         ) : null}
                     </div>
                     <div className=" text-blue-600 flex float-right">
-                        <Link to='resetPassword' title="reset password" className="py-2">Forgot Password?</Link>
+                        <Link to='/forgetPassword' title="reset password" className="py-2">Forgot Password?</Link>
                     </div>
                     <div className="text-center">
                         <CustomButton
@@ -118,7 +119,7 @@ export default function Login() {
                     </div>
                 </form>
                 <div className=" text-center">
-                    Don&apos;t have an account?<Link to='/signup' title="register" className="text-blue-600" > Create Account</Link>
+                    Don&apos;t have an account?<Link to='/register' title="register" className="text-blue-600" > Create Account</Link>
                 </div>
             </div>
         </div>

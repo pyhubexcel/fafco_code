@@ -7,7 +7,7 @@ function App() {
   return (
     <div className='h-screen flex flex-col justify-between'>
       <Header />
-      <div className='bg-gray-200 h-screen flex justify-center'>
+      <div className='bg-gray-200 flex justify-center'>
         <Router/>
       </div>
       <Footer />

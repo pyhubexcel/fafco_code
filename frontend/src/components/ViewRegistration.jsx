@@ -104,7 +104,7 @@ const ViewRegistration = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', m: '5px' }}>
                                     <Typography>Date Summited:</Typography>
                                     <FormControl sx={{ width: 300 }} size="small">
-                                        <InputLabel id="demo-select-small-label">Age</InputLabel>
+                                        <InputLabel id="demo-select-small-label">Date</InputLabel>
                                         <Select
                                             labelId="demo-select-small-label"
                                             id="demo-select-small"
@@ -130,7 +130,7 @@ const ViewRegistration = () => {
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', m: '5px' }}>
                                     <Typography>Installer: {row.original.city}</Typography>
                                     <FormControl sx={{ width: 300 }} size="small">
-                                        <InputLabel id="demo-select-small-label">Age</InputLabel>
+                                        <InputLabel id="demo-select-small-label">Date</InputLabel>
                                         <Select
                                             labelId="demo-select-small-label"
                                             id="demo-select-small"
@@ -148,7 +148,7 @@ const ViewRegistration = () => {
                                     </FormControl>
                                 </Box>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', m: '5px' }}>
-                                    <Typography>Dealer Comment: {row.original.state}</Typography>
+                                    <Typography>Dealer Comment:</Typography>
                                     <TextField
                                         type='text'
                                         // onBlur={handleBlur}
@@ -164,7 +164,7 @@ const ViewRegistration = () => {
 
 
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '5px', m: '5px' }}>
-                                    <Typography>Dealer Ref#: {row.original.country}</Typography>
+                                    <Typography>Dealer Ref#:</Typography>
                                     <TextField
                                         type='text'
                                         // onBlur={handleBlur}
@@ -183,7 +183,7 @@ const ViewRegistration = () => {
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', m: '5px' }}>
                                         <Typography>Date Shipped:</Typography>
                                         <FormControl sx={{ width: 300 }} size="small">
-                                            <InputLabel id="demo-select-small-label">Age</InputLabel>
+                                            <InputLabel id="demo-select-small-label">Date</InputLabel>
                                             <Select
                                                 labelId="demo-select-small-label"
                                                 id="demo-select-small"
@@ -202,9 +202,9 @@ const ViewRegistration = () => {
                                     </Box>
 
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', m: '5px' }}>
-                                        <Typography>Entered By: {row.original.city}</Typography>
+                                        <Typography>Entered By: </Typography>
                                         <FormControl sx={{ width: 300 }} size="small">
-                                            <InputLabel id="demo-select-small-label">Age</InputLabel>
+                                            <InputLabel id="demo-select-small-label">Date</InputLabel>
                                             <Select
                                                 labelId="demo-select-small-label"
                                                 id="demo-select-small"
@@ -222,7 +222,7 @@ const ViewRegistration = () => {
                                         </FormControl>
                                     </Box>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', m: '5px' }}>
-                                        <Typography>Sales Support Note: {row.original.state}</Typography>
+                                        <Typography>Sales Support Note:</Typography>
                                         <TextField
                                             type='text'
                                             // onBlur={handleBlur}

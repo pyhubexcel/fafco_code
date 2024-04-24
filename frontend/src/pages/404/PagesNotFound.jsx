@@ -1,9 +1,9 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 
 const PagesNotfound = () => {
   return (
-    <div className="text-center mt-8">
+    <div className='h-fit py-40'>
+    <div className="text-center">
     <h1 className="mb-4 text-6xl font-semibold text-red-500">404</h1>
     <p className="mb-4  text-gray-600 text-2xl">Oops! Looks like you're lost.</p>
     <div className="animate-bounce">
@@ -13,6 +13,7 @@ const PagesNotfound = () => {
     </div>
     <p className="mt-4 text-gray-600 text-2xl font-bold">Let's get you back 
     <Link to="/" className="text-blue-500">home</Link>.</p>
+  </div>
   </div>
   )
 }

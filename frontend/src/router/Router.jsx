@@ -10,20 +10,22 @@ import RegisterLink from '../pages/registerLink/RegisterLink';
 import HomeownerRegistration from '../pages/homeownerRegistration/HomeownerRegistration';
 import RegistrationLookup from '../pages/registrationLookup/RegistrationLookup';
 import PagesNotfound from '../pages/404/PagesNotFound';
+import NewPassword from '../pages/newPassword/NewPassword';
 
 export default function Router() {
     let token = cookie.load('token');
 
     return (
         <Routes>
-            <Route exact path="/" element={token ? <PrivateRoute><Home /></PrivateRoute> : <Navigate to="/signIn" />}/>
-            <Route exact path="/signIn" element={token ? <Navigate to="/" /> : <Login />}/>
-            <Route exact path="/signUp" element={token ? <Navigate to="/" /> : <Signup />}/>
+            <Route exact path="/" element={token ? <PrivateRoute><Home /></PrivateRoute> : <Navigate to="/login" />}/>
+            <Route exact path="/login" element={token ? <Navigate to="/" /> : <Login />}/>
+            <Route exact path="/register" element={token ? <Navigate to="/" /> : <Signup />}/>
             <Route path="/inactiveAccount" element={<InactiveAccount />} />
-            <Route path="/resetPassword" element={<ResetPassword />} />
+            <Route path="/forgetPassword" element={<ResetPassword />} />
             <Route path="/registerLink" element={<RegisterLink />} />
             <Route path="/homeownerRegistration" element={<HomeownerRegistration />} />
             <Route path="/registrationLookup" element={<RegistrationLookup />} />
+            <Route path="newPassword" element={<NewPassword />} />
             <Route path="*" element={<PagesNotfound />} />
         </Routes>
     );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
@@ -24,6 +24,7 @@ const Header = () => {
         cookie.remove('token')
         cookie.remove('role')
         navigate('/')
+        window.top.location.reload();
     }
 
     const toggleNavbar = () => {
@@ -66,7 +67,7 @@ const Header = () => {
                         {token &&
                             <div className='hidden xl:block'>
                                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                                    <Typography>abc@gmail.com</Typography>
+                                    {/* <Typography>abc@gmail.com</Typography> */}
                                     <Tooltip title="Account settings">
                                         <IconButton
                                             onClick={handleClick}
@@ -137,6 +138,7 @@ const Header = () => {
                                 </Menu>
                             </div>
                         }
+                        {token &&
                         <div className="-mr-2 flex xl:hidden">
                             <button
                                 onClick={toggleNavbar}
@@ -167,6 +169,7 @@ const Header = () => {
                                 </svg>
                             </button>
                         </div>
+                    }
                     </div>
                 </div>
                 {token &&
@@ -185,7 +188,7 @@ const Header = () => {
                                         <Avatar sx={{ width: 32, height: 32 }}></Avatar>
                                     </IconButton>
                                 </Tooltip>
-                                <Typography>abc@gmail.com</Typography>
+                                {/* <Typography>abc@gmail.com</Typography> */}
                             </Box>
                             <Menu
                                 anchorEl={anchorEl}
