@@ -1,17 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import cookie from 'react-cookies'
+import { useDispatch, useSelector } from 'react-redux';
+import { customApiFunc } from "../redux/slices/CustomSlice";
 
 const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+    const id = cookie.load('id')
+    const apiUrl = `api/auth/user/${id}`
     const navigate = useNavigate()
     const token = cookie.load('token')
     const open = Boolean(anchorEl);
+    const dispatch = useDispatch();
+    // const id = cookie.load('id')
+    const name = cookie.load("name");
+
+    const customSliceRes = useSelector((state) => state.CustomSlice);
+    console.log(customSliceRes)
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -23,14 +34,15 @@ const Header = () => {
         setAnchorEl(null);
         cookie.remove('token')
         cookie.remove('role')
-        navigate('/')
+        navigate('/login')
+        dispatch(customApiFunc(apiUrl))
     }
 
     const toggleNavbar = () => {
         setIsOpen(!isOpen);
     };
     return (
-        <div className=" px-7 py-2 shadow-xl">
+        <div className=" bg-white px-7 py-2 shadow-xl ">
             <nav className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
                     <div className="flex items-center justify-between h-16 ">
@@ -62,11 +74,12 @@ const Header = () => {
                                     </div>
                                 </div>
                             )}
+
                         </div>
                         {token &&
                             <div className='hidden xl:block'>
                                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                                    <Typography>abc@gmail.com</Typography>
+                                    <Typography>Welcome,{name}</Typography>
                                     <Tooltip title="Account settings">
                                         <IconButton
                                             onClick={handleClick}
@@ -137,36 +150,38 @@ const Header = () => {
                                 </Menu>
                             </div>
                         }
-                        <div className="-mr-2 flex xl:hidden">
-                            <button
-                                onClick={toggleNavbar}
-                                type="button"
-                                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                                aria-expanded="false"
-                            >
-                                <span className="sr-only">Open main menu</span>
-                                <svg
-                                    className={`${isOpen ? 'hidden' : 'block'} h-6 w-6`}
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    aria-hidden="true"
+                        {token &&
+                            <div className="-mr-2 flex xl:hidden">
+                                <button
+                                    onClick={toggleNavbar}
+                                    type="button"
+                                    className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                                    aria-expanded="false"
                                 >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                                <svg
-                                    className={`${isOpen ? 'block' : 'hidden'} h-6 w-6`}
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    aria-hidden="true"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+                                    <span className="sr-only">Open main menu</span>
+                                    <svg
+                                        className={`${isOpen ? 'hidden' : 'block'} h-6 w-6`}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                    <svg
+                                        className={`${isOpen ? 'block' : 'hidden'} h-6 w-6`}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        }
                     </div>
                 </div>
                 {token &&
@@ -185,7 +200,7 @@ const Header = () => {
                                         <Avatar sx={{ width: 32, height: 32 }}></Avatar>
                                     </IconButton>
                                 </Tooltip>
-                                <Typography>abc@gmail.com</Typography>
+                                <Typography>Welcome,{name}</Typography>
                             </Box>
                             <Menu
                                 anchorEl={anchorEl}

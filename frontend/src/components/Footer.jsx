@@ -1,30 +1,34 @@
 import { Link } from 'react-router-dom'
 import footerLogo from '../assets/img/footer-logo.png'
 import footerUsa from '../assets/img/footer-usa.png'
+import cookie from 'react-cookies'
 
-const footerElement = [
-  { name: 'Above-Ground Pool Heating' },
-  { name: 'In-Ground Pool Heating' },
-  { name: 'CoolPV' },
-  { name: 'IceStor' },
-]
-const footerElement2 = [
-  { name: 'Pool Heating Basics' },
-  { name: 'Technologies' },
-  { name: 'Designing a System' },
-]
-const footerElement3 = [
-  { name: 'FAQs' },
-  { name: 'Service' },
-  { name: 'Downloads' },
-  { name: 'Find a Dealer' },
-]
+const footerArray = [
+  [
+    { name: 'Above-Ground Pool Heating' },
+    { name: 'In-Ground Pool Heating' },
+    { name: 'CoolPV' },
+    { name: 'IceStor' },
+  ],
+  [
+    { name: 'Pool Heating Basics' },
+    { name: 'Technologies' },
+    { name: 'Designing a System' },
+  ],
+  [
+    { name: 'FAQs' },
+    { name: 'Service' },
+    { name: 'Downloads' },
+    { name: 'Find a Dealer' },
+  ]
+];
 
 export default function Footer() {
+  const token = cookie.load('token')
   return (
     <footer className="bg-[#005D92]">
-      <div className=" w-full  p-4 py-6 lg:py-8">
-        <div className="md:flex md:justify-around gap-16">
+      {!token &&
+        <div className="py-6 w-9/12 m-auto gap-16 grid grid-cols-1  sm:grid-cols-2  lg:grid-cols-4  xl:grid-cols-4">
 
 
           <div className="mb-6 md:mb-0 gap-5">
@@ -37,45 +41,29 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-20 ">
-            <div>
-              <h2 className="mb-6 text-xl font-semibold uppercase text-white">Products</h2>
+
+          {footerArray.map((item, i) => (
+            <div key={i}>
+              <h2 className="mb-4 text-xl font-semibold uppercase text-white">Products</h2>
               <ul className="text-md text-[#BBFCFF]  ">
-                {footerElement.map((link, i) => (
-                  <li key={i} className="mb-4">
+                {item.map((link, j) => (
+                  <li key={j} className="mb-4">
                     <Link style={{ color: "#BBFCFF" }} href="#" className="hover:underline">{link.name}</Link>
                   </li>
                 ))}
               </ul>
             </div>
+          ))}
 
-
-            <div>
-              <h2 className="mb-6 text-xl font-semibold uppercase text-white">Learn</h2>
-              <ul className="text-md text-[#BBFCFF] ">
-                {footerElement2.map((link, i) => (
-                  <li key={i} className="mb-4 text-red-500">
-                    <Link style={{ color: "#BBFCFF" }} href="#" className="hover:underline">{link.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-
-            <div>
-              <h2 className="mb-6 text-xl font-semibold uppercase text-white">Support</h2>
-              <ul className="text-md text-[#BBFCFF] ">
-                {footerElement3.map((link, i) => (
-                  <li key={i} className="mb-4">
-                    <Link style={{ color: "#BBFCFF" }} href="#" className="hover:underline">{link.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </div>
+      }
+      <div className='bg-[#333333] text-white text-center text-sm py-4 flex justify-center gap-1'>
+        All Copyright © 2014
+        <div className='text-blue-500' >
+          <Link to='https://fafco.com/' target='_blank'> FAFCO</Link>
+        </div>
+        , Inc. - Privacy Policy
       </div>
-      <div className='bg-[#333333] text-white text-center py-4'>Copyright © 2024 FAFCO</div>
     </footer>
   )
 }

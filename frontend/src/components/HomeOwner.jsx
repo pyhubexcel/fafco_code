@@ -3,8 +3,8 @@ import { Link } from "react-router-dom"
 
 const HomeOwner = () => {
   return (
-    <Box sx={{minWidth:'80%',display:'flex',justifyContent:'center'}} my={10}>
-            <Card sx={{ width: '90%', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
+    // <Box sx={{minWidth:'80%',display:'flex',justifyContent:'center'}} my={3}>
+            <Card sx={{ margin:'25px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
                 <Stack sx={{ padding: '5px' }} >
                     <Box gap={2} sx={{ textAlign: 'center', padding: '20px', display: "flex", flexDirection: "column" }}>
                         <Stack gap={3} >
@@ -15,11 +15,12 @@ const HomeOwner = () => {
                             <Link to='/inactiveAccount'>Inactive Account</Link>
                             <Link to='/registrationLookup'>Registration Lookup</Link>
                             <Link to='/registerLink'>Registration Link</Link>
+                            <Link to='/addressValidation'>Address Validation</Link>
                         </Box>
                     </Box>
                 </Stack>
             </Card>
-        </Box >
+        // </Box >
   )
 }
 
