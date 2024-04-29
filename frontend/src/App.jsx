@@ -5,9 +5,9 @@ import Router from './router/Router'
 
 function App() {
   return (
-    <div className='h-screen flex flex-col justify-between'>
+    <div className='bg-gray-100 flex flex-col justify-between min-h-screen'>
       <Header />
-      <div className='bg-gray-200 flex justify-center'>
+      <div className='flex justify-center'>
         <Router/>
       </div>
       <Footer />

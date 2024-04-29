@@ -4,61 +4,38 @@ import {
     useMaterialReactTable,
 } from 'material-react-table';
 
-const data = [
-    {
-        REGID: 1,
-        Name: "John",
-        Email: "Doe",
-        Address: "Smith",
-        ZIP: 30,
-        CurrentDealer: "Pacific",
-    },
-    {
-        REGID: 1,
-        Name: "John",
-        Email: "Doe",
-        Address: "Smith",
-        ZIP: 310,
-        CurrentDealer: "Pacific",
-    },
-    {
-        REGID: 1,
-        Name: "John",
-        Email: "Doe",
-        Address: "Smith",
-        ZIP: 11110,
-        CurrentDealer: "Pacific",
-    },
-    {
-        REGID: 1,
-        Name: "John",
-        Email: "Doe",
-        Address: "Smith",
-        ZIP: 32220,
-        CurrentDealer: "Pacific",
-    },
-    {
-        REGID: 1,
-        Name: "John",
-        Email: "Doe",
-        Address: "Smith",
-        ZIP: 3333440,
-        CurrentDealer: "Pacific",
-    },
-    {
-        REGID: 1,
-        Name: "John",
-        Email: "Doe",
-        Address: "Smith",
-        ZIP: 3550,
-        CurrentDealer: "Pacific",
-    },
-];
-const RegisteredUsers = () => {
+// const data = [
+//     {
+//         id: 1,
+//         Name: 'John Doe',
+//         owner_email: 'john@example.com',
+//         address: '123 Main St',
+//         zip_code: '12345',
+//         current_dealer: 'ABC Motors',
+//     },
+//     {
+//         id: 2,
+//         Name: 'Jane Smith',
+//         owner_email: 'jane@example.com',
+//         address: '456 Elm St',
+//         zip_code: '54321',
+//         current_dealer: 'XYZ Autos',
+//     },
+//     {
+//         id: 3,
+//         Name: 'Alice Johnson',
+//         owner_email: 'alice@example.com',
+//         address: '789 Oak St',
+//         zip_code: '67890',
+//         current_dealer: '123 Cars',
+//     },
+//     // Add more dummy data as needed
+// ];
+const RegisteredUsers = ({userList}) => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'REGID',
+                accessorKey: 'id',
                 enableColumnFilterModes: false,
                 filterFn: 'equals',
                 header: 'REGID',
@@ -68,19 +45,19 @@ const RegisteredUsers = () => {
                 header: 'Name',
             },
             {
-                accessorKey: 'Email',
+                accessorKey: 'owner_email',
                 header: 'Email',
             },
             {
-                accessorKey: 'Address',
+                accessorKey: 'address',
                 header: 'Address',
             },
             {
-                accessorKey: 'ZIP',
+                accessorKey: 'zip_code',
                 header: 'ZIP',
             },
             {
-                accessorKey: 'CurrentDealer',
+                accessorKey: 'current_dealer',
                 header: 'Current Dealer',
             },
         ],
@@ -89,16 +66,16 @@ const RegisteredUsers = () => {
 
     const table = useMaterialReactTable({
         columns,
-        data,
+        data:userList,
         enableColumnFilterModes: false,
         enableDensityToggle: false,
         enableFullScreenToggle: false,
         enableGlobalFilter: true,
         // enableColumnFilters:false,
         enableHiding: false,
-        
-        enableColumnActions: false, enableSorting: false,
-        initialState: { showColumnFilters: true,showGlobalFilter:true }, 
+        enableColumnActions: false, 
+        enableSorting: false,
+        initialState: { showColumnFilters: false,showGlobalFilter:true }, 
         filterFns: {
             customFilterFn: (row, id, filterValue) => {
                 return row.getValue(id) === filterValue;

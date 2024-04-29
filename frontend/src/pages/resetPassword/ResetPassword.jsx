@@ -27,7 +27,7 @@ export default function ResetPassword() {
                   const res =  await axiosInstance.post('api/auth/forgot-password/', payload);
                     console.log("res ===res", res);
                     if(res.status === 200){
-                        navigate('/newPassword')
+                        // navigate('/newPassword')
                     }
                 } catch (error) {
                     toast.error(error.response.data.detail)
