@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import footerLogo from '../assets/img/footer-logo.png'
 import footerUsa from '../assets/img/footer-usa.png'
 import cookie from 'react-cookies'
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 const footerArray = [
   [
@@ -24,7 +26,14 @@ const footerArray = [
 ];
 
 export default function Footer() {
-  const token = cookie.load('token')
+  let token = cookie.load('token')
+  const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
+  const logoutSuccess = useSelector((state)=>state.CustomSlice.data);
+
+  useEffect(()=>{
+    token = cookie.load('token');
+    console.log("testing footer")
+},[customSliceSuccess,logoutSuccess])
   return (
     <footer className="bg-[#005D92]">
       {!token &&

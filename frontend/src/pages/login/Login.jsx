@@ -30,7 +30,7 @@ export default function Login() {
                 password: "",
             },
             validationSchema: loginSchema,
-            onSubmit: (values) => {
+            onSubmit:async (values) => {
                 // console.log("values===", values);
                 const payload = {
                     username: values.email,
@@ -57,7 +57,12 @@ export default function Login() {
                 //     setLoading(false)
                 // }
 
-                dispatch(customApiFunc(apiUrl, payload));
+             const res = await   dispatch(customApiFunc(apiUrl, payload));
+             console.log(res,'okay res')
+            //  cookie.save('token', response?.data?.data?.access)
+            //  cookie.save('id', response?.data?.data?.id)
+            //  cookie.save('role', response?.data?.data?.customer_type)
+            //  cookie.save('name', response?.data?.data?.name)
 
                 // dispatch(resetReducer());
             },
@@ -68,13 +73,7 @@ export default function Login() {
     // }, [customSliceSuccess])
 
     useEffect(() => {
-        if (customSliceRes.data.status) {
-            // toast.success("Login Successful");
-            dispatch(resetReducer());
-            navigate('/login')
-        }
         if (customSliceRes.data.non_field_errors) {
-            // console.log(customSliceRes.data.non_field_errors)
             toast.error(customSliceRes.data.non_field_errors[0])
         }
     }, [customSliceSuccess, customSliceRes.data.non_field_errors])

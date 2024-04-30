@@ -1,4 +1,4 @@
-import { Box, Card,  TextField, Typography } from "@mui/material";
+import { Box, Card, TextField, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import UploadDocsTable from "../../components/viewRegistration/UploadDocsTable";
 import { useState } from "react";
@@ -7,10 +7,11 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import ViewRegistrationComp from "../../components/viewRegistration/ViewRegistration";
+import { useLocation } from "react-router-dom";
+import axiosInstance from "../../utils/axios";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
-
     return (
         <div
             role="tabpanel"
@@ -43,9 +44,68 @@ function a11yProps(index) {
 
 export default function ViewRegistration() {
     const [value, setValue] = useState(0);
-
+    const [uploadState,setUploadState] = useState([{
+        uploadInput:null,
+        commentInput:''
+    }])
+    const location = useLocation()
     const handleChange = (event, newValue) => {
         setValue(newValue);
+    };
+
+    const uploadApi = async () => {
+        try {
+            const data = {
+                document_note: uploadState.commentInput,
+                document: uploadState.uploadInput
+            };
+    
+            const res = await axiosInstance.post(`api/claims/upload/document/`, data, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+    
+            console.log("Response:", res);
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log("upload...." ,uploadState)
+        if (!uploadState.uploadInput) {
+            console.log("Please select a file.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', uploadState.uploadInput);
+        formData.append('comment', uploadState.commentInput);
+
+        try {
+            await uploadApi();
+        } catch (error) {
+            console.error('Error uploading:', error);
+        }
+    };
+
+    const handleFileUploadChange = (e) => {
+        const file = e?.target?.files[0];
+        if (!file) return;
+        setUploadState((prevState) => ({
+            ...prevState,
+            uploadInput : file
+        }));
+    };
+    
+    const handleUploadChange = (e) => {
+        const { value } = e.target;
+            setUploadState((prevState) => [{
+                ...prevState,
+                commentInput: value
+            }]);
     };
 
     // const claimApi = async ()=>{
@@ -60,17 +120,18 @@ export default function ViewRegistration() {
     //         console.log("Error:", error);
     //     }
     // }
+
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }} my={2}>
             <Card sx={{ width: '100%', margin: '15px', padding: '20px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
                 <div className="flex flex-col justify-between sm:flex-row md:flex-row" >
                     <Box sx={{ display: 'flex', gap: '5px' }}>
                         <Typography sx={{ fontSize: '1.05rem', fontWeight: '600' }}>Registration Addresss: </Typography>
-                        <Typography sx={{ fontSize: '1.05rem' }}>123 Some St, Sometown, PA 12345</Typography>
+                        <Typography sx={{ fontSize: '1.05rem' }}>{location.state.address}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', gap: '5px' }} >
                         <Typography sx={{ fontSize: '1.05rem', fontWeight: '600' }}>Assigned Dealer:</Typography>
-                        <Typography sx={{ fontSize: '1.05rem' }}> Super Solar Inc.</Typography>
+                        <Typography sx={{ fontSize: '1.05rem' }}>{location.state.current_dealer}</Typography>
                     </Box>
                 </div>
                 <Box sx={{ width: '50%', display: 'flex', gap: '7px', alignItems: 'center' }} my={2}>
@@ -85,7 +146,7 @@ export default function ViewRegistration() {
                         className="w-1/2"
                         // label='Jim & Joan Smith'
                         size="small"
-                        value='Jim & Joan Smith'
+                        value={location.state.Name}
                     />
                     <CustomButton buttonName="Update" variant="contained" />
                 </Box>
@@ -101,7 +162,6 @@ export default function ViewRegistration() {
                         <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px', marginBottom: '20px' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#1976D2', color: 'white', padding: '10px', marginBottom: '10px' }}>
                                 <Typography >Pool Parts</Typography>
-                                {/* <CloseIcon className="cursor-pointer text-gray-500 hover:text-gray-950  hover:shadow-2xl" onClick={() => setShowParts(!showParts)} /> */}
                             </Box>
                             <Box margin={3}>
                                 <PartsTable />
@@ -112,29 +172,28 @@ export default function ViewRegistration() {
                         <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px', marginBottom: '20px' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#1976D2', color: 'white', padding: '10px', marginBottom: '10px' }}>
                                 <Typography>Pool - Upload POP Docs</Typography>
-                                {/* <CloseIcon className="cursor-pointer text-gray-500 hover:text-gray-950  hover:shadow-2xl" onClick={() => setUpload(!upload)} /> */}
                             </Box>
                             <Box margin={3}>
                                 <UploadDocsTable />
-                                <Box width={'400px'} >
-                                    <Box my={2}>
-                                        <TextField type="file" size="small"/>
+                                <form onSubmit={handleSubmit}>
+                                    <Box width={'400px'} >
+                                        <Box my={2}>
+                                            <TextField type="file" size="small" value={uploadState.uploadInput} onChange={handleFileUploadChange}/>
+                                        </Box>
+                                        <Box display={"flex"} alignItems={'center'} gap={1}>
+                                            <Typography>Comment:</Typography>
+                                            <TextField size="small" fullWidth placeholder="Enter document name" value={uploadState.commentInput}  onChange={handleUploadChange} />
+                                            <CustomButton buttonName="Upload" variant="contained" type='submit' />
+                                        </Box>
                                     </Box>
-                                    <Box display={"flex"} alignItems={'center'} gap={1}>
-                                        <Typography>Comment:</Typography>
-                                        <TextField size="small" fullWidth placeholder="optional*" />
-                                    </Box>
-                                </Box>
+                                </form>
                             </Box>
-
                         </Card>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={2}>
                         comming soon...
                     </CustomTabPanel>
                 </Box>
-
-
                 <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
                     <ViewRegistrationComp />
                 </Card>

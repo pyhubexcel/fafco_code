@@ -132,7 +132,7 @@ export default function Register() {
         if (customSliceRes.data.status) {
             toast.success("Registration Successful");
             dispatch(resetReducer());
-            navigate('/login')
+            navigate('/registerLink')
         }
 
         if (customSliceRes.data.email) {
@@ -246,7 +246,6 @@ export default function Register() {
                         variant="outlined"
                         size="small"
                         required
-                    // error={customSliceRes.data.non_field_errors && customSliceRes.data.non_field_errors.length > 0 && true}
                     >
                         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                         <OutlinedInput
@@ -283,7 +282,6 @@ export default function Register() {
                         variant="outlined"
                         size="small"
                         required
-                    // error={customSliceRes.data.non_field_errors && customSliceRes.data.non_field_errors.length > 0 && true}
                     >
                         <InputLabel
                             htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
@@ -316,7 +314,6 @@ export default function Register() {
                     ) : null}
                 </div>
                 <FormControl>
-                    {/* <label>I am a:</label> */}
                     <RadioGroup
                         onBlur={handleBlur}
                         onChange={handleChange}

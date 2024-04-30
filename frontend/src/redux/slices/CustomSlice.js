@@ -23,6 +23,13 @@ const CustomSlice = createSlice({
       state.isSuccess = true;
       state.data = { ...action.payload };
     },
+    logoutSuccess(state, action){
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = true;
+      console.log(action, 'this is action')
+      state.data = { ...action.payload };
+    },
     hasError(state, action) {
       state.isError = true;
       state.isLoading = false;
@@ -39,19 +46,20 @@ const CustomSlice = createSlice({
 });
 
 export function customApiFunc(apiUrl,payload) {
-  console.log("payload in customSlice=====",payload)
-  console.log("payload in customSlice=====",apiUrl)
+  // console.log("payload in customSlice=====",payload)
+  // console.log("payload in customSlice=====",apiUrl)
 
   return async (dispatch) => {
     dispatch(CustomSlice.actions.startLoading());
     try {
       const response = await axiosInstance.post(apiUrl,payload);
-      console.log(response);
-      if (response.data.status == "Successfull") {
-        cookie.save('token', response?.data?.data?.access)
-        cookie.save('id', response?.data?.data?.id)
-        cookie.save('role', response?.data?.data?.customer_type)
-        cookie.save('name', response?.data?.data?.name)
+      console.log(response)
+      if (response.data.status == "Successful") {
+        // cookie.save('token', response?.data?.data?.access)
+        // cookie.save('id', response?.data?.data?.id)
+        // cookie.save('role', response?.data?.data?.customer_type)
+        // cookie.save('name', response?.data?.data?.name)
+        console.log( response?.data?.data?.name , "and",  response?.data?.data)
       }
       dispatch(CustomSlice.actions.loginSuccess(response.data));
     } catch (e) {
@@ -61,5 +69,27 @@ export function customApiFunc(apiUrl,payload) {
   };
 }
 
-export const { startLoading, hasError, loginSuccess, resetReducer } = CustomSlice.actions;
+export function logout(apiUrl,token){
+  return async (dispatch) => {
+    dispatch(CustomSlice.actions.startLoading());
+    try {
+      const response = await axiosInstance.get(apiUrl, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+      if(response.data.status == "Successfull"){
+        cookie.remove('token')
+        cookie.remove('role')
+      }
+      dispatch(CustomSlice.actions.logoutSuccess(response.data));
+    } catch (e) {
+        console.log('error in catch====',e.response.data);
+      dispatch(CustomSlice.actions.hasError(e.response.data));
+    }
+  };
+}
+
+export const { startLoading, hasError, loginSuccess, resetReducer,logoutSuccess } = CustomSlice.actions;
 export default CustomSlice.reducer;

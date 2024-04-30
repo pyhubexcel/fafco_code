@@ -1,28 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
-import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
-import Settings from '@mui/icons-material/Settings';
+import { Link } from 'react-router-dom';
+import { Avatar, Backdrop, Box, CircularProgress, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import Logout from '@mui/icons-material/Logout';
 import cookie from 'react-cookies'
 import { useDispatch, useSelector } from 'react-redux';
-import { customApiFunc } from "../redux/slices/CustomSlice";
+import { logout } from "../redux/slices/CustomSlice";
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+
+const navbarLinks = [
+    {
+        name: 'HOME',
+        link: '/',
+    },
+    {
+        name: 'REGISTRATION LOOKUP',
+        link: '/registrationLookup',
+    },
+    {
+        name: ' ADDRESS VALIDATION',
+        link: '/addressValidation',
+    },
+]
 
 const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
-    const id = cookie.load('id')
-    const apiUrl = `api/auth/user/${id}`
-    const navigate = useNavigate()
-    const token = cookie.load('token')
+    const apiUrl = `api/auth/logout/`
+    let token = cookie.load('token')
     const open = Boolean(anchorEl);
     const dispatch = useDispatch();
     // const id = cookie.load('id')
     const name = cookie.load("name");
-
-    const customSliceRes = useSelector((state) => state.CustomSlice);
-    console.log(customSliceRes)
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -32,50 +42,51 @@ const Header = () => {
 
     const handleLogout = () => {
         setAnchorEl(null);
-        cookie.remove('token')
-        cookie.remove('role')
-        navigate('/login')
-        dispatch(customApiFunc(apiUrl))
+        dispatch(logout(apiUrl, token))
     }
 
     const toggleNavbar = () => {
         setIsOpen(!isOpen);
     };
+    const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
+    const logoutSuccess = useSelector((state) => state.CustomSlice.data);
+    const logoutLoading = useSelector((state) => state.CustomSlice.isLoading);
+
+
+    useEffect(() => {
+        token = cookie.load('token');
+        console.log("testing header")
+    }, [customSliceSuccess, logoutSuccess])
+
     return (
-        <div className=" bg-white px-7 py-2 shadow-xl ">
-            <nav className="bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div className=" bg-white px-7 py-1 shadow-md ">
+            {/* <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={logoutLoading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop> */}
+            <nav >
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
                     <div className="flex items-center justify-between h-16 ">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <div className=' w-44 '>
-                                    <img src={HeaderLogo} alt="logo" />
+                        <div className="flex-shrink-0 w-44">
+                            <img src={HeaderLogo} alt="logo" />
+                        </div>
+
+
+                        {token &&
+                            <div className="hidden xl:block">
+                                <div className="ml-10 flex items-baseline space-x-4">
+                                    {navbarLinks.map((item, i) => (
+                                        <Link key={i} to={item.link} className=" hover:text-blue-600 px-5 py-2 rounded-md text-xl font-medium">
+                                            {item.name}
+                                        </Link>
+                                    ))}
                                 </div>
                             </div>
+                        }
 
-                            {token && (
-                                <div className="hidden xl:block">
-                                    <div className="ml-10 flex items-baseline space-x-4">
-                                        <Link href="#" className=" hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium">
-                                            Home
-                                        </Link>
-                                        <Link href="#" className=" hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium">
-                                            New Registration
-                                        </Link>
-                                        <Link href="#" className=" hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium">
-                                            Find Registration
-                                        </Link>
-                                        <Link href="#" className=" hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium">
-                                            Open a Claim
-                                        </Link>
-                                        <Link href="#" className=" hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium">
-                                            My Account
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
 
-                        </div>
                         {token &&
                             <div className='hidden xl:block'>
                                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -135,12 +146,6 @@ const Header = () => {
                                         <Avatar /> My account
                                     </MenuItem>
                                     <Divider />
-                                    <MenuItem onClick={handleClose}>
-                                        <ListItemIcon>
-                                            <Settings fontSize="small" />
-                                        </ListItemIcon>
-                                        Settings
-                                    </MenuItem>
                                     <MenuItem onClick={handleLogout}>
                                         <ListItemIcon>
                                             <Logout fontSize="small" />
@@ -150,6 +155,9 @@ const Header = () => {
                                 </Menu>
                             </div>
                         }
+
+
+
                         {token &&
                             <div className="-mr-2 flex xl:hidden">
                                 <button
@@ -159,31 +167,16 @@ const Header = () => {
                                     aria-expanded="false"
                                 >
                                     <span className="sr-only">Open main menu</span>
-                                    <svg
-                                        className={`${isOpen ? 'hidden' : 'block'} h-6 w-6`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        aria-hidden="true"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                                    </svg>
-                                    <svg
-                                        className={`${isOpen ? 'block' : 'hidden'} h-6 w-6`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        aria-hidden="true"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <MenuIcon sx={{ display: isOpen ? 'none' : 'block'  }} />
+                                    <CloseIcon sx={{ display: isOpen ? 'block' : 'none'}} />
                                 </button>
                             </div>
                         }
                     </div>
                 </div>
+
+
+
                 {token &&
                     <div className={`${isOpen ? 'block ' : 'hidden'} xl:hidden`}>
                         <div className="  pt-2 space-y-1 pb-2 sm:px-3">
@@ -244,12 +237,6 @@ const Header = () => {
                                     <Avatar /> My account
                                 </MenuItem>
                                 <Divider />
-                                <MenuItem onClick={handleClose}>
-                                    <ListItemIcon>
-                                        <Settings fontSize="small" />
-                                    </ListItemIcon>
-                                    Settings
-                                </MenuItem>
                                 <MenuItem onClick={handleLogout}>
                                     <ListItemIcon>
                                         <Logout fontSize="small" />
@@ -260,27 +247,15 @@ const Header = () => {
                         </div>
                         <Divider />
                         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                            <Link href="#" className=" hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
-                                Home
+                        {navbarLinks.map((item,i)=>(
+                            <Link key={i} to={item.link} className=" hover:text-blue-600 block px-3 py-2 rounded-md text-md font-medium">
+                               {item.name}
                             </Link>
-                            <Link href="#" className=" hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
-                                New Registration
-                            </Link>
-                            <Link href="#" className=" hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
-                                Find Registration
-                            </Link>
-                            <Link href="#" className=" hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
-                                Open a Claim
-                            </Link>
-                            <Link href="#" className=" hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
-                                My Account
-                            </Link>
-
+                        ))}
                         </div>
                     </div>
                 }
             </nav>
-
         </div>
     )
 }

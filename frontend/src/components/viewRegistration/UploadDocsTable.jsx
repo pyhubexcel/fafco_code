@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import {
-  MRT_Table, //import alternative sub-component if we do not want toolbars
+  MRT_Table,
   useMaterialReactTable,
 } from 'material-react-table';
 import CustomButton from '../ui/CustomButton';
@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const data = [
   {
-    actionButtons: '', // You can leave this empty for dummy data
+    actionButtons: '',
     DocumentNote: 'Lorem ipsum dolor sit amet',
     Uploaded: '2024-04-28',
     RMAID: 'RMA001',
@@ -29,7 +29,7 @@ export const UploadDocsTable = () => {
         {
             accessorKey: 'actionButtons', 
             header: '#', 
-            Cell: ({ row }) => ( 
+            Cell: () => ( 
               <div className='flex gap-4'>
                 <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>}></CustomButton>
                 <CustomButton buttonName='View' variant="text" buttonIcon={ <VisibilityIcon/>}></CustomButton>
@@ -51,15 +51,6 @@ export const UploadDocsTable = () => {
     ],
     [],
   );
-  const handleEdit = (row) => {
-    // Handle edit button click here
-    console.log('Edit button clicked for row:', row);
-  };
-
-  const handleView = (row) => {
-    // Handle view button click here
-    console.log('View button clicked for row:', row);
-  };
 
   const table = useMaterialReactTable({
     columns,

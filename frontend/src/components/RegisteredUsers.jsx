@@ -1,37 +1,41 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
     MaterialReactTable,
     useMaterialReactTable,
 } from 'material-react-table';
 
-// const data = [
-//     {
-//         id: 1,
-//         Name: 'John Doe',
-//         owner_email: 'john@example.com',
-//         address: '123 Main St',
-//         zip_code: '12345',
-//         current_dealer: 'ABC Motors',
-//     },
-//     {
-//         id: 2,
-//         Name: 'Jane Smith',
-//         owner_email: 'jane@example.com',
-//         address: '456 Elm St',
-//         zip_code: '54321',
-//         current_dealer: 'XYZ Autos',
-//     },
-//     {
-//         id: 3,
-//         Name: 'Alice Johnson',
-//         owner_email: 'alice@example.com',
-//         address: '789 Oak St',
-//         zip_code: '67890',
-//         current_dealer: '123 Cars',
-//     },
-//     // Add more dummy data as needed
-// ];
-const RegisteredUsers = ({userList}) => {
+const data = [
+    {
+        id: 1,
+        Name: "John Doe",
+        owner_email: "john@example.com",
+        address: "123 Main St",
+        zip_code: "12345",
+        current_dealer: "Dealer A"
+    },
+    {
+        id: 2,
+        Name: "Jane Smith",
+        owner_email: "jane@example.com",
+        address: "456 Elm St",
+        zip_code: "67890",
+        current_dealer: "Dealer B"
+    },
+    {
+        id: 3,
+        Name: "Alice Johnson",
+        owner_email: "alice@example.com",
+        address: "789 Oak St",
+        zip_code: "54321",
+        current_dealer: "Dealer C"
+    },
+    // Add more dummy data as needed
+];
+
+
+const RegisteredUsers = ({ userList,getRowData }) => {
+    const [userData, setUserData] = useState(null) 
+    getRowData(userData);
     const columns = useMemo(
         () => [
             {
@@ -66,27 +70,33 @@ const RegisteredUsers = ({userList}) => {
 
     const table = useMaterialReactTable({
         columns,
-        data:userList,
+        data,
         enableColumnFilterModes: false,
         enableDensityToggle: false,
-        enableFullScreenToggle: false,
+        enableFullScreenToggle: false,  
         enableGlobalFilter: true,
+        enableRowSelection: true,
         // enableColumnFilters:false,
         enableHiding: false,
-        enableColumnActions: false, 
+        enableColumnActions: false,
         enableSorting: false,
-        initialState: { showColumnFilters: false,showGlobalFilter:true }, 
+        initialState: { showColumnFilters: false, showGlobalFilter: true },
         filterFns: {
             customFilterFn: (row, id, filterValue) => {
                 return row.getValue(id) === filterValue;
             },
-        },
+        }, 
         localization: {
             filterCustomFilterFn: 'Custom Filter Fn',
         },
+        renderTopToolbar: ({ table }) => {
+            setUserData(table?.getSelectedRowModel()?.rows[0]?.original)
+            // console.log(table.getSelectedRowModel().rows[0]?.original);
+            console.log(userData,'userData')
+        }
     });
 
-    return <MaterialReactTable table={table} />;
+    return <MaterialReactTable  table={table} />;
 };
 
 export default RegisteredUsers;
