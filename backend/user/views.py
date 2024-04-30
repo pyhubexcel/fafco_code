@@ -22,6 +22,7 @@ from django.urls import reverse
 from .serializers import ForgotPasswordSerializer
 from django.core.mail import send_mail
 from django.conf import settings
+from django.shortcuts import render
 
 
 class RegisterAPI(APIView):
@@ -58,6 +59,26 @@ class RegisterAPI(APIView):
             html_message=f"Click the link to verify your email: {click_here_link}",
         )
 
+class ResendVerificationEmailAPIView(APIView):
+    def post(self, request):
+        email = request.data['payload']['username']
+        try:
+            user = Customer.objects.get(email=email)
+            if user.is_active:
+                return Response(
+                    {"status": "Failed", "message": "User is already active."},
+                    status=status.HTTP_200_OK,
+                )
+            RegisterAPI.send_verification_email(self, user)
+            return Response(
+                {"status": "Successful", "message": "Verification link has been resent to your email. Please check your email inbox."},
+                status=status.HTTP_200_OK,
+            )
+        except Customer.DoesNotExist:
+            return Response(
+                {"status": "Failed", "message": "User with this email does not exist."},
+                status=status.HTTP_200_OK,
+            )
 
 class VerifyEmailAPI(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -68,44 +89,95 @@ class VerifyEmailAPI(APIView):
         if default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response(
-                {"message": "Successfully vereified. You can now log in."},
-                status=status.HTTP_200_OK)
+            message = "Successfully verified. You can now log in."
+            return render(request, 'email_template.html', {'message': message})
         else:
-            return Response(
-                {"error": "Invalid verification link."},
-                status=status.HTTP_400_BAD_REQUEST)
+            message = "Successfully verified. You can now log in."
+            return render(request, 'email_template.html', {'message': message})
 
+
+# class VerifyEmailAPI(APIView):
+#     permission_classes = (permissions.AllowAny,)
+
+#     def get(self, request, uidb64, token):
+#         uid = urlsafe_base64_decode(uidb64).decode()
+#         user = Customer.objects.filter(pk=uid).first()
+#         if default_token_generator.check_token(user, token):
+#             user.is_active = True
+#             user.save()
+#             return Response(
+#                 {"message": "Successfully vereified. You can now log in."},
+#                 status=status.HTTP_200_OK)
+#         else:
+#             return Response(
+#                 {"error": "Invalid verification link."},
+#                 status=status.HTTP_400_BAD_REQUEST)
+
+
+# class LoginAPI(APIView):
+#     permission_classes = (permissions.AllowAny,)
+
+#     def post(self, request, format=None):
+#         serializer = AuthTokenSerializer(data=request.data)
+#         serializer.is_valid()
+#         user = get_object_or_404(Customer, email=request.data["username"])
+#         if user.is_active:
+#             user = serializer.validated_data['user']
+#             refresh = RefreshToken.for_user(user)
+
+#             data = {
+#                 'id': user.id,
+#                 'customer_type': user.customer_type,
+#                 'name': user.name,
+#                 'refresh': str(refresh),
+#                 'access': str(refresh.access_token),
+#             }
+#             response_data = {
+#                 "status": "Successfull",
+#                 "message": "Login successfully",
+#                 "data": data,
+#                 }
+#             return Response(response_data, status=status.HTTP_200_OK)
+#         else:
+#             response_data = {
+#              "message": "Your account is Disabled."
+#             }
+#             return Response(response_data, status=status.HTTP_200_OK)
 
 class LoginAPI(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = get_object_or_404(Customer, email=request.data["username"])
-        if user.is_active:
-            user = serializer.validated_data['user']
-            refresh = RefreshToken.for_user(user)
+        if serializer.is_valid():
+            user = get_object_or_404(Customer, email=request.data.get("username"))
+            if user.is_active:
+                user = serializer.validated_data['user']
+                refresh = RefreshToken.for_user(user)
 
-            data = {
-                'id': user.id,
-                'customer_type': user.customer_type,
-                'email': user.email,
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }
-            response_data = {
-                "status": "Successfull",
-                "message": "Login successfully",
-                "data": data,
+                data = {
+                    'id': user.id,
+                    'customer_type': user.customer_type,
+                    'name': user.name,
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
                 }
-            return Response(response_data, status=status.HTTP_200_OK)
-        else:
-            response_data = {
-             "message": "Your account is Disabled."
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
+                response_data = {
+                    "status": "Successful",
+                    "message": "Login successfully",
+                    "data": data,
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
+            else:
+                response_data = {
+                    "message": "Invalid username or password or (Please check your email for verification)"
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
+
+        response_data = {
+            "message": "Invalid username or password or (Please check your email for verification)"
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class LogoutAPI(APIView):
@@ -131,7 +203,7 @@ class UpdatePasswordAPIView(APIView):
         new_password = serializer.validated_data.get('new_password')
         re_password = serializer.validated_data.get("re_password")
 
-        if user.check_password(current_password):
+        if user.check_password(current_password): 
             if new_password == re_password:
                 user.password = make_password(new_password)
                 user.save()

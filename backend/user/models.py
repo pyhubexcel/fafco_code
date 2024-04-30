@@ -27,6 +27,7 @@ class Customer(AbstractUser):
 
 
 class Profile(models.Model):
+    name = models.CharField(max_length=64)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE,
                                  related_name="customer_profile")
     address = models.CharField(max_length=255, unique=True)
