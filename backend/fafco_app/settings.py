@@ -139,3 +139,4 @@ FE_DOMAIN = os.getenv('FE_DOMAIN')
 
 KEY = os.getenv('KEY')
 HOSTNAME = 'localhost'
+BACKEND_IP = os.getenv('BACKEND_IP')

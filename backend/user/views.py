@@ -20,6 +20,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 from .serializers import ForgotPasswordSerializer
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class RegisterAPI(APIView):
@@ -30,16 +32,49 @@ class RegisterAPI(APIView):
         data["username"] = data["email"]
         serializer = CustomerSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            response_data = {
-                "status": "Successful",
-                "message": "User Created",
-                "data": serializer.data,
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
+            user = serializer.save()
+            user.is_active = False
+            user.save()
+            self.send_verification_email(user)
+            return Response(
+                {"status": "Successful", "message": "Verification link has been sent to your email. Please check your email inbox."},
+                status=status.HTTP_200_OK,
+            )
         else:
             errors = serializer.errors
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def send_verification_email(self, user):
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        verification_url = f"http://{settings.BACKEND_IP}/api/auth/verify/{uid}/{token}/"
+        click_here_link = f'<a href="{verification_url}">click here</a>'
+        send_mail(
+            "Verify Your Email",
+            f"Click the link to verify your email: {click_here_link}",
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            fail_silently=False,
+            html_message=f"Click the link to verify your email: {click_here_link}",
+        )
+
+
+class VerifyEmailAPI(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, uidb64, token):
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Customer.objects.filter(pk=uid).first()
+        if default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response(
+                {"message": "Successfully vereified. You can now log in."},
+                status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "Invalid verification link."},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPI(APIView):
@@ -62,7 +97,7 @@ class LoginAPI(APIView):
             }
             response_data = {
                 "status": "Successfull",
-                "message": "Login successfully by user",
+                "message": "Login successfully",
                 "data": data,
                 }
             return Response(response_data, status=status.HTTP_200_OK)
@@ -257,19 +292,22 @@ class ProfileDetailAPI(APIView):
 
     def delete(self, request, pk):
         user = get_object_or_404(Profile, customer=request.user.id, pk=pk)
-        print('delete', user)
         user.is_active = True
         user.save()
-        return Response({"message": "User disabled Successfully"},
-                        status=status.HTTP_200_OK)
+        return Response(
+            {"message": "User disabled Successfully"},
+            status=status.HTTP_200_OK
+        )
 
 
 class AutocompleteAPIView(APIView):
     def get(self, request):
         search_term = request.GET.get('search_term', '')
         if not search_term:
-            return Response({'error': 'Please provide a search term'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+               {'error': 'Please provide a search term'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         results = autocomplete(search_term)
         return Response(results)
 
