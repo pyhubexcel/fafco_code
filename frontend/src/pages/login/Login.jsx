@@ -21,7 +21,7 @@ export default function Login() {
     const customSliceLoading = useSelector((state) => state.CustomSlice.isLoading);
     const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
 
-    // console.log('customSliceRes', customSliceRes)
+    console.log('customSliceRes', customSliceRes)
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
@@ -75,6 +75,9 @@ export default function Login() {
     useEffect(() => {
         if (customSliceRes.data.non_field_errors) {
             toast.error(customSliceRes.data.non_field_errors[0])
+        }
+        if(customSliceRes.data.message == "Invalid username or password or (Please check your email for verification)"){
+            toast.error('Invalid username or password')
         }
     }, [customSliceSuccess, customSliceRes.data.non_field_errors])
 

@@ -4,13 +4,16 @@ import axiosInstance from "../../utils/axios";
 import { useSelector } from "react-redux";
 
 export default function RegisterLink() {
+    const localEmail = localStorage.getItem('username')
     const customSliceRes = useSelector((state) => state.CustomSlice);
     console.log(customSliceRes,'customSliceRes')
    
     const resendApi = async () => {
         try {
-            // const token = cookie.load('token');
-            const res = await axiosInstance.post(`api/auth/resend-verification/`, {
+            const payload = {
+                username: localEmail,
+            } 
+            const res = await axiosInstance.post(`api/auth/resend-verification/`,{payload}, {
                 headers: {
                     "Content-Type": "application/json",
                     // "Authorization": `Bearer ${token}`

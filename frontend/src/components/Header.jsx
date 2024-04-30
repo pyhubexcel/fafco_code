@@ -42,6 +42,8 @@ const Header = () => {
 
     const handleLogout = () => {
         setAnchorEl(null);
+        cookie.remove('token')
+        cookie.remove('role')
         dispatch(logout(apiUrl, token))
     }
 
