@@ -24,7 +24,7 @@ const signupElements = [
     {
         name: 'phone',
         placeHolder: 'Phone Number',
-        type: 'text'
+        type: 'number'
     },
     {
         name: 'email',
@@ -130,17 +130,10 @@ export default function Register() {
 
     useEffect(() => {
         if (customSliceRes.data.status) {
-            toast.success("Registration Successful");
             dispatch(resetReducer());
             navigate('/registerLink')
         }
 
-        if (customSliceRes.data.email) {
-            toast.error(customSliceRes.data.email[0]);
-        }
-        if (customSliceRes.data.phone) {
-            toast.error(customSliceRes.data.phone[0]);
-        }
     }, [customSliceSuccess, customSliceRes.data.phone,customSliceRes.data.phone])
 
 
@@ -167,61 +160,71 @@ export default function Register() {
             <form className="space-y-4" onSubmit={handleSubmit}>
                 {signupElements.map((item, i) => (
                     item?.name == "phone" ?
-                        <div key={i} className="flex gap-2">
-                            <Autocomplete
-                                id="country-select-demo"
-                                sx={{ width: 150 }}
-                                options={countries}
-                                size="small"
-                                onChange={handleChangeCountry}
-                                getOptionLabel={(option) => option.label}
-                                renderOption={(props, option) => (
-                                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                        {/* <img
+                        <div key={i}>
+                            <div className="flex gap-2">
+                                <Autocomplete
+                                    id="country-select-demo"
+                                    sx={{ width: 150 }}
+                                    options={countries}
+                                    size="small"
+                                    onChange={handleChangeCountry}
+                                    getOptionLabel={(option) => option.label}
+                                    renderOption={(props, option) => (
+                                        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                            {/* <img
                                             loading="lazy"
                                             width="20"
                                             srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
                                             src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
                                             alt=""
                                         /> */}
-                                        {option.name}
-                                    </Box>
-                                )}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Country"
-                                        inputProps={{
-                                            ...params.inputProps,
-                                            autoComplete: 'new-password',
-                                        }}
-                                    />
-                                )} />
+                                            {option.name}
+                                        </Box>
+                                    )}
+                                    renderInput={(params) => (
+                                        <TextField
+                                        error={
+                                        customSliceRes?.data?.phone &&
+                                        customSliceRes?.data?.phone?.length > 0
+                                        // customSliceRes.data.phone == item.name  &&
+                                    }
+                                            {...params}
+                                            label="Country"
+                                            inputProps={{
+                                                ...params.inputProps,
+                                                autoComplete: 'new-password',
+                                            }}
+                                            required
+                                        />
+                                    )} />
 
-                            <TextField
-                                error={
-                                     customSliceRes?.data?.phone  &&
-                                    customSliceRes?.data?.phone?.length > 0 
-                                    // customSliceRes.data.phone == item.name  &&
-                                }
-                                type={item.type}
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values[item.name]}
-                                name={item.name}
-                                className="w-full"
-                                label={item.placeHolder}
-                                size="small"
-                                required
-                            />
-
+                                <TextField
+                                    error={
+                                        customSliceRes?.data?.phone &&
+                                        customSliceRes?.data?.phone?.length > 0
+                                        // customSliceRes.data.phone == item.name  &&
+                                    }
+                                    type={item.type}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values[item.name]}
+                                    name={item.name}
+                                    className="w-full"
+                                    label={item.placeHolder}
+                                    size="small"
+                                    required
+                                />
+                            </div>
+                            {errors[item.name] && touched[item.name] ? (
+                                <div className="text-red-500 text-[12px] italic ml-32">{errors[item.name]}</div>
+                            ) : null}
                         </div>
                         :
                         <div key={i} className="space-y-1">
                             <TextField
-                             error={
-                                     customSliceRes?.data?.email  &&
-                                    customSliceRes?.data?.email?.length > 0  &&
+                                error={
+                                    customSliceRes?.data?.email &&
+                                    customSliceRes?.data?.email?.length > 0 &&
                                     (item.name === 'confirmEmail' || item.name === 'email')
                                     // customSliceRes.data.email.includes(item.name)  &&
                                 }
@@ -326,7 +329,7 @@ export default function Register() {
                         <FormControlLabel value="2" control={<Radio />} label="Homeowner" />
                     </RadioGroup>
                 </FormControl>
-                <CustomButton loading={customSliceLoading} buttonName='Register' type="submit"  variant='contained'/>
+                <CustomButton loading={customSliceLoading} buttonName='Register' type="submit" variant='contained' />
                 <ToastContainer
                     position="top-right"
                     autoClose={5000}

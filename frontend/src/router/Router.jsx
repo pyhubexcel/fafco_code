@@ -13,6 +13,7 @@ import Register from '../pages/Register/Register';
 import PageNotfound from '../pages/pageNotFound/PagesNotFound';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import CreateClaim from '../pages/claim/CreateClaim';
 
 export default function Router() {
     let token = cookie.load('token');
@@ -42,6 +43,7 @@ export default function Router() {
             <Route path="/registrationLookup" element={ token ? <RegistrationLookup /> :  <Navigate to="/" />}/>
             <Route path="/addressValidation" element={ token ?  <AddressValidation /> :  <Navigate to="/" />}/>
             <Route path="*" element={ <PageNotfound /> }/>
+            <Route path="/createClaim" element={ <CreateClaim /> }/>
         </Routes>
     );
 }

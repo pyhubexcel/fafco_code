@@ -45,7 +45,7 @@ const RegisteredUsers = ({ userList,getRowData }) => {
                 header: 'REGID',
             },
             {
-                accessorKey: 'Name',
+                accessorKey: 'name',
                 header: 'Name',
             },
             {
@@ -70,7 +70,7 @@ const RegisteredUsers = ({ userList,getRowData }) => {
 
     const table = useMaterialReactTable({
         columns,
-        data,
+        data:userList,
         enableColumnFilterModes: false,
         enableDensityToggle: false,
         enableFullScreenToggle: false,  

@@ -34,12 +34,12 @@ export default function RegistrationLookup() {
     }
 
     useEffect(() => {
-        // lookupApi();
+        lookupApi();
     }, [])
     return (
         <Card sx={{ width: '95%', margin: 'auto', padding: '20px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
             <Typography sx={{ fontSize: '1.35rem', fontWeight: '700' }}>Registration Lookup</Typography>
-            {/* {userList?.length > 0 ?
+            {userList?.length > 0 ?
                 <RegisteredUsers getRowData={getRowData} userList={userList} />
                 :
                 <Stack spacing={1}>
@@ -49,10 +49,10 @@ export default function RegistrationLookup() {
                     <Skeleton variant="text" sx={{ fontSize: '1rem' }} height={40} />
                     <Skeleton variant="rounded" width={210} height={50} />
                 </Stack>
-            } */}
+            }
 
 
-            <RegisteredUsers getRowData={getRowData} userList={userList} />
+            {/* <RegisteredUsers getRowData={getRowData} userList={userList} /> */}
 
 
             <Box sx={{ width: '200px', direction: 'flex', justifyContent: 'flex-start' }} my={2}>

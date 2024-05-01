@@ -27,18 +27,19 @@ const data = [
     // Add more dummy data objects as needed
   ];
 
-export const PartsTable = () => {
+export const PartsTable = ({handleOpen}) => {
+  console.log(handleOpen,'handleopennnnnnn')
   const columns = useMemo(
     () => [
         {
             accessorKey: 'actionButtons', 
             header: (
                 <div className='flex gap-2'>
-                  <CustomButton buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon/>}></CustomButton>
+                  <CustomButton buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon/>} onClick={handleOpen}></CustomButton>
                 </div>
               ), 
             // eslint-disable-next-line react/prop-types
-            Cell: ({ row }) => ( 
+            Cell: () => ( 
               <div className='flex gap-4'>
                 <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>}></CustomButton>
                 <CustomButton buttonName='Delete' variant="text" buttonIcon={ <DeleteIcon/>}></CustomButton>

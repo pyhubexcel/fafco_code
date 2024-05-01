@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Avatar, Backdrop, Box, CircularProgress, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import Logout from '@mui/icons-material/Logout';
 import cookie from 'react-cookies'
@@ -80,9 +80,11 @@ const Header = () => {
                             <div className="hidden xl:block">
                                 <div className="ml-10 flex items-baseline space-x-4">
                                     {navbarLinks.map((item, i) => (
-                                        <Link key={i} to={item.link} className=" hover:text-blue-600 px-5 py-2 rounded-md text-xl font-medium">
+                                        <NavLink key={i} to={item.link}
+                                         className={({isActive})=> {return `${isActive?"border-b-4 rounded-none border-blue-500 ":""}  hover:text-blue-600 px-5 py-2 rounded-md text-xl  font-medium`}}>
+                                        {/* className={`${({ isActive }) => (isActive ? 'bg-black' : 'bg-blue-600')}`}> */}
                                             {item.name}
-                                        </Link>
+                                        </NavLink>
                                     ))}
                                 </div>
                             </div>

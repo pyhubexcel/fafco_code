@@ -73,13 +73,11 @@ export default function Login() {
     // }, [customSliceSuccess])
 
     useEffect(() => {
-        if (customSliceRes.data.non_field_errors) {
-            toast.error(customSliceRes.data.non_field_errors[0])
-        }
         if(customSliceRes.data.message == "Invalid username or password or (Please check your email for verification)"){
-            toast.error('Invalid username or password')
+            dispatch(resetReducer());
+            navigate('/inactiveAccount')
         }
-    }, [customSliceSuccess, customSliceRes.data.non_field_errors])
+    }, [ customSliceRes.data.message])
 
     return (
         <div className="bg-white w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto my-6 px-4 py-10 rounded-xl space-y-6 shadow-2xl">
@@ -87,7 +85,7 @@ export default function Login() {
             <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className="space-y-1">
                     <TextField
-                        error={customSliceRes.data.non_field_errors && customSliceRes?.data?.non_field_errors?.length > 0 }
+                        // error={customSliceRes.isError}
                         type='email'
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -109,7 +107,7 @@ export default function Login() {
                         variant="outlined"
                         size="small"
                         required
-                        error={customSliceRes.data.non_field_errors && customSliceRes?.data?.non_field_errors?.length > 0 }
+                        // error={customSliceRes.isError}
                     >
                         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                         <OutlinedInput

@@ -9,6 +9,8 @@ import Tab from '@mui/material/Tab';
 import ViewRegistrationComp from "../../components/viewRegistration/ViewRegistration";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
+import { ToastContainer, toast } from "react-toastify";
+import CreateClaim from "../../components/createClaim/CreateClaim";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -44,10 +46,12 @@ function a11yProps(index) {
 
 export default function ViewRegistration() {
     const [value, setValue] = useState(0);
-    const [uploadState,setUploadState] = useState([{
-        uploadInput:null,
-        commentInput:''
-    }])
+    const [loading, setLoading] = useState(false)
+    const [uploadState, setUploadState] = useState({
+        uploadInput: null,
+        commentInput: ''
+    });
+    
     const location = useLocation()
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -55,35 +59,44 @@ export default function ViewRegistration() {
 
     const uploadApi = async () => {
         try {
+            setLoading(true)
             const data = {
                 document_note: uploadState.commentInput,
                 document: uploadState.uploadInput
             };
-    
+
+            console.log(data, 'dataaaaaa')
+
             const res = await axiosInstance.post(`api/claims/upload/document/`, data, {
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'multipart/form-data'
                 }
             });
-    
             console.log("Response:", res);
+            if (res.status == 200) {
+                toast.success('Document Uploaded')
+                setUploadState({
+        uploadInput: null,
+        commentInput: ''
+    })
+            }
         } catch (error) {
             console.log("Error:", error);
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("upload...." ,uploadState)
+        console.log("upload....", uploadState)
         if (!uploadState.uploadInput) {
             console.log("Please select a file.");
             return;
         }
-
-        const formData = new FormData();
-        formData.append('file', uploadState.uploadInput);
-        formData.append('comment', uploadState.commentInput);
-
+        // const formData = new FormData();
+        // formData.append('file', uploadState.uploadInput);
+        // formData.append('comment', uploadState.commentInput);
         try {
             await uploadApi();
         } catch (error) {
@@ -91,22 +104,24 @@ export default function ViewRegistration() {
         }
     };
 
+
     const handleFileUploadChange = (e) => {
-        const file = e?.target?.files[0];
+        const file = e.target.files[0];
         if (!file) return;
         setUploadState((prevState) => ({
             ...prevState,
-            uploadInput : file
+            uploadInput: file
         }));
     };
-    
+
     const handleUploadChange = (e) => {
         const { value } = e.target;
-            setUploadState((prevState) => [{
-                ...prevState,
-                commentInput: value
-            }]);
+        setUploadState((prevState) => ({
+            ...prevState,
+            commentInput: value
+        }));
     };
+
 
     // const claimApi = async ()=>{
     //     try {
@@ -178,12 +193,24 @@ export default function ViewRegistration() {
                                 <form onSubmit={handleSubmit}>
                                     <Box width={'400px'} >
                                         <Box my={2}>
-                                            <TextField type="file" size="small" value={uploadState.uploadInput} onChange={handleFileUploadChange}/>
+                                            <TextField  type="file" size="small"  onChange={handleFileUploadChange} />
                                         </Box>
                                         <Box display={"flex"} alignItems={'center'} gap={1}>
                                             <Typography>Comment:</Typography>
-                                            <TextField size="small" fullWidth placeholder="Enter document name" value={uploadState.commentInput}  onChange={handleUploadChange} />
-                                            <CustomButton buttonName="Upload" variant="contained" type='submit' />
+                                            <TextField size="small" fullWidth placeholder="Enter document name" value={uploadState.commentInput} onChange={handleUploadChange} />
+                                            <CustomButton buttonName={'Upload'} type={'submit'} variant={'contained'} loading={loading} />
+                                            <ToastContainer
+                                                position="top-right"
+                                                autoClose={5000}
+                                                hideProgressBar={false}
+                                                newestOnTop={false}
+                                                closeOnClick
+                                                rtl={false}
+                                                pauseOnFocusLoss
+                                                draggable
+                                                pauseOnHover
+                                                theme="colored"
+                                            />
                                         </Box>
                                     </Box>
                                 </form>
@@ -191,7 +218,7 @@ export default function ViewRegistration() {
                         </Card>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={2}>
-                        comming soon...
+                        <CreateClaim />
                     </CustomTabPanel>
                 </Box>
                 <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
