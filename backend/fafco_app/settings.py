@@ -57,7 +57,7 @@ ROOT_URLCONF = 'fafco_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,6 +120,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'user.Customer'
 
@@ -140,3 +142,4 @@ FE_DOMAIN = os.getenv('FE_DOMAIN')
 KEY = os.getenv('KEY')
 HOSTNAME = 'localhost'
 BACKEND_IP = os.getenv('BACKEND_IP')
+

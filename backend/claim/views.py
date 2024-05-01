@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Claim, Profile
-from .serializers import ClaimSerializer
+from .models import Claim, Profile , UploadClaimDocument
+from .serializers import ClaimSerializer , UploadClaimSerializer
 from rest_framework.permissions import IsAuthenticated
-
+from django.conf import settings
 
 class ClaimAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -58,3 +58,27 @@ class ClaimDetailAPI(APIView):
         claims = get_object_or_404(Claim, pk=pk)
         claims.delete()
         return Response({"message": "Deleted Successfully"})
+
+
+class UploadClaimeDocumentAPI(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        data =request.data
+        serializer = UploadClaimSerializer(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors)
+        print(data)
+        serializer.save()
+        return Response({"message":"document is uploaded successfully"})
+
+
+
+    def get(self, request, pk):
+        claims_docs = get_object_or_404(UploadClaimDocument, pk=pk)
+        serializer = UploadClaimSerializer(claims_docs,context={"request": request})
+        document_url = serializer.get_document(claims_docs)
+        serializer.data['document'] = document_url
+        response = Response(serializer.data, status=200)
+        response.success_message = "Fetched Data."
+        return response
