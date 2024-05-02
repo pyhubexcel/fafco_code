@@ -23,6 +23,7 @@ from .serializers import ForgotPasswordSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render
+from utils.mail_send import send_verification_email
 
 
 class RegisterAPI(APIView):
@@ -37,8 +38,8 @@ class RegisterAPI(APIView):
             user.is_active = False
             user.save()
             self.send_verification_email(user)
-            return Response(
-                {"status": "Successful", "message": "Verification link has been sent to your email. Please check your email inbox."},
+            return Response(             
+                {"success": True, "message": "Verification link has been sent to your email. Please check your email inbox.","email": user.email},
                 status=status.HTTP_200_OK,
             )
         else:
@@ -71,13 +72,13 @@ class ResendVerificationEmailAPIView(APIView):
                 )
             RegisterAPI.send_verification_email(self, user)
             return Response(
-                {"status": "Successful", "message": "Verification link has been resent to your email. Please check your email inbox."},
+                {"success":True, "message": "Verification link has been resent to your email. Please check your email inbox."},
                 status=status.HTTP_200_OK,
             )
         except Customer.DoesNotExist:
             return Response(
-                {"status": "Failed", "message": "User with this email does not exist."},
-                status=status.HTTP_200_OK,
+                {"success": False, "message": "User with this email does not exist."},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
 class VerifyEmailAPI(APIView):
@@ -163,7 +164,7 @@ class LoginAPI(APIView):
                     'access': str(refresh.access_token),
                 }
                 response_data = {
-                    "status": "Successful",
+                    "success" : True,
                     "message": "Login successfully",
                     "data": data,
                 }
@@ -175,9 +176,10 @@ class LoginAPI(APIView):
                 return Response(response_data, status=status.HTTP_200_OK)
 
         response_data = {
-            "message": "Invalid username or password or (Please check your email for verification)"
+            "success":False,
+            "message": "invalid credentials"
         }
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(response_data, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutAPI(APIView):
@@ -186,7 +188,7 @@ class LogoutAPI(APIView):
     def get(self, request, *args):
         logout(request)
         response_data = {
-         "status": "Successfull",
+         "success": True,
          "message": "Logout successfully by user",
         }
         return Response(response_data, status=status.HTTP_200_OK)
@@ -217,7 +219,12 @@ class PasswordResetAPIView(APIView):
         serializer = ForgotPasswordSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
-            user = get_object_or_404(Customer, email=email, is_active=True)
+            print(email)
+            user = get_object_or_404(Customer, email=email)
+            if not user.is_active:
+                return Response(
+                {'detail': 'User in not active'},
+                status=status.HTTP_400_BAD_REQUEST)          
             user.password_reset_done = False
             user.save()
             reset_url = self._generate_reset_url(request, user)
