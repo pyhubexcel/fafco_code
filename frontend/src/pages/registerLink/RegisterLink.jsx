@@ -2,26 +2,29 @@ import { Box, Card, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify';
+
 
 export default function RegisterLink() {
-    const localEmail = localStorage.getItem('username')
-    const customSliceRes = useSelector((state) => state.CustomSlice);
-    console.log(customSliceRes,'customSliceRes')
-   
+    const registerdEmail=     localStorage.getItem("registerdMail")    
     const resendApi = async () => {
         try {
             const payload = {
-                username: localEmail,
+                username: registerdEmail,
             } 
             const res = await axiosInstance.post(`api/auth/resend-verification/`,{payload}, {
                 headers: {
                     "Content-Type": "application/json",
-                    // "Authorization": `Bearer ${token}`
                 }
             });
-            console.log("street res ===", res.data.data);
-            // setUserList(res?.data?.data)
+            if(res.data.success){
+                toast.success("email resent successfully");
+            }
+            else{
+                toast.error("please make registration first");
+            }
         } catch (error) {
+            toast.error("please make registration first");
             console.log("Error:", error);
         }
     }

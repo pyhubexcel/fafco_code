@@ -8,15 +8,15 @@ const initialState = {
   data: {},
 };
 
-const loginSlice = createSlice({
-  name: "login",
+const logOutSlice = createSlice({
+  name: "logout",
   initialState,
   reducers: {
     startLoading(state) {
       state.isLoading = true;
       state.isError = false;
     },
-    loginSuccess(state, action) {
+    logOutSuccess(state, action) {
       state.isLoading = false;
       state.isError = false;
       state.isSuccess = true;
@@ -37,16 +37,21 @@ const loginSlice = createSlice({
   },
 });
 
-export function login(payload) {
-  return async (dispatch) => {
-    dispatch(loginSlice.actions.startLoading());
-    try {
-      const response = await axiosInstance.post("api/auth/login/", payload);
-      dispatch(loginSlice.actions.loginSuccess(response.data));
-    } catch (e) {
-      dispatch(loginSlice.actions.hasError(e));
-    }
-  };
-}
-export const { startLoading, hasError, loginSuccess, resetReducer } = loginSlice.actions;
-export default loginSlice.reducer;
+
+export const logOutUser = (token) => async (dispatch) => {
+  dispatch(logOutSlice.actions.startLoading());
+  try {
+    const response = await axiosInstance.get("api/auth/logout/", {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    dispatch(logOutSuccess(response.data));
+  } catch (e) {
+    console.log(e)
+    dispatch(hasError(e));
+  }
+};
+export const { startLoading, hasError, logOutSuccess, resetReducer } = logOutSlice.actions;
+export default logOutSlice.reducer;

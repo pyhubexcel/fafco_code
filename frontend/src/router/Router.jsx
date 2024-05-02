@@ -21,15 +21,16 @@ export default function Router() {
     const Navigation = useNavigate();
     const location = useLocation();
     const urlPath  = location.pathname;
-    const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
-    const logoutSuccess = useSelector((state)=>state.CustomSlice.data);
+    const loginSliceData = useSelector((state) => state.LoginSlice.data);
+    const logoOutState = useSelector((state) => state.logOutSlice);
+    
     useEffect(()=>{
         token = cookie.load('token');
         if(token && (urlPath == "/login" || urlPath == "/register")){
             Navigation('/')
         }
         console.log("testing routes ")
-    },[customSliceSuccess,logoutSuccess])
+    },[loginSliceData,logoOutState])
 
     return (
         <Routes>

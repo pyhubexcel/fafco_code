@@ -9,7 +9,7 @@ import Tab from '@mui/material/Tab';
 import ViewRegistrationComp from "../../components/viewRegistration/ViewRegistration";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import CreateClaim from "../../components/createClaim/CreateClaim";
 import cookie from 'react-cookies'
 
@@ -329,18 +329,6 @@ export default function ViewRegistration() {
                                             <Typography>Comment:</Typography>
                                             <TextField size="small" fullWidth placeholder="Enter document name" value={uploadState.commentInput} onChange={handleUploadChange} />
                                             <CustomButton buttonName={'Upload'} type={'submit'} variant={'contained'} loading={loading} />
-                                            <ToastContainer
-                                                position="top-right"
-                                                autoClose={5000}
-                                                hideProgressBar={false}
-                                                newestOnTop={false}
-                                                closeOnClick
-                                                rtl={false}
-                                                pauseOnFocusLoss
-                                                draggable
-                                                pauseOnHover
-                                                theme="colored"
-                                            />
                                         </Box>
                                     </Box>
                                 </form>

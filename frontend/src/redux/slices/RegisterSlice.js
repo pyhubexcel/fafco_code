@@ -8,8 +8,8 @@ const initialState = {
   data: {},
 };
 
-const loginSlice = createSlice({
-  name: "login",
+const RegisterSlice = createSlice({
+  name: "register",
   initialState,
   reducers: {
     startLoading(state) {
@@ -37,16 +37,17 @@ const loginSlice = createSlice({
   },
 });
 
-export function login(payload) {
+export function register(payload) {
   return async (dispatch) => {
-    dispatch(loginSlice.actions.startLoading());
+    dispatch(RegisterSlice.actions.startLoading());
     try {
-      const response = await axiosInstance.post("api/auth/login/", payload);
-      dispatch(loginSlice.actions.loginSuccess(response.data));
+      const response = await axiosInstance.post("api/auth/signup/", payload);
+      dispatch(RegisterSlice.actions.loginSuccess(response.data));
+      localStorage.setItem("registerdMail", payload?.email);
     } catch (e) {
-      dispatch(loginSlice.actions.hasError(e));
+      dispatch(RegisterSlice.actions.hasError(e));
     }
   };
 }
-export const { startLoading, hasError, loginSuccess, resetReducer } = loginSlice.actions;
-export default loginSlice.reducer;
+export const { startLoading, hasError, loginSuccess, resetReducer } = RegisterSlice.actions;
+export default RegisterSlice.reducer;
