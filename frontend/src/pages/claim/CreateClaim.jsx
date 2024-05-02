@@ -9,7 +9,6 @@ import Tab from '@mui/material/Tab';
 import ViewRegistrationComp from "../../components/viewRegistration/ViewRegistration";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
-import { TextArea } from "devextreme-react";
 import RevsTable from "../../components/createClaim/RevsTable";
 
 export default function CreateClaim() {
@@ -96,7 +95,6 @@ export default function CreateClaim() {
                 </Box>
                 <Box display={'flex'} gap={2} my={2}>
                     <Typography>Upload List:</Typography>
-                    <TextArea></TextArea>
                 </Box>
                 <Box sx={{ display:'flex', justifyContent:'end' }} my={2}>
                     <CustomButton buttonName={'Add Part'} variant='contained' />

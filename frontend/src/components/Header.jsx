@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, Backdrop, Box, CircularProgress, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import Logout from '@mui/icons-material/Logout';
 import cookie from 'react-cookies'
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from "../redux/slices/CustomSlice";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import { logOutUser } from "../redux/slices/LogoutSlice"
+import { resetReducer } from '../redux/slices/LoginSlice';
+import Button from '@mui/material/Button';
+import { LogoutOutlined } from '@mui/icons-material';
 
 const navbarLinks = [
     {
@@ -27,12 +30,15 @@ const navbarLinks = [
 const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
-    const apiUrl = `api/auth/logout/`
-    let token = cookie.load('token')
+    let token = cookie.load('token');
     const open = Boolean(anchorEl);
     const dispatch = useDispatch();
-    // const id = cookie.load('id')
+    const Navigation = useNavigate();
     const name = cookie.load("name");
+    const loginSliceData = useSelector((state) => state.LoginSlice?.data?.success);
+    const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
+    const logOutLoding = useSelector((state) => state.logOutSlice?.isLoading);
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -42,32 +48,28 @@ const Header = () => {
 
     const handleLogout = () => {
         setAnchorEl(null);
-        cookie.remove('token')
-        cookie.remove('role')
-        dispatch(logout(apiUrl, token))
+        dispatch(logOutUser(token))
     }
 
     const toggleNavbar = () => {
         setIsOpen(!isOpen);
     };
-    const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
-    const logoutSuccess = useSelector((state) => state.CustomSlice.data);
-    const logoutLoading = useSelector((state) => state.CustomSlice.isLoading);
-
 
     useEffect(() => {
         token = cookie.load('token');
         console.log("testing header")
-    }, [customSliceSuccess, logoutSuccess])
+        if (logOutState) {
+            cookie.remove('token')
+            Navigation('/')
+        }
+    }, [loginSliceData, logOutState])
 
     return (
         <div className=" bg-white px-7 py-1 shadow-md ">
-            {/* <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={logoutLoading}
-            >
+            <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={logOutLoding}>
                 <CircularProgress color="inherit" />
-            </Backdrop> */}
+            </Backdrop>
             <nav >
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
                     <div className="flex items-center justify-between h-16 ">
@@ -81,8 +83,7 @@ const Header = () => {
                                 <div className="ml-10 flex items-baseline space-x-4">
                                     {navbarLinks.map((item, i) => (
                                         <NavLink key={i} to={item.link}
-                                         className={({isActive})=> {return `${isActive?"border-b-4 rounded-none border-blue-500 ":""}  hover:text-blue-600 px-5 py-2 rounded-md text-xl  font-medium`}}>
-                                        {/* className={`${({ isActive }) => (isActive ? 'bg-black' : 'bg-blue-600')}`}> */}
+                                            className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 " : ""}  hover:text-blue-600 px-5 py-2 rounded-md text-xl linkEffect font-medium` }}>
                                             {item.name}
                                         </NavLink>
                                     ))}
@@ -171,8 +172,8 @@ const Header = () => {
                                     aria-expanded="false"
                                 >
                                     <span className="sr-only">Open main menu</span>
-                                    <MenuIcon sx={{ display: isOpen ? 'none' : 'block'  }} />
-                                    <CloseIcon sx={{ display: isOpen ? 'block' : 'none'}} />
+                                    <MenuIcon sx={{ display: isOpen ? 'none' : 'block' }} />
+                                    <CloseIcon sx={{ display: isOpen ? 'block' : 'none' }} />
                                 </button>
                             </div>
                         }
@@ -251,11 +252,11 @@ const Header = () => {
                         </div>
                         <Divider />
                         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        {navbarLinks.map((item,i)=>(
-                            <Link key={i} to={item.link} className=" hover:text-blue-600 block px-3 py-2 rounded-md text-md font-medium">
-                               {item.name}
-                            </Link>
-                        ))}
+                            {navbarLinks.map((item, i) => (
+                                <Link key={i} to={item.link} className=" hover:text-blue-600 block px-3 py-2 rounded-md text-md font-medium">
+                                    {item.name}
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 }

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link ,useNavigate} from 'react-router-dom'
 import footerLogo from '../assets/img/footer-logo.png'
 import footerUsa from '../assets/img/footer-usa.png'
 import cookie from 'react-cookies'
@@ -27,13 +27,23 @@ const footerArray = [
 
 export default function Footer() {
   let token = cookie.load('token')
-  const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
-  const logoutSuccess = useSelector((state)=>state.CustomSlice.data);
+  const Navigation = useNavigate();
+
+  const loginSliceSuccess = useSelector((state) => state.LoginSlice?.data?.success);
+  const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
+  console.log(logOutState,'testing hash')
 
   useEffect(()=>{
     token = cookie.load('token');
     console.log("testing footer")
-},[customSliceSuccess,logoutSuccess])
+  //   if (logOutState) {
+  //     cookie.remove('token')
+  //     Navigation('/')
+  // }
+  },[loginSliceSuccess,logOutState])
+  console.log(loginSliceSuccess,'loginSliceSuccess',logOutState, token)
+
+
   return (
     <footer className="bg-[#005D92]">
       {!token &&

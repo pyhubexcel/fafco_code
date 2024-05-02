@@ -5,7 +5,7 @@ import { loginSchema } from "../../schema";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from 'react-toastify';
 
 export default function ResetPassword() {
     const [loading, setLoading] = useState(false);
@@ -15,7 +15,6 @@ export default function ResetPassword() {
             initialValues: {
                 email: "",
             },
-            // validationSchema: loginSchema,
             onSubmit: async (values) => {
                 console.log("values===");
                 console.log("values===", values);
@@ -27,17 +26,16 @@ export default function ResetPassword() {
                   const res =  await axiosInstance.post('api/auth/forgot-password/', payload);
                     console.log("res ===res", res);
                     if(res.status === 200){
-                        // navigate('/newPassword')
+                        toast.success("mail sent successfully")
                     }
                 } catch (error) {
-                    toast.error(error.response.data.detail)
+                    toast.error(error?.response?.data?.detail)
                     console.log("Error:", error);
                 } finally {
                     setLoading(false)
                 }
             },
         });
-    // console.log('formik===', errors, touched, handleChange, handleBlur, handleSubmit)
     return (
         <Box className="flex justify-center my-20">
             <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
@@ -63,7 +61,6 @@ export default function ResetPassword() {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values.email}
-                                    // id="outlined-size-small"
                                     required
                                 />
                                 {errors.email && touched.email ? (
@@ -74,7 +71,6 @@ export default function ResetPassword() {
                                     loading={loading}
                                     type="submit"
                                      />
-                                     <Toaster />
                             </form>
                         </Box>
                     </Box>

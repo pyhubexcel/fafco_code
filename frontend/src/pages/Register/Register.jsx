@@ -11,8 +11,8 @@ import { useEffect, useState } from "react";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { useDispatch, useSelector } from "react-redux";
-import { customApiFunc, resetReducer } from "../../redux/slices/CustomSlice";
-import { ToastContainer, toast } from 'react-toastify';
+import { register } from "../../redux/slices/RegisterSlice";
+import { toast } from 'react-toastify';
 
 
 const signupElements = [
@@ -65,13 +65,8 @@ export default function Register() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [countryCode, setCountryCode] = useState(null);
-    const [apiUrl, setApiUrl] = useState('api/auth/signup/')
-
-    const customSliceRes = useSelector((state) => state.CustomSlice);
-    const customSliceLoading = useSelector((state) => state.CustomSlice.isLoading);
-    const customSliceSuccess = useSelector((state) => state.CustomSlice.isSuccess);
-
-    // console.log('customSliceRes====',customSliceRes);
+    const RegisterSliceRes = useSelector((state) => state.RegisterSlice);
+    const RegisterSliceLoading = useSelector((state) => state.RegisterSlice.isLoading);
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
@@ -86,7 +81,6 @@ export default function Register() {
             },
             validationSchema: signupSchema,
             onSubmit: async (values) => {
-                // console.log("values===", values);
                 const payload = {
                     name: values.name,
                     phone: ` ${countryCode} ` + values.phone,
@@ -94,65 +88,26 @@ export default function Register() {
                     password: values.password,
                     customer_type: values.role
                 }
-                // try {
-                //     const res = await axiosInstance.post('api/auth/signup/', payload, {
-                //         headers: {
-                //             "Content-Type": "application/json",
-                //         }
-                //     });
-                //     console.log("res ===", res.data);
-                //     if (res.status === 200) {
-                //         toast.success('Registration Successfully!')
-                //         navigate('/login');
-                //     }
-                // } catch (error) {
-                //     if (error.response.data.phone) {
-                //         toast.error(error.response.data.phone[0])
-                //     }
-                //     if (error.response.data.email) {
-
-                //         toast.error(error.response.data.email[0])
-                //     }
-                //     console.log("Error:", error.response.data);
-                // } finally {
-                //     setLoading(false)
-                // }
-
-                dispatch(customApiFunc(apiUrl, payload));
-
-                // dispatch(resetReducer());
+                dispatch(register(payload));
             },
         });
 
-    // useEffect(() => {
-    //     dispatch(resetReducer());
-    // }, [customSliceSuccess])
-
-    useEffect(() => {
-        if (customSliceRes.data.status) {
-            dispatch(resetReducer());
-            navigate('/registerLink')
-        }
-
-    }, [customSliceSuccess, customSliceRes.data.phone,customSliceRes.data.phone])
-
-
-
-    // useEffect(() => {
-
-    //     if (customSliceRes.data.email) {
-    //         console.log("errorrrrrrrrrrrrr");
-    //         toast.error(customSliceRes.data.email[0]);
-
-    //     }
-    //     if (customSliceRes.data.phone) {
-    //         toast.error(customSliceRes.data.phonep[0]);
-    //     }
-    // }, [customSliceSuccess, customSliceRes.isError])
 
     const handleChangeCountry = (event, countryCode) => {
         setCountryCode(countryCode?.label)
     };
+
+
+    useEffect(() => {
+        if (RegisterSliceRes?.data?.success) {
+            toast.success("registered successfully");
+            navigate('/registerLink')
+        }
+
+        if (RegisterSliceRes?.data?.response?.status == 400) {
+            toast.error("user already registered with this email");
+        }
+    }, [RegisterSliceRes?.data?.success, RegisterSliceRes?.data?.response?.status == 400])
 
     return (
         <div className="w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto bg-white my-6  px-4 py-10 rounded-xl space-y-6 shadow-2xl">
@@ -183,11 +138,11 @@ export default function Register() {
                                     )}
                                     renderInput={(params) => (
                                         <TextField
-                                        error={
-                                        customSliceRes?.data?.phone &&
-                                        customSliceRes?.data?.phone?.length > 0
-                                        // customSliceRes.data.phone == item.name  &&
-                                    }
+                                            error={
+                                                RegisterSliceRes?.data?.phone &&
+                                                RegisterSliceRes?.data?.phone?.length > 0
+                                                // RegisterSliceRes.data.phone == item.name  &&
+                                            }
                                             {...params}
                                             label="Country"
                                             inputProps={{
@@ -200,9 +155,9 @@ export default function Register() {
 
                                 <TextField
                                     error={
-                                        customSliceRes?.data?.phone &&
-                                        customSliceRes?.data?.phone?.length > 0
-                                        // customSliceRes.data.phone == item.name  &&
+                                        RegisterSliceRes?.data?.phone &&
+                                        RegisterSliceRes?.data?.phone?.length > 0
+                                        // RegisterSliceRes.data.phone == item.name  &&
                                     }
                                     type={item.type}
                                     onBlur={handleBlur}
@@ -223,10 +178,10 @@ export default function Register() {
                         <div key={i} className="space-y-1">
                             <TextField
                                 error={
-                                    customSliceRes?.data?.email &&
-                                    customSliceRes?.data?.email?.length > 0 &&
+                                    RegisterSliceRes?.data?.email &&
+                                    RegisterSliceRes?.data?.email?.length > 0 &&
                                     (item.name === 'confirmEmail' || item.name === 'email')
-                                    // customSliceRes.data.email.includes(item.name)  &&
+                                    // RegisterSliceRes.data.email.includes(item.name)  &&
                                 }
                                 type={item.type}
                                 onBlur={handleBlur}
@@ -329,20 +284,7 @@ export default function Register() {
                         <FormControlLabel value="2" control={<Radio />} label="Homeowner" />
                     </RadioGroup>
                 </FormControl>
-                <CustomButton loading={customSliceLoading} buttonName='Register' type="submit" variant='contained' />
-                <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="colored"
-                // transition:Zoom,
-                />
+                <CustomButton loading={RegisterSliceLoading} buttonName='Register' type="submit" variant='contained' />
             </form>
             <div className="  text-center">
                 Already have account?<Link to='/' title="Login" className="text-blue-600"> Login</Link>
