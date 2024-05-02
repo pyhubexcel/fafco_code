@@ -46,7 +46,7 @@ export default function Router() {
             <Route path="/addressValidation" element={ token ?  <AddressValidation /> :  <Navigate to="/" />}/>
             <Route path="*" element={ <PageNotfound /> }/>
             <Route path="/createClaim" element={ <CreateClaim /> }/>
-            <Route path="/CreateRegistration" element={ <CreateRegistration /> }/>
+            <Route path="/CreateRegistration" element={token ? <CreateRegistration />:  <Navigate to="/" /> }/>
         </Routes>
     );
 }

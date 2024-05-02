@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/axios";
+import { toast } from "react-toastify";
 
 const initialState = {
   isLoading: false,
@@ -42,9 +43,19 @@ export function register(payload) {
     dispatch(RegisterSlice.actions.startLoading());
     try {
       const response = await axiosInstance.post("api/auth/signup/", payload);
+      console.log(response, 'resssssssssss')
       dispatch(RegisterSlice.actions.loginSuccess(response.data));
       localStorage.setItem("registerdMail", payload?.email);
     } catch (e) {
+      console.log(e.response, 'res in catch')
+      // if (e?.response?.data?.phone[0]) {
+      //   toast.error(e.response.data.phone[0])
+      // }
+      // if (e?.response?.data?.email[0]) {
+      //   toast.error(e.response.data.email[0]);
+      // }
+
+
       dispatch(RegisterSlice.actions.hasError(e));
     }
   };

@@ -4,6 +4,7 @@ import { useState } from "react";
 import cookie from 'react-cookies'
 import axiosInstance from "../../utils/axios";
 import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const inputDataArray = [
     {
@@ -71,14 +72,14 @@ export default function CreateRegistration() {
             });
             console.log("Response:", res);
             if (res.status == 200) {
-                // toast.success('Document Uploaded')
+                toast.success(res.data.message)
                 // setUploadState({
                 //     uploadInput: null,
                 //     commentInput: ''
                 // })
             }
         } catch (error) {
-            // toast.error('api failed!!!')
+            toast.error(error.response.data.address[0])
             console.log("Error:", error);
         } finally {
             setLoading(false)

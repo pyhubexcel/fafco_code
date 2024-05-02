@@ -253,7 +253,11 @@ const Header = () => {
                         <Divider />
                         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                             {navbarLinks.map((item, i) => (
-                                <Link key={i} to={item.link} className=" hover:text-blue-600 block px-3 py-2 rounded-md text-md font-medium">
+                                <Link key={i} to={item.link}
+                                onClick={()=>setIsOpen(!isOpen)}
+                                    className=" hover:text-blue-600 block px-3 py-2 rounded-md text-lg font-medium"
+                                    // className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 " : ""}  hover:text-blue-600 px-5 py-2 rounded-md text-xl linkEffect font-medium` }}
+                                >
                                     {item.name}
                                 </Link>
                             ))}

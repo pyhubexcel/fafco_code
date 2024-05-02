@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { useDispatch, useSelector } from "react-redux";
-import { register } from "../../redux/slices/RegisterSlice";
+import { register, resetReducer } from "../../redux/slices/RegisterSlice";
 import { toast } from 'react-toastify';
 
 
@@ -66,6 +66,7 @@ export default function Register() {
     const dispatch = useDispatch();
     const [countryCode, setCountryCode] = useState(null);
     const RegisterSliceRes = useSelector((state) => state.RegisterSlice);
+    console.log(RegisterSliceRes.data,'RegisterSliceRes')
     const RegisterSliceLoading = useSelector((state) => state.RegisterSlice.isLoading);
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
@@ -100,12 +101,18 @@ export default function Register() {
 
     useEffect(() => {
         if (RegisterSliceRes?.data?.success) {
+            dispatch(resetReducer())
             toast.success("registered successfully");
             navigate('/registerLink')
         }
 
-        if (RegisterSliceRes?.data?.response?.status == 400) {
-            toast.error("user already registered with this email");
+        if (RegisterSliceRes?.data?.response?.data.email) {
+            dispatch(resetReducer())
+            toast.error(RegisterSliceRes?.data?.response?.data.email[0]);
+        }
+        if (RegisterSliceRes?.data?.response?.data.phone) {
+            dispatch(resetReducer())
+            toast.error(RegisterSliceRes?.data?.response?.data.phone[0]);
         }
     }, [RegisterSliceRes?.data?.success, RegisterSliceRes?.data?.response?.status == 400])
 
