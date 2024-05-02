@@ -1,4 +1,4 @@
-import { Box, Button, Card, Modal, Stack, TextField, TextareaAutosize, Typography } from "@mui/material";
+import { Box, Card, Modal, Stack, TextField, TextareaAutosize, Typography } from "@mui/material";
 import PartsTable from "../viewRegistration/PartsTable";
 import CustomButton from "../ui/CustomButton";
 import RevsTable from "./RevsTable";
@@ -6,32 +6,63 @@ import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
 import { useState } from "react";
 
+const modalInputs = [
+    {
+        name: 'Part Number:',
+        type: 'text'
+    },
+    {
+        name: 'Part Description:',
+        type: 'text'
+    },
+    {
+        name: 'Product Line:',
+        type: 'text'
+    },
+    {
+        name: 'Installing Dealer:',
+        type: 'text'
+    },
+    {
+        name: 'Barcode:',
+        type: 'text'
+    },
+    {
+        name: 'Problem:',
+        type: 'text'
+    },
+    {
+        name: 'Action:',
+        type: 'text'
+    },
+]
+
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 300,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
+    // border: '2px solid #000',
+    boxShadow: 10,
     p: 2,
 };
 
 export default function CreateClaim() {
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
     const [uploadState, setUploadState] = useState({
         uploadInput: null,
         commentInput: ''
     });
 
 
-    const handleOpen = () => {
-        console.log("handleOpen CallEnd.....")
-        setOpen(true)
-    };
+    const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const handleOpenDelete = () => setOpenDelete(true);
+    const handleDeleteClose = () => setOpenDelete(false);
 
     const uploadApi = async () => {
         try {
@@ -80,7 +111,7 @@ export default function CreateClaim() {
                 </Box>
                 <Box >
                     <Typography>Choose Part:</Typography>
-                    <PartsTable handleOpen={handleOpen} />
+                    <PartsTable handleOpen={handleOpen} handleOpenDelete={handleOpenDelete} />
                 </Box>
                 <Box display={'flex'} gap={2} my={2}>
                     <Box>
@@ -128,37 +159,37 @@ export default function CreateClaim() {
                         aria-describedby="modal-modal-description"
                     >
                         <Box sx={style} >
-                            <Box>
-                                <Typography>Part Number:</Typography>
-                                <TextField size="small" fullWidth />
+                            {modalInputs.map((item, i) => (
+                                <Box key={i} >
+                                    <TextField 
+                                    size="small" 
+                                    fullWidth 
+                                    label={item.name}
+                                    type={item.type}
+                                    variant="standard"
+                                    sx={{marginBottom:'15px'}}
+                                    />
+                                </Box>
+                            ))}
+                            <Box display={"flex"} justifyContent={'end'} gap={2}>
+                                <CustomButton buttonName={'cancel'} onClick={handleClose}/>
+                                <CustomButton buttonName={'Create'} onClick={handleClose}/>
                             </Box>
-                            <Box>
-                                <Typography>Part Description:</Typography>
-                                <TextField size="small" />
-                            </Box>
-                            <Box>
-                                <Typography>Product Line:</Typography>
-                                <TextField size="small" />
-                            </Box>
-                            <Box>
-                                <Typography>Installing Dealer:</Typography>
-                                <TextField size="small" />
-                            </Box>
-                            <Box>
-                                <Typography>Barcode:</Typography>
-                                <TextField size="small" />
-                            </Box>
-                            <Box>
-                                <Typography>Problem:</Typography>
-                                <TextField size="small" />
-                            </Box>
-                            <Box>
-                                <Typography>Action:</Typography>
-                                <TextField size="small" />
-                            </Box>
-                            <Box display={"flex"} justifyContent={'end'}  gap={2}>
-                                <CustomButton buttonName={'cancel'}/>
-                                <CustomButton buttonName={'Create'}/>
+                        </Box>
+                    </Modal>
+                </Box>
+                <Box>
+                    <Modal
+                        open={openDelete}
+                        onClose={handleDeleteClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style} >
+                           <Typography>Are you sure?</Typography>
+                            <Box display={"flex"} justifyContent={'end'} gap={2}>
+                                <CustomButton buttonName={'Sure'} onClick={handleDeleteClose}/>
+                                <CustomButton buttonName={'Cancel'} onClick={handleDeleteClose}/>
                             </Box>
                         </Box>
                     </Modal>

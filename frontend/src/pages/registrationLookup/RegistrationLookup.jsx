@@ -9,11 +9,12 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 
 export default function RegistrationLookup() {
+    const [loading,setLoading] = useState(false);
     const [userList, setUserList] = useState([])
     const [rowUserData, setRowUserData] = useState(null)
-    // const hoo=(d)=>log
     const lookupApi = async () => {
         try {
+            setLoading(true)
             const token = cookie.load('token');
             const res = await axiosInstance.get(`api/auth/profiles/`, {
                 headers: {
@@ -21,10 +22,12 @@ export default function RegistrationLookup() {
                     "Authorization": `Bearer ${token}`
                 }
             });
-            console.log("street res ===", res.data.data);
+            console.log("profile res ===", res.data.data);
             setUserList(res?.data?.data)
         } catch (error) {
             console.log("Error:", error);
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -39,7 +42,7 @@ export default function RegistrationLookup() {
     return (
         <Card sx={{ width: '95%', margin: 'auto', padding: '20px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
             <Typography sx={{ fontSize: '1.35rem', fontWeight: '700' }}>Registration Lookup</Typography>
-            {userList?.length > 0 ?
+            {!loading ?
                 <RegisteredUsers getRowData={getRowData} userList={userList} />
                 :
                 <Stack spacing={1}>

@@ -27,7 +27,7 @@ const data = [
     // Add more dummy data objects as needed
   ];
 
-export const PartsTable = ({handleOpen}) => {
+export const PartsTable = ({handleOpen,handleDeleteClose}) => {
   console.log(handleOpen,'handleopennnnnnn')
   const columns = useMemo(
     () => [
@@ -41,8 +41,8 @@ export const PartsTable = ({handleOpen}) => {
             // eslint-disable-next-line react/prop-types
             Cell: () => ( 
               <div className='flex gap-4'>
-                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>}></CustomButton>
-                <CustomButton buttonName='Delete' variant="text" buttonIcon={ <DeleteIcon/>}></CustomButton>
+                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>} onClick={handleOpen}></CustomButton>
+                <CustomButton buttonName='Delete' variant="text" buttonIcon={ <DeleteIcon/>} onClick={handleDeleteClose}></CustomButton>
               </div>
             ),
           },

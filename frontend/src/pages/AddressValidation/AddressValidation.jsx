@@ -3,6 +3,7 @@ import axiosInstance from "../../utils/axios";
 import { TextField } from "@mui/material";
 import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AddressValidation() {
     const [loading, setLoading] = useState(false);
@@ -14,13 +15,13 @@ export default function AddressValidation() {
     });
     const [showData, setShowData] = useState(false)
     const [apiData, setApiData] = useState([]);
-    // const navigate = useNavigate();
-
+    const [addressData, setAddressData] = useState('');
+    const navigate = useNavigate();
 
 
     const streetApi = async (props) => {
         // console.log("inside api function value:",value)
-        console.log('props=====',props)
+        console.log('props=====', props)
         try {
             const res = await axiosInstance.get(`api/auth/autocomplete/?search_term=${props}`);
             console.log("street res ===", res.data);
@@ -34,7 +35,7 @@ export default function AddressValidation() {
 
     const addressValidationApi = async (e) => {
         e.preventDefault();
-        console.log('inputfileds values:',inputData.street,inputData.state)
+        console.log('inputfileds values:', inputData.street, inputData.state)
         setLoading(true)
         try {
             const res = await axiosInstance.post(`http://116.202.210.102:8074/api/auth/validation/`, {
@@ -45,12 +46,12 @@ export default function AddressValidation() {
                 zipcode: inputData.zipcode,
             });
             setLoading(false)
+            setAddressData(res)
             console.log("address validation res ===", res);
-            
-
-            if(res.data.error){
+            navigate('/createRegistration',{state:res.data})
+            if (res.data.error) {
                 toast.error(res.data.error)
-            }else{
+            } else {
                 toast.success("Address Verified")
             }
         } catch (error) {
@@ -65,7 +66,7 @@ export default function AddressValidation() {
         const { name, value } = event.target;
         // console.log('inside handlechange name and value====',name,value)
         setInputData({ ...inputData, [name]: value });
-        console.log('inputData',inputData)
+        console.log('inputData', inputData)
         streetApi(value)
         setShowData(true)
     };
@@ -172,12 +173,16 @@ export default function AddressValidation() {
                         />
                     </div>
                     <div className="text-center">
-                        <CustomButton
-                            loading={loading}
-                            buttonName='View'
-                            type="submit"
-                            variant='contained'
-                        />
+                        {/* <Link
+                            to={addressData ? '/viewRegistration' : ''}
+                        > */}
+                            <CustomButton
+                                loading={loading}
+                                buttonName='View'
+                                type="submit"
+                                variant='contained'
+                            />
+                        {/* </Link> */}
                         <Toaster />
                     </div>
                 </form>
