@@ -19,7 +19,7 @@ from utils.single_address_validation import singleaddressvalidation
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
-from .serializers import ForgotPasswordSerializer
+from .serializers import ForgotPasswordSerializer,LoginSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render
@@ -97,87 +97,53 @@ class VerifyEmailAPI(APIView):
             return render(request, 'email_template.html', {'message': message})
 
 
-# class VerifyEmailAPI(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def get(self, request, uidb64, token):
-#         uid = urlsafe_base64_decode(uidb64).decode()
-#         user = Customer.objects.filter(pk=uid).first()
-#         if default_token_generator.check_token(user, token):
-#             user.is_active = True
-#             user.save()
-#             return Response(
-#                 {"message": "Successfully vereified. You can now log in."},
-#                 status=status.HTTP_200_OK)
-#         else:
-#             return Response(
-#                 {"error": "Invalid verification link."},
-#                 status=status.HTTP_400_BAD_REQUEST)
-
-
-# class LoginAPI(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def post(self, request, format=None):
-#         serializer = AuthTokenSerializer(data=request.data)
-#         serializer.is_valid()
-#         user = get_object_or_404(Customer, email=request.data["username"])
-#         if user.is_active:
-#             user = serializer.validated_data['user']
-#             refresh = RefreshToken.for_user(user)
-
-#             data = {
-#                 'id': user.id,
-#                 'customer_type': user.customer_type,
-#                 'name': user.name,
-#                 'refresh': str(refresh),
-#                 'access': str(refresh.access_token),
-#             }
-#             response_data = {
-#                 "status": "Successfull",
-#                 "message": "Login successfully",
-#                 "data": data,
-#                 }
-#             return Response(response_data, status=status.HTTP_200_OK)
-#         else:
-#             response_data = {
-#              "message": "Your account is Disabled."
-#             }
-#             return Response(response_data, status=status.HTTP_200_OK)
-
 class LoginAPI(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = get_object_or_404(Customer, email=request.data.get("username"))
-            if user.is_active:
-                user = serializer.validated_data['user']
-                refresh = RefreshToken.for_user(user)
+            email = serializer.validated_data.get('username')
+            password = serializer.validated_data.get('password')
+            try:
+                user = Customer.objects.get(email=email)
+            except Customer.DoesNotExist:
+                response_data = {
+                    "success": False,
+                    "message": "Email does not exist"
+                }
+                return Response(response_data, status=status.HTTP_401_UNAUTHORIZED)
+            if not user.is_active:
+                response_data = {
+                    "success": False,
+                    "message": "Inactive Account"
+                }
+                return Response(response_data, status=status.HTTP_401_UNAUTHORIZED)
+            if not user.check_password(password):
+                response_data = {
+                    "success": False,
+                    "message": "Invalid password"
+                }
+                return Response(response_data, status=status.HTTP_401_UNAUTHORIZED)
+            refresh = RefreshToken.for_user(user)
 
-                data = {
-                    'id': user.id,
-                    'customer_type': user.customer_type,
-                    'name': user.name,
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                }
-                response_data = {
-                    "success" : True,
-                    "message": "Login successfully",
-                    "data": data,
-                }
-                return Response(response_data, status=status.HTTP_200_OK)
-            else:
-                response_data = {
-                    "message": "Invalid username or password or (Please check your email for verification)"
-                }
-                return Response(response_data, status=status.HTTP_200_OK)
+            data = {
+                'id': user.id,
+                'customer_type': user.customer_type,
+                'name': user.name,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            response_data = {
+                "success": True,
+                "message": "Login successfully",
+                "data": data,
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
 
         response_data = {
-            "success":False,
-            "message": "invalid credentials"
+            "success": False,
+            "message": "Invalid credentials"
         }
         return Response(response_data, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -219,7 +185,6 @@ class PasswordResetAPIView(APIView):
         serializer = ForgotPasswordSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
-            print(email)
             user = get_object_or_404(Customer, email=email)
             if not user.is_active:
                 return Response(
@@ -237,30 +202,32 @@ class PasswordResetAPIView(APIView):
                 {'error': 'Invalid request'},
                 status=status.HTTP_400_BAD_REQUEST)
 
+    
     def _generate_reset_url(self, request, user):
+        email = urlsafe_base64_encode(user.email.encode('utf-8'))
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         protocol = 'https' if request.is_secure() else 'http'
-        domain = request.get_host()
-        return f"{protocol}://{domain}{reverse('password_reset_confirm', args=[uid, token])}"
+        domain = 'localhost:5173/newpassword/'
+        return f"{protocol}://{domain}{email}"
 
     def _send_reset_email(self, email, reset_url):
         email_subject = 'Password Reset'
-        email_body = f'Click the link below to reset your password:\n\n{reset_url}'
+        email_body = f'Click the link below to reset your password:\n\n<a href="{reset_url}">click here</a>'
         email = EmailMultiAlternatives(email_subject, email_body, to=[email])
         email.send()
-
-
+        
+        
 class PasswordResetConfirmAPIView(APIView):
-
-    def post(self, request, uidb64, token):
-        uid = urlsafe_base64_decode(uidb64)
-        user = get_object_or_404(Customer, pk=uid)
-
-        if user is not None and default_token_generator.check_token(
-                                                        user, token):
-            new_password = request.data.get('new_password')
-            confirm_password = request.data.get('confirm_password')
+    def post(self, request):
+        email = request.data.get('email')
+        uid_bytes = urlsafe_base64_decode(email)
+        uid_str = uid_bytes.decode('utf-8')
+        print(uid_str) 
+        user = get_object_or_404(Customer, email=uid_str)  
+        if user:
+            new_password = request.data.get('newPassword')
+            confirm_password = request.data.get('confirmPassword')
 
             if new_password != confirm_password:
                 return Response({'error': "Passwords should be same"},
@@ -271,7 +238,8 @@ class PasswordResetConfirmAPIView(APIView):
             user.save()
             return Response({'message': 'Password reset successfully'},
                             status=status.HTTP_200_OK)
-        return Response({'error': 'Invalid request'},
+            
+        return Response({'error': 'user not found'},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -314,8 +282,28 @@ class PasswordChangeAPI(APIView):
             response = Response(status=400)
             response.error_message = str(e)
             return response
+        
+        
+class UpdateCustomerAPI(APIView):
+    def get(self, request, pk):
+        customer = get_object_or_404(Customer, pk=pk)
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+    def patch(self, request, pk):
+        customer = get_object_or_404(Customer, pk=pk)     
+        data = {}
+        if 'name' and 'phone' in request.data:
+            data['name'] = request.data['name']
+            data['phone'] = request.data['phone'] 
+        serializer = CustomerSerializer(customer, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "message": "Updated Data"},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
 class ProfileAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -368,7 +356,7 @@ class ProfileDetailAPI(APIView):
          "data": serializer.data,
         }
         return Response(response_data, status=status.HTTP_200_OK)
-
+    
     def delete(self, request, pk):
         user = get_object_or_404(Profile, customer=request.user.id, pk=pk)
         user.is_active = True
