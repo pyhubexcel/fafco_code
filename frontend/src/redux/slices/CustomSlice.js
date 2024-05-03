@@ -47,8 +47,6 @@ const CustomSlice = createSlice({
 });
 
 export function customApiFunc(apiUrl, payload) {
-  // console.log("payload in customSlice=====",payload)
-  // console.log("payload in customSlice=====",apiUrl)
 
   return async (dispatch) => {
     dispatch(CustomSlice.actions.startLoading());

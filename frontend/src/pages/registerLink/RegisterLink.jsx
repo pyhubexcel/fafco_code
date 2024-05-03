@@ -25,7 +25,6 @@ export default function RegisterLink() {
             }
         } catch (error) {
             toast.error("please make registration first");
-            console.log("Error:", error);
         }
     }
     return (

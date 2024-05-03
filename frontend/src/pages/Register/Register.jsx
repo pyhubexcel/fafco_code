@@ -114,6 +114,7 @@ export default function Register() {
             dispatch(resetReducer())
             toast.error(RegisterSliceRes?.data?.response?.data.phone[0]);
         }
+        
     }, [RegisterSliceRes?.data?.success, RegisterSliceRes?.data?.response?.status == 400])
 
     return (

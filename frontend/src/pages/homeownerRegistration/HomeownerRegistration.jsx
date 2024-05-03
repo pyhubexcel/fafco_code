@@ -137,14 +137,12 @@ export default function ViewRegistration() {
                 document: uploadState.uploadInput
             };
 
-            console.log(data, 'dataaaaaa')
 
             const res = await axiosInstance.post(`api/claims/upload/document/`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            console.log("Response:", res);
             if (res.status == 200) {
                 toast.success('Document Uploaded')
                 setUploadState({
@@ -161,7 +159,6 @@ export default function ViewRegistration() {
 
     const createPartApi = async () => {
         const token = cookie.load('token')
-        console.log(token,'cccccccccccccccccccccccccccc')
         try {
             setLoading(true)
             const data = {
@@ -178,15 +175,12 @@ export default function ViewRegistration() {
                 active:partInput.active,
             };
 
-            console.log(data, 'dataaaaaa')
-
             const res = await axiosInstance.post(`api/parts/part/`, data, {
                 headers: {
                     'Content-Type': "application/json",
                     "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE0NjQ1MDIzLCJpYXQiOjE3MTQ2NDIwMjMsImp0aSI6ImUxNmU5ZjUyMjYyYjQ0NmJhOGFiM2U4NDM1M2M4MTAxIiwidXNlcl9pZCI6MTB9.FcB8FN65jyXlub7Qg04YlKcRolnsDhNK2QgHVx2rYhQ`
                 }
             });
-            console.log("Response:", res);
             if (res.status == 200) {
                 toast.success('Document Uploaded')
                 setUploadState({
@@ -196,7 +190,6 @@ export default function ViewRegistration() {
             }
         } catch (error) {
             toast.error('api failed!!!')
-            console.log("Error:", error);
         } finally {
             setLoading(false)
         }
@@ -204,9 +197,8 @@ export default function ViewRegistration() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("upload....", uploadState)
+
         if (!uploadState.uploadInput) {
-            console.log("Please select a file.");
             return;
         }
         try {
@@ -243,28 +235,12 @@ export default function ViewRegistration() {
 
     const handlePartSubmit = async (e) => {
         e.preventDefault();
-        console.log("part input data....", partInput)
         try {
             await createPartApi();
         } catch (error) {
-            console.error('Error in crete part api*****************:', error);
         }
     };
 
-
-
-    // const claimApi = async ()=>{
-    //     try {
-    //         const res = await axiosInstance.post(`api/claims/claim/`,{
-    //             headers: {
-    //                 "Content-Type": "application/json"
-    //             }
-    //         });
-    //         console.log("street res ===", res);
-    //     } catch (error) {
-    //         console.log("Error:", error);
-    //     }
-    // }
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }} my={2}>

@@ -8,9 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { logOutUser } from "../redux/slices/LogoutSlice"
-import { resetReducer } from '../redux/slices/LoginSlice';
-import Button from '@mui/material/Button';
-import { LogoutOutlined } from '@mui/icons-material';
 
 const navbarLinks = [
     {
@@ -73,8 +70,10 @@ const Header = () => {
             <nav >
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
                     <div className="flex items-center justify-between h-16 ">
-                        <div className="flex-shrink-0 w-44">
+                        <div className="flex-shrink-0 w-44 cursor-pointer">
+                            <Link to={`${token ? "/" : "/login"}`}>
                             <img src={HeaderLogo} alt="logo" />
+                            </Link>
                         </div>
 
 

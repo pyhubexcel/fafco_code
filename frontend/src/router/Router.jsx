@@ -40,10 +40,10 @@ export default function Router() {
             <Route path="/inactiveAccount" element={ token ?  <Navigate to="/" /> : <InactiveAccount /> } />
             <Route path="/forgetPassword" element={token ?  <Navigate to="/" /> :  <ResetPassword /> } />
             <Route path="/registerLink" element={ token ?  <Navigate to="/" /> : <RegisterLink />} />
-            <Route path="/newPassword" element={ token ? <Navigate to="/" /> :  <NewPassword />  }/>
-            <Route path="/viewRegistration" element={ token ?  <ViewRegistration /> :  <Navigate to="/" />}/>
-            <Route path="/registrationLookup" element={ token ? <RegistrationLookup /> :  <Navigate to="/" />}/>
-            <Route path="/addressValidation" element={ token ?  <AddressValidation /> :  <Navigate to="/" />}/>
+            <Route path="/newPassword/:email" element={ token ? <Navigate to="/" /> :  <NewPassword />  }/>
+            <Route path="/viewRegistration" element={ token ?  <ViewRegistration /> :  <Navigate to="/login" />}/>
+            <Route path="/registrationLookup" element={ token ? <RegistrationLookup /> :  <Navigate to="/login" />}/>
+            <Route path="/addressValidation" element={ token ?  <AddressValidation /> :  <Navigate to="/login" />}/>
             <Route path="*" element={ <PageNotfound /> }/>
             <Route path="/createClaim" element={ <CreateClaim /> }/>
             <Route path="/CreateRegistration" element={token ? <CreateRegistration />:  <Navigate to="/" /> }/>

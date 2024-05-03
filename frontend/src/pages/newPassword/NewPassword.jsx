@@ -1,8 +1,8 @@
-import { Box, Card, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField, Typography } from "@mui/material";
+import { Box, Card, FormControl, IconButton, Button, InputAdornment, InputLabel, OutlinedInput, Stack, TextField, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import { useFormik } from "formik";
 import { loginSchema } from "../../schema";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
 import toast, { Toaster } from "react-hot-toast";
@@ -12,6 +12,9 @@ import Visibility from "@mui/icons-material/Visibility";
 export default function NewPassword() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const { email } = useParams();
+    console.log(email, 'encodedEmail')
+
     const navigate = useNavigate();
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
@@ -19,31 +22,27 @@ export default function NewPassword() {
                 newpassword: "",
                 confirmPassword: ""
             },
-            // validationSchema: loginSchema,
             onSubmit: async (values) => {
-                console.log("values===");
-                console.log("values===", values);
                 setLoading(true);
                 const payload = {
                     newPassword: values.email,
                     confirmPassword: values.email,
+                    email: email
                 }
                 try {
                     const res = await axiosInstance.post('api/auth/reset/confirm/MQ/c5ztit-56c9de5822c6f8646bae0a94ab1391ec/ ', payload);
-                    console.log("res ===", res.data);
-                    if(res.status === 200){
+                    if (res.status === 200) {
+                        toast.success("passowrd updated successfully")
                         navigate('/')
                     }
                 } catch (error) {
                     if (error)
                         toast.error(error.response.data.error)
-                    console.log("Error:", error);
                 } finally {
                     setLoading(false)
                 }
             },
         });
-    // console.log('formik===', errors, touched, handleChange, handleBlur, handleSubmit)
     return (
         <Box className="flex justify-center my-20">
             <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
@@ -122,10 +121,18 @@ export default function NewPassword() {
                                 <CustomButton
                                     buttonName="Email Link"
                                     loading={loading}
+                                    variant={'contained'}
                                     type="submit"
-
                                 />
-                                <Toaster />
+                                <Box>
+                                    <Link to="/login">
+                                        <CustomButton
+                                            buttonName="back to login"
+                                            variant={'contained'}
+                                            loading={loading}>
+                                        </CustomButton>
+                                    </Link>
+                                </Box>
                             </form>
                         </Box>
                     </Box>
