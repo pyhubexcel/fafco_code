@@ -1,18 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
 import CustomButton from "../../components/ui/CustomButton";
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import { signupSchema } from "../../schema";
 import { useFormik } from "formik";
-import { Autocomplete, Box, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
+import { Autocomplete, Box, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Visibility from "@mui/icons-material/Visibility";
-import { useDispatch, useSelector } from "react-redux";
-import { register, resetReducer } from "../../redux/slices/RegisterSlice";
 import { toast } from 'react-toastify';
+import axiosInstance from "../../utils/axios";
+import cookie from 'react-cookies'
 
 
 const signupElements = [
@@ -60,239 +52,158 @@ const countries = [
 ]
 
 export default function UpdateAccountInfo() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showPassword2, setShowPassword2] = useState(false);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false)
     const [countryCode, setCountryCode] = useState(null);
-    const RegisterSliceRes = useSelector((state) => state.RegisterSlice);
-    console.log(RegisterSliceRes.data,'RegisterSliceRes')
-    const RegisterSliceLoading = useSelector((state) => state.RegisterSlice.isLoading);
+    const [userDetails, setUserDetails] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        confirmEmail: ''
+    });
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
-            initialValues: {
-                name: "",
-                phone: "",
-                email: "",
-                confirmEmail: "",
-                password: "",
-                confirmPassword: "",
-                role: "",
-            },
-            validationSchema: signupSchema,
+            initialValues: userDetails,
+
             onSubmit: async (values) => {
-                const payload = {
-                    name: values.name,
-                    phone: ` ${countryCode} ` + values.phone,
-                    email: values.email,
-                    password: values.password,
-                    customer_type: values.role
+                console.log(userDetails, 'valuessssss===userDetails')
+
+                const token = cookie.load('token')
+                try {
+                    setLoading(true)
+                    const payload = {
+                        name: values.name,
+                        phone: ` ${countryCode} ` + values.phone,
+                    }
+
+                    console.log(payload, 'dataaaaaa')
+
+                    const res = await axiosInstance.post(`/api/auth/update-profile/2/`, payload, {
+                        headers: {
+                            'Content-Type': "application/json",
+                            "Authorization": `Bearer ${token}`
+                        }
+                    });
+                    if (res.status == 200) {
+                        toast.success(res?.data?.message, " create successfully")
+                    }
+                } catch (error) {
+                    toast.error(error.response.data.address[0])
+                    console.log("Error:", error);
+                } finally {
+                    setLoading(false)
                 }
-                dispatch(register(payload));
             },
         });
+
+    const lookupApi = async () => {
+        try {
+            setLoading(true)
+            const token = cookie.load('token');
+            const id = cookie.load('id');
+            const res = await axiosInstance.get(`api/auth/update-profile/${id}/`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            if(res?.data){
+                setUserDetails({
+                    name: res?.data?.name,
+                    phone: res?.data?.phone,
+                    email: res?.data?.email,
+                    confirmEmail:res?.data?.email
+                })
+            }
+
+
+        } catch (error) {
+            console.log("Error:", error);
+        } finally {
+            setLoading(false)
+        }
+    }
 
 
     const handleChangeCountry = (event, countryCode) => {
         setCountryCode(countryCode?.label)
     };
 
-
     useEffect(() => {
-        if (RegisterSliceRes?.data?.success) {
-            dispatch(resetReducer())
-            toast.success("registered successfully");
-            navigate('/registerLink')
-        }
+        lookupApi();
+    }, [])
 
-        if (RegisterSliceRes?.data?.response?.data.email) {
-            dispatch(resetReducer())
-            toast.error(RegisterSliceRes?.data?.response?.data.email[0]);
-        }
-        if (RegisterSliceRes?.data?.response?.data.phone) {
-            dispatch(resetReducer())
-            toast.error(RegisterSliceRes?.data?.response?.data.phone[0]);
-        }
-    }, [RegisterSliceRes?.data?.success, RegisterSliceRes?.data?.response?.status == 400])
 
     return (
-        <div className="w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto bg-white my-6  px-4 py-10 rounded-xl space-y-6 shadow-2xl">
-            <div className="text-3xl text-center text-blue-500 font-semibold">Update Account Info</div>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                {signupElements.map((item, i) => (
-                    item?.name == "phone" ?
-                        <div key={i}>
-                            <div className="flex gap-2">
-                                <Autocomplete
-                                    id="country-select-demo"
-                                    sx={{ width: 150 }}
-                                    options={countries}
-                                    size="small"
-                                    onChange={handleChangeCountry}
-                                    getOptionLabel={(option) => option.label}
-                                    renderOption={(props, option) => (
-                                        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                            {/* <img
-                                            loading="lazy"
-                                            width="20"
-                                            srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                                            src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                                            alt=""
-                                        /> */}
-                                            {option.name}
-                                        </Box>
-                                    )}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            error={
-                                                RegisterSliceRes?.data?.phone &&
-                                                RegisterSliceRes?.data?.phone?.length > 0
-                                                // RegisterSliceRes.data.phone == item.name  &&
-                                            }
-                                            {...params}
-                                            label="Country"
-                                            inputProps={{
-                                                ...params.inputProps,
-                                                autoComplete: 'new-password',
-                                            }}
-                                            required
-                                        />
-                                    )} />
+        <div>
+            {loading ? <div>Loading</div> : <div className="w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto bg-white my-6  px-4 py-10 rounded-xl space-y-6 shadow-2xl">
+                <div className="text-3xl text-center text-blue-500 font-semibold">Update Account Info</div>
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    {signupElements.map((item, i) => (
+                        item?.name == "phone" ?
+                            <div key={i}>
+                                <div className="flex gap-2">
+                                    <Autocomplete
+                                        id="country-select-demo"
+                                        sx={{ width: 150 }}
+                                        options={countries}
+                                        size="small"
+                                        
+                                        onChange={handleChangeCountry}
+                                        getOptionLabel={(option) => option.label}
+                                        renderOption={(props, option) => (
+                                            <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                                {option.name}
+                                            </Box>
+                                        )}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Country"
+                                                inputProps={{
+                                                    ...params.inputProps,
+                                                    autoComplete: 'new-password',
+                                                }}
+                                                required
+                                            />
+                                        )} />
 
+                                    <TextField
+                                        type={item.type}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={userDetails?.phone}
+                                        name={item.name}
+                                        className="w-full"
+                                        label={item.placeHolder}
+                                        size="small"
+                                        required
+                                    />
+                                </div>
+                                {errors[item.name] && touched[item.name] ? (
+                                    <div className="text-red-500 text-[12px] italic ml-32">{errors[item.name]}</div>
+                                ) : null}
+                            </div>
+                            :
+                            <div key={i} className="space-y-1">
                                 <TextField
-                                    error={
-                                        RegisterSliceRes?.data?.phone &&
-                                        RegisterSliceRes?.data?.phone?.length > 0
-                                        // RegisterSliceRes.data.phone == item.name  &&
-                                    }
                                     type={item.type}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values[item.name]}
+                                    value={userDetails[item.name]}
                                     name={item.name}
                                     className="w-full"
                                     label={item.placeHolder}
                                     size="small"
                                     required
                                 />
-                            </div>
-                            {errors[item.name] && touched[item.name] ? (
-                                <div className="text-red-500 text-[12px] italic ml-32">{errors[item.name]}</div>
-                            ) : null}
-                        </div>
-                        :
-                        <div key={i} className="space-y-1">
-                            <TextField
-                                error={
-                                    RegisterSliceRes?.data?.email &&
-                                    RegisterSliceRes?.data?.email?.length > 0 &&
-                                    (item.name === 'confirmEmail' || item.name === 'email')
-                                    // RegisterSliceRes.data.email.includes(item.name)  &&
-                                }
-                                type={item.type}
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values[item.name]}
-                                name={item.name}
-                                className="w-full"
-                                label={item.placeHolder}
-                                size="small"
-                                required
-                            />
-                            {errors[item.name] && touched[item.name] ? (
-                                <div className="text-red-500 text-[12px] italic">{errors[item.name]}</div>
-                            ) : null}
-                        </div>))}
-
-                <div className="space-y-1">
-                    <FormControl
-                        fullWidth
-                        variant="outlined"
-                        size="small"
-                        required
-                    >
-                        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                        <OutlinedInput
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            value={values.password}
-                            name='password'
-                            label="Password"
-                            required
-                            // id="outlined-adornment-password"
-                            className="w-full"
-                            type={showPassword ? 'text' : 'password'}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={() => setShowPassword((show) => !show)}
-                                        // onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {!showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                        />
-                    </FormControl>
-                    {errors.password && touched.password ? (
-                        <div className="text-red-500 text-[12px] italic">{errors.password}</div>
-                    ) : null}
-                </div>
-                <div className="space-y-1">
-                    <FormControl
-                        fullWidth
-                        variant="outlined"
-                        size="small"
-                        required
-                    >
-                        <InputLabel
-                            htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
-                        <OutlinedInput
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            value={values.confirmPassword}
-                            name='confirmPassword'
-                            required
-                            label="confirm Password"
-                            // id="outlined-adornment-password"
-                            className="w-full"
-                            type={showPassword2 ? 'text' : 'password'}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={() => setShowPassword2((show) => !show)}
-                                        // onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {!showPassword2 ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                        />
-                    </FormControl>
-                    {errors.confirmPassword && touched.confirmPassword ? (
-                        <div className="text-red-500 text-sm italic">{errors.confirmPassword}</div>
-                    ) : null}
-                </div>
-                <FormControl>
-                    <RadioGroup
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.role}
-                        row
-                        aria-labelledby="demo-row-radio-buttons-group-label"
-                        name="role"
-                    >
-                        <FormControlLabel value="1" control={<Radio />} label="Dealer" />
-                        <FormControlLabel value="2" control={<Radio />} label="Homeowner" />
-                    </RadioGroup>
-                </FormControl>
-                <CustomButton loading={RegisterSliceLoading} buttonName='Update Details' type="submit" variant='contained' />
-            </form>
+                                {errors[item.name] && touched[item.name] ? (
+                                    <div className="text-red-500 text-[12px] italic">{errors[item.name]}</div>
+                                ) : null}
+                            </div>))}
+                    <CustomButton loading={loading} buttonName='Update Details' type="submit" onClick={handleSubmit} variant='contained' />
+                </form>
+            </div>}
         </div>
     )
 }

@@ -1,11 +1,9 @@
-import { Box, Card, FormControl, IconButton, Button, InputAdornment, InputLabel, OutlinedInput, Stack, TextField, Typography } from "@mui/material";
+import { Box, Card, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import { useFormik } from "formik";
-import { loginSchema } from "../../schema";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
-import toast, { Toaster } from "react-hot-toast";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 
@@ -129,7 +127,7 @@ export default function NewPassword() {
                                         <CustomButton
                                             buttonName="back to login"
                                             variant={'contained'}
-                                            loading={loading}>
+                                        >
                                         </CustomButton>
                                     </Link>
                                 </Box>
