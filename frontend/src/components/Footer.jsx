@@ -31,7 +31,6 @@ export default function Footer() {
 
   const loginSliceSuccess = useSelector((state) => state.LoginSlice?.data?.success);
   const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
-  // console.log(logOutState,'testing hash')
 
   useEffect(()=>{
     token = cookie.load('token');
@@ -41,7 +40,6 @@ export default function Footer() {
   //     Navigation('/')
   // }
   },[loginSliceSuccess,logOutState])
-  // console.log(loginSliceSuccess,'loginSliceSuccess',logOutState, token)
 
 
   return (

@@ -49,7 +49,6 @@ export const logOutUser = (token) => async (dispatch) => {
     });
     dispatch(logOutSuccess(response.data));
   } catch (e) {
-    console.log(e)
     dispatch(hasError(e));
   }
 };

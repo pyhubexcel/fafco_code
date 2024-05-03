@@ -1,8 +1,7 @@
-import { Box, Card, Stack, TextField, Typography } from "@mui/material";
+import { Box, Card, Stack, TextField, Typography, Button } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import { useFormik } from "formik";
-import { loginSchema } from "../../schema";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
 import { toast } from 'react-toastify';
@@ -23,9 +22,9 @@ export default function ResetPassword() {
                     email: values.email,
                 }
                 try {
-                  const res =  await axiosInstance.post('api/auth/forgot-password/', payload);
+                    const res = await axiosInstance.post('api/auth/forgot-password/', payload);
                     console.log("res ===res", res);
-                    if(res.status === 200){
+                    if (res.status === 200) {
                         toast.success("mail sent successfully")
                     }
                 } catch (error) {
@@ -69,8 +68,18 @@ export default function ResetPassword() {
                                 <CustomButton
                                     buttonName="Email Link"
                                     loading={loading}
+                                    variant={'contained'}
                                     type="submit"
-                                     />
+                                />
+                                <Box>
+                                <Link to="/login">
+                                    <CustomButton
+                                        buttonName="back to login"
+                                        variant={'contained'}
+                                        loading={loading}>
+                                    </CustomButton>
+                                </Link>
+                                </Box>
                             </form>
                         </Box>
                     </Box>

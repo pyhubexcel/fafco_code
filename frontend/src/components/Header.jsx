@@ -74,8 +74,10 @@ const Header = () => {
             <nav >
                 <div className="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
                     <div className="flex items-center justify-between h-16 ">
-                        <div className="flex-shrink-0 w-44">
+                        <div className="flex-shrink-0 w-44 cursor-pointer">
+                            <Link to={`${token ? "/" : "/login"}`}>
                             <img src={HeaderLogo} alt="logo" />
+                            </Link>
                         </div>
 
 

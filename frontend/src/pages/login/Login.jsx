@@ -37,21 +37,21 @@ export default function Login() {
             },
         });
 
-    useEffect(() => {
-        if (loginSliceData.success) {
-            toast.success("Login Successful");
-            cookie.save('token', loginSliceData?.data?.access)
-            cookie.save('id', loginSliceData?.data?.id)
-            cookie.save('role', loginSliceData?.data?.customer_type)
-            cookie.save('name', loginSliceData?.data?.name)
-            dispatch(resetReducer());
-            Navigate('/')
-        }
-        if (!loginSliceData?.response?.data?.success) {
-            toast.error(loginSliceData?.response?.data?.message);
-        }
-        console.log(loginSliceData?.data?.access, 'loginSliceData?.data?.access')
-    }, [loginSliceData, loginSliceData?.response?.data?.success])
+        useEffect(()=>{
+            if(loginSliceData.success){
+                toast.success("Login successfull");
+                cookie.save('id', loginSliceData?.data?.id)
+                cookie.save('role', loginSliceData?.data?.customer_type)
+                cookie.save('name', loginSliceData?.data?.name)
+                cookie.save('token', loginSliceData?.data?.access)
+                dispatch(resetReducer());
+                Navigate('/')
+            }
+            if(loginSliceData?.response?.data?.success === false){
+                toast.error(loginSliceData?.response?.data?.message);
+                dispatch(resetReducer());
+            }
+        },[loginSliceData,loginSliceData?.response?.data?.success])
 
 
     return (
