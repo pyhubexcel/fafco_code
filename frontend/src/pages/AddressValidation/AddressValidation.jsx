@@ -91,7 +91,7 @@ export default function AddressValidation() {
     return (
         <div className="flex w-full">
             <Toaster />
-            <div className="bg-white w-full sm:w-[80%] md:w-[60%] lg:w-[40%] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
+            <div className="bg-white w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
                 <div className="text-3xl text-center text-blue-500 font-semibold ">Address Verification</div>
                 <form className="space-y-5" onSubmit={addressValidationApi} >
                     <div className="space-y-1">

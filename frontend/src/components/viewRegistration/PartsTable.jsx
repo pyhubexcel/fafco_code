@@ -28,7 +28,7 @@ const data = [
   ];
 
 export const PartsTable = ({handleOpen,handleDeleteClose}) => {
-  console.log(handleOpen,'handleopennnnnnn')
+  // console.log(handleOpen,'handleopennnnnnn')
   const columns = useMemo(
     () => [
         {

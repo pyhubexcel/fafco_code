@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useParams, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import cookie from 'react-cookies';
 import Home from '../pages/Home/Home';
 import Login from '../pages/login/Login';
@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import CreateClaim from '../pages/claim/CreateClaim';
 import CreateRegistration from '../pages/createRegistration/CreateRegistration';
+import UpdateAccountInfo from '../pages/updateAccountInfo/UpdateAccountInfo';
 
 export default function Router() {
     let token = cookie.load('token');
@@ -47,6 +48,7 @@ export default function Router() {
             <Route path="*" element={ <PageNotfound /> }/>
             <Route path="/createClaim" element={ <CreateClaim /> }/>
             <Route path="/CreateRegistration" element={token ? <CreateRegistration />:  <Navigate to="/" /> }/>
+            <Route path="/updateInfo" element={token ? <UpdateAccountInfo />:  <Navigate to="/" /> }/>
         </Routes>
     );
 }

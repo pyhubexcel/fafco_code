@@ -40,7 +40,7 @@ export default function RegistrationLookup() {
         lookupApi();
     }, [])
     return (
-        <Card sx={{ width: '95%', margin: 'auto', padding: '20px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
+        <Card sx={{ width:'100%', margin: '20px', padding: '20px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
             <Typography sx={{ fontSize: '1.35rem', fontWeight: '700' }}>Registration Lookup</Typography>
             {!loading ?
                 <RegisteredUsers getRowData={getRowData} userList={userList} />
@@ -59,7 +59,7 @@ export default function RegistrationLookup() {
 
 
             <Box sx={{ width: '200px', direction: 'flex', justifyContent: 'flex-start' }} my={2}>
-                <Link to={rowUserData ? '/viewRegistration': ''} state={rowUserData}>
+                <Link to={rowUserData ? '/viewRegistration': ''} state={rowUserData} title="view registration details">
                     <CustomButton buttonName='View Registration' variant='contained' disable={!rowUserData } />
                 </Link>
             </Box>

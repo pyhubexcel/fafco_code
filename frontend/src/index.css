@@ -59,7 +59,7 @@ justify-content: start !important;
    
 }
 .linkEffect:hover{
-  border-bottom: 5px solid rgb(30, 93, 220);
+  border-bottom: 4px solid #1976D2;
   transition: all 0.6s ease;
   border-radius: 0;
    transition: 0.3s;

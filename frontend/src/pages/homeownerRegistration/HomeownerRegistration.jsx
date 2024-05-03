@@ -105,21 +105,22 @@ export default function ViewRegistration() {
         commentInput: ''
     });
 
+    const location = useLocation()
+    console.log(location.state,'locationnnnnnnn')
+
     const [partInput, setPartInput] = useState({
-        profile_id: 5,
+        profile_id: location.state.id,
         partNumber: '',
         description: '',
-        dealer: 1,
+        dealer: location.state.current_dealer,
         product: '',
         date_installed: new Date().toISOString().split('T')[0], // Set today's date
         barcode: '',
         problem: '',
         action: 1,
-        rmaid: 1,
-        active: true,
     });
 
-    const location = useLocation()
+   
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -161,7 +162,6 @@ export default function ViewRegistration() {
 
     const createPartApi = async () => {
         const token = cookie.load('token')
-        console.log(token,'cccccccccccccccccccccccccccc')
         try {
             setLoading(true)
             const data = {
@@ -183,12 +183,12 @@ export default function ViewRegistration() {
             const res = await axiosInstance.post(`api/parts/part/`, data, {
                 headers: {
                     'Content-Type': "application/json",
-                    "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE0NjQ1MDIzLCJpYXQiOjE3MTQ2NDIwMjMsImp0aSI6ImUxNmU5ZjUyMjYyYjQ0NmJhOGFiM2U4NDM1M2M4MTAxIiwidXNlcl9pZCI6MTB9.FcB8FN65jyXlub7Qg04YlKcRolnsDhNK2QgHVx2rYhQ`
+                    "Authorization": `Bearer ${token}`
                 }
             });
             console.log("Response:", res);
             if (res.status == 200) {
-                toast.success('Document Uploaded')
+                toast.success('Part created successful')
                 setUploadState({
                     uploadInput: null,
                     commentInput: ''
@@ -308,7 +308,7 @@ export default function ViewRegistration() {
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#1976D2', color: 'white', padding: '10px', marginBottom: '10px' }}>
                                 <Typography >Pool Parts</Typography>
                             </Box>
-                            <Box margin={3}>
+                            <Box sx={{overflow:'auto'}} margin={3}>
                                 <PartsTable handleOpen={handleOpen} handleOpenDelete={handleOpenDelete} />
                             </Box>
                         </Card>

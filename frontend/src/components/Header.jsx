@@ -8,9 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { logOutUser } from "../redux/slices/LogoutSlice"
-import { resetReducer } from '../redux/slices/LoginSlice';
-import Button from '@mui/material/Button';
-import { LogoutOutlined } from '@mui/icons-material';
 
 const navbarLinks = [
     {
@@ -24,6 +21,10 @@ const navbarLinks = [
     {
         name: ' ADDRESS VALIDATION',
         link: '/addressValidation',
+    },
+    {
+        name: ' UPDATE ACCOUNT',
+        link: '/updateInfo',
     },
 ]
 
@@ -71,7 +72,7 @@ const Header = () => {
                 <CircularProgress color="inherit" />
             </Backdrop>
             <nav >
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
+                <div className="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
                     <div className="flex items-center justify-between h-16 ">
                         <div className="flex-shrink-0 w-44">
                             <img src={HeaderLogo} alt="logo" />
@@ -83,7 +84,7 @@ const Header = () => {
                                 <div className="ml-10 flex items-baseline space-x-4">
                                     {navbarLinks.map((item, i) => (
                                         <NavLink key={i} to={item.link}
-                                            className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 " : ""}  hover:text-blue-600 px-5 py-2 rounded-md text-xl linkEffect font-medium` }}>
+                                            className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 text-blue-500 " : ""}  hover:text-blue-500 px-5 py-2 rounded-md text-md linkEffect font-medium` }}>
                                             {item.name}
                                         </NavLink>
                                     ))}
@@ -94,13 +95,14 @@ const Header = () => {
 
                         {token &&
                             <div className='hidden xl:block'>
-                                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                                    <Typography>Welcome,{name}</Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center',gap:'5px' }}>
+                                    <Typography>Welcome,</Typography>
+                                    <Typography>{name}</Typography>
                                     <Tooltip title="Account settings">
                                         <IconButton
                                             onClick={handleClick}
                                             size="small"
-                                            sx={{ ml: 2 }}
+                                            // sx={{ ml: 2 }}
                                             aria-controls={open ? 'account-menu' : undefined}
                                             aria-haspopup="true"
                                             aria-expanded={open ? 'true' : undefined}
@@ -185,7 +187,7 @@ const Header = () => {
                 {token &&
                     <div className={`${isOpen ? 'block ' : 'hidden'} xl:hidden`}>
                         <div className="  pt-2 space-y-1 pb-2 sm:px-3">
-                            <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center',gap:'5px' }}>
                                 <Tooltip title="Account settings">
                                     <IconButton
                                         onClick={handleClick}
@@ -198,7 +200,8 @@ const Header = () => {
                                         <Avatar sx={{ width: 32, height: 32 }}></Avatar>
                                     </IconButton>
                                 </Tooltip>
-                                <Typography>Welcome,{name}</Typography>
+                                <Typography>Welcome,</Typography>
+                                    <Typography>{name}</Typography>
                             </Box>
                             <Menu
                                 anchorEl={anchorEl}
