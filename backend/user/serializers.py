@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Customer, Profile
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -12,6 +13,22 @@ class CustomerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = Customer.objects.create_user(**validated_data)
         return user
+
+class LoginSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        label=_("Username"),
+        write_only=True
+    )
+    password = serializers.CharField(
+        label=_("Password"),
+        style={'input_type': 'password'},
+        trim_whitespace=False,
+        write_only=True
+    )
+   
+    class Meta:
+       model = Customer
+       fields = ('username','password')
 
 
 class ProfileSerializer(serializers.ModelSerializer):

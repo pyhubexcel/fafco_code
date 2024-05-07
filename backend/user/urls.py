@@ -6,7 +6,7 @@ from .views import (
     PasswordChangeAPI, ProfileAPI, ProfileDetailAPI,
     AutocompleteAPIView, SingleAddressValidationAPIView,
     PasswordResetAPIView, PasswordResetConfirmAPIView, VerifyEmailAPI, 
-    ResendVerificationEmailAPIView
+    ResendVerificationEmailAPIView, UpdateCustomerAPI
 )
 
 urlpatterns = [
@@ -17,6 +17,8 @@ urlpatterns = [
          name='update_password'),
     path('change_password/', PasswordChangeAPI.as_view(),
          name='change_password'),
+    path('update-profile/<int:pk>/', UpdateCustomerAPI.as_view(),
+         name='update_profile'),
     path('profiles/', ProfileAPI.as_view(), name='profile'),
     path('profile_detail/<int:pk>/', ProfileDetailAPI.as_view(),
          name='ProfileDetailAPI'),
@@ -25,7 +27,7 @@ urlpatterns = [
          name='validation'),
     path('forgot-password/', PasswordResetAPIView.as_view(),
          name='forgot_password'),
-    path('reset/confirm/<uidb64>/<token>/',
+    path('reset/confirm/',
          PasswordResetConfirmAPIView.as_view(), name='password_reset_confirm'),
     path('reset-password/complete/',
          auth_views.PasswordResetCompleteView.as_view(),
