@@ -192,8 +192,7 @@ class PasswordResetAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST)          
             user.password_reset_done = False
             user.save()
-            reset_url = self._generate_reset_url(request, user)
-            self._send_reset_email(user.email, reset_url)
+            self.send_pass_forgot_email(user)
             return Response(
                 {'message': 'Password reset email sent'},
                 status=status.HTTP_200_OK)
@@ -201,21 +200,19 @@ class PasswordResetAPIView(APIView):
             return Response(
                 {'error': 'Invalid request'},
                 status=status.HTTP_400_BAD_REQUEST)
-
-    
-    def _generate_reset_url(self, request, user):
+            
+    def send_pass_forgot_email(self, user):
         email = urlsafe_base64_encode(user.email.encode('utf-8'))
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-        protocol = 'https' if request.is_secure() else 'http'
-        domain = 'localhost:5173/newpassword/'
-        return f"{protocol}://{domain}{email}"
-
-    def _send_reset_email(self, email, reset_url):
-        email_subject = 'Password Reset'
-        email_body = f'Click the link below to reset your password:\n\n<a href="{reset_url}">click here</a>'
-        email = EmailMultiAlternatives(email_subject, email_body, to=[email])
-        email.send()
+        verification_url = f"http://116.202.210.102:8888/newPassword/{email}/"
+        click_here_link = f'<a href="{verification_url}">click here</a>'
+        send_mail(
+            "Reset Your Email",
+            f"Click the link to Reset your email: {click_here_link}",
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            fail_silently=False,
+            html_message=f"Click the link to verify your email: {click_here_link}",
+        )
         
         
 class PasswordResetConfirmAPIView(APIView):
@@ -223,7 +220,6 @@ class PasswordResetConfirmAPIView(APIView):
         email = request.data.get('email')
         uid_bytes = urlsafe_base64_decode(email)
         uid_str = uid_bytes.decode('utf-8')
-        print(uid_str) 
         user = get_object_or_404(Customer, email=uid_str)  
         if user:
             new_password = request.data.get('newPassword')

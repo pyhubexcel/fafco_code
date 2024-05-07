@@ -19,8 +19,5 @@ def autocomplete(search_term):
     suggestions = client.send(lookup)
     results = []
     for suggestion in suggestions:
-        # suggestion_dict = suggestion.__dict__
-        # if 'entries' in suggestion_dict:
-        #     del suggestion_dict['entries']
         results.append(suggestion.__dict__)
     return results
