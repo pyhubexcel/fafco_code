@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import { logOutUser } from "../redux/slices/LogoutSlice"
+import { logOutUser, resetReducer } from "../redux/slices/LogoutSlice"
 
 const navbarLinks = [
     {
@@ -64,6 +64,7 @@ const Header = () => {
             Cookies.remove('id')
             Cookies.remove('name')
             Navigation('/login')
+            dispatch(resetReducer());
         }
         if (!token) {
             Navigation('/login');
