@@ -24,21 +24,18 @@ const data = [
       Barcode: 'BAR456',
       InstallDate: '2024-04-29',
     },
-    // Add more dummy data objects as needed
   ];
 
 export const PartsTable = ({handleOpen,handleDeleteClose}) => {
-  // console.log(handleOpen,'handleopennnnnnn')
   const columns = useMemo(
     () => [
         {
             accessorKey: 'actionButtons', 
             header: (
-                <div className='flex gap-2'>
-                  <CustomButton buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon/>} onClick={handleOpen}></CustomButton>
+                <div>
+                  <CustomButton className='flex gap-2' buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon/>} onClick={handleOpen}></CustomButton>
                 </div>
               ), 
-            // eslint-disable-next-line react/prop-types
             Cell: () => ( 
               <div className='flex gap-4'>
                 <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>} onClick={handleOpen}></CustomButton>

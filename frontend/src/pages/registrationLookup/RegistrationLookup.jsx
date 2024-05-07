@@ -4,9 +4,9 @@ import CustomButton from "../../components/ui/CustomButton";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import { useEffect, useState } from "react";
-import cookie from 'react-cookies'
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
+import Cookies from 'js-cookie';
 
 export default function RegistrationLookup() {
     const [loading,setLoading] = useState(false);
@@ -15,7 +15,7 @@ export default function RegistrationLookup() {
     const lookupApi = async () => {
         try {
             setLoading(true)
-            const token = cookie.load('token');
+            const token = Cookies.get('token');
             const res = await axiosInstance.get(`api/auth/profiles/`, {
                 headers: {
                     "Content-Type": "application/json",

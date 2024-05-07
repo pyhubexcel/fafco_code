@@ -1,11 +1,12 @@
 import CustomButton from "../../components/ui/CustomButton";
 import axiosInstance from "../../utils/axios";
-import { TextField } from "@mui/material";
+import { Box, CircularProgress, TextField } from "@mui/material";
 import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { Link, useNavigate } from "react-router-dom";
 
 export default function AddressValidation() {
+    const [addressLoader, setAddressLoader] = useState(false);
     const [loading, setLoading] = useState(false);
     const [inputData, setInputData] = useState({
         street: "",
@@ -20,8 +21,8 @@ export default function AddressValidation() {
 
 
     const streetApi = async (props) => {
-        // console.log("inside api function value:",value)
         console.log('props=====', props)
+        setAddressLoader(true)
         try {
             const res = await axiosInstance.get(`api/auth/autocomplete/?search_term=${props}`);
             console.log("street res ===", res.data);
@@ -29,6 +30,9 @@ export default function AddressValidation() {
             console.log('apidata', apiData)
         } catch (error) {
             console.log("Error:", error);
+        }
+         finally {
+            setAddressLoader(false)
         }
     }
 
@@ -38,7 +42,7 @@ export default function AddressValidation() {
         console.log('inputfileds values:', inputData.street, inputData.state)
         setLoading(true)
         try {
-            const res = await axiosInstance.post(`http://116.202.210.102:8074/api/auth/validation/`, {
+            const res = await axiosInstance.post(`api/auth/validation/`, {
 
                 street: inputData.street,
                 city: inputData.city,
@@ -48,7 +52,7 @@ export default function AddressValidation() {
             setLoading(false)
             setAddressData(res)
             console.log("address validation res ===", res);
-            navigate('/createRegistration',{state:res.data})
+            navigate('/createRegistration', { state: res.data })
             if (res.data.error) {
                 toast.error(res.data.error)
             } else {
@@ -64,7 +68,6 @@ export default function AddressValidation() {
 
     const handleChangeStreet = (event) => {
         const { name, value } = event.target;
-        // console.log('inside handlechange name and value====',name,value)
         setInputData({ ...inputData, [name]: value });
         console.log('inputData', inputData)
         streetApi(value)
@@ -72,9 +75,7 @@ export default function AddressValidation() {
     };
     const handleChange = (event) => {
         const { name, value } = event.target;
-        // console.log('inside handlechange name and value====',name,value)
         setInputData({ ...inputData, [name]: value });
-        // console.log('apiData', apiData)
     }
 
     const handleOptionClick = (user) => {
@@ -106,25 +107,33 @@ export default function AddressValidation() {
                             label='Address'
                             size="small"
                             required
-
+                            InputProps={{
+                                autoComplete: 'off',
+                            }}
                         />
-                        <div className="bg-gray-200 w-full max-h-40 overflow-auto rounded-lg " style={{ display: showData ? 'block' : 'none' }} >
-                            {apiData.map((user, i) => (
-                                <div key={i}>
-                                    <div
-                                        className=" flex gap-4 cursor-pointer hover:bg-gray-100 px-2 py-1"
-                                        onClick={() => handleOptionClick(user)}
-                                    >
-                                        <div>{user.street_line}</div>
-                                        <div>{user.city}</div>
-                                        <div>{user.state}</div>
-                                        <div>{user.zipcode}</div>
-
-                                    </div>
-                                    <hr className="bg-white border- border-white" />
+                        <div className="bg-gray-200 w-full rounded-lg align-items-center " style={{ display: showData ? 'block' : 'none' }} >
+                            {addressLoader ? (
+                                <div className="flex justify-center align-items-center py-5">
+                                    <CircularProgress />
                                 </div>
-                            ))}
+                            ) : (
+                                apiData.map((user, i) => (
+                                    <div  key={i}>
+                                        <div
+                                            className=" flex gap-4 cursor-pointer hover:bg-gray-100 px-2 py-1"
+                                            onClick={() => handleOptionClick(user)}
+                                        >
+                                            <div>{user.street_line}</div>
+                                            <div>{user.city}</div>
+                                            <div>{user.state}</div>
+                                            <div>{user.zipcode}</div>
+                                        </div>
+                                        <hr className="bg-white border- border-white" />
+                                    </div>
+                                ))
+                            )}
                         </div>
+
                     </div>
 
                     <div className="space-y-1">
@@ -176,12 +185,12 @@ export default function AddressValidation() {
                         {/* <Link
                             to={addressData ? '/viewRegistration' : ''}
                         > */}
-                            <CustomButton
-                                loading={loading}
-                                buttonName='View'
-                                type="submit"
-                                variant='contained'
-                            />
+                        <CustomButton
+                            loading={loading}
+                            buttonName='View'
+                            type="submit"
+                            variant='contained'
+                        />
                         {/* </Link> */}
                         <Toaster />
                     </div>

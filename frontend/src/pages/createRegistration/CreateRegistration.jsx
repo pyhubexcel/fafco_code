@@ -1,7 +1,7 @@
 import CustomButton from "../../components/ui/CustomButton";
 import { Checkbox, TextField } from "@mui/material";
 import { useState } from "react";
-import cookie from 'react-cookies'
+import Cookies from 'js-cookie';
 import axiosInstance from "../../utils/axios";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -48,7 +48,7 @@ export default function CreateRegistration() {
     });
 
     const registrationApi = async () => {
-        const token = cookie.load('token')
+        const token = Cookies.get('token')
         console.log(token, 'cccccccccccccccccccccccccccc')
         try {
             setLoading(true)

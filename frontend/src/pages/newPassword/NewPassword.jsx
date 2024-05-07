@@ -32,7 +32,7 @@ export default function NewPassword() {
                 try {
                     const res = await axiosInstance.post('api/auth/reset/confirm/', payload);
                     if (res.status === 200) {
-                        toast.success("passowrd updated successfully")
+                        toast.success("password updated successfully")
                         navigate('/')
                     }
                 } catch (error) {
@@ -119,7 +119,7 @@ export default function NewPassword() {
                                     ) : null}
                                 </div>
                                 <CustomButton
-                                    buttonName="Email Link"
+                                    buttonName="Submit"
                                     loading={loading}
                                     variant={'contained'}
                                     type="submit"

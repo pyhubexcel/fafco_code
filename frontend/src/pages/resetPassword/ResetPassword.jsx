@@ -1,14 +1,13 @@
-import { Box, Card, Stack, TextField, Typography, Button } from "@mui/material";
+import { Box, Card, Stack, TextField, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import { useFormik } from "formik";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
 import { toast } from 'react-toastify';
 
 export default function ResetPassword() {
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
             initialValues: {
@@ -66,7 +65,7 @@ export default function ResetPassword() {
                                     <div className="text-red-500 text-[12px] italic">{errors.email}</div>
                                 ) : null}
                                 <CustomButton
-                                    buttonName="Email Link"
+                                    buttonName="Submit"
                                     loading={loading}
                                     variant={'contained'}
                                     type="submit"
@@ -76,7 +75,7 @@ export default function ResetPassword() {
                                     <CustomButton
                                         buttonName="back to login"
                                         variant={'contained'}
-                                        loading={loading}>
+                                        >
                                     </CustomButton>
                                 </Link>
                                 </Box>

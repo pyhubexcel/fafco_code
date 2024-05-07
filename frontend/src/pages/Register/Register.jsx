@@ -295,7 +295,7 @@ export default function Register() {
                 <CustomButton loading={RegisterSliceLoading} buttonName='Register' type="submit" variant='contained' />
             </form>
             <div className="  text-center">
-                Already have account?<Link to='/' title="Login" className="text-blue-600"> Login</Link>
+                Already have account?<Link to='/login' title="Login" className="text-blue-600"> Login</Link>
             </div>
         </div>
     )

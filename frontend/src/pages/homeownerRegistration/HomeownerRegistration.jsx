@@ -9,9 +9,9 @@ import Tab from '@mui/material/Tab';
 import ViewRegistrationComp from "../../components/viewRegistration/ViewRegistration";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 import CreateClaim from "../../components/createClaim/CreateClaim";
-import cookie from 'react-cookies'
+import Cookies from 'js-cookie';
 
 const style = {
     position: 'absolute',
@@ -106,7 +106,7 @@ export default function ViewRegistration() {
     });
 
     const location = useLocation()
-    console.log(location.state,'locationnnnnnnn')
+    console.log(location.state, 'locationnnnnnnn')
 
     const [partInput, setPartInput] = useState({
         profile_id: location.state.id,
@@ -120,7 +120,7 @@ export default function ViewRegistration() {
         action: 1,
     });
 
-   
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -159,11 +159,11 @@ export default function ViewRegistration() {
     }
 
     const createPartApi = async () => {
-        const token = cookie.load('token')
+        const token = Cookies.get('token')
         try {
             setLoading(true)
             const data = {
-                profile_id : partInput.profile_id,
+                profile_id: partInput.profile_id,
                 part_number: partInput.partNumber,
                 part_description: partInput.description,
                 product_line: partInput.product,
@@ -172,8 +172,8 @@ export default function ViewRegistration() {
                 barcode: partInput.barcode,
                 problem_code: partInput.problem,
                 claim_action: partInput.action,
-                rmaid:partInput.rmaid,
-                active:partInput.active,
+                rmaid: partInput.rmaid,
+                active: partInput.active,
             };
 
             const res = await axiosInstance.post(`api/parts/part/`, data, {
@@ -239,6 +239,7 @@ export default function ViewRegistration() {
         try {
             await createPartApi();
         } catch (error) {
+            console.log(error);
         }
     };
 
@@ -256,22 +257,18 @@ export default function ViewRegistration() {
                         <Typography sx={{ fontSize: '1.05rem' }}>{location.state.current_dealer}</Typography>
                     </Box>
                 </div>
-                <Box sx={{ width: '50%', display: 'flex', gap: '7px', alignItems: 'center' }} my={2}>
-                    <Typography sx={{ fontSize: '1.05rem', fontWeight: '600' }}>Owner Name:</Typography>
-                    <TextField
-                        type='text'
-                        // onBlur={handleBlur}
-                        // onChange={handleChange}
-                        // value={values.email}
-                        name='name'
-                        id="outlined-size-small"
-                        className="w-1/2"
-                        // label='Jim & Joan Smith'
-                        size="small"
-                        value={location.state.Name}
-                    />
-                    <CustomButton buttonName="Update" variant="contained" />
-                </Box>
+                <div className="flex flex-col gap-2 my-2 sm:flex-row sm:items-center">
+                        <Typography sx={{ fontSize: '1.05rem', fontWeight: '600' }}>Owner Name:</Typography>
+                        <TextField
+                            type='text'
+                            name='name'
+                            id="outlined-size-small"
+                            className="w-full sm:w-2/6"
+                            size="small"
+                            value={location.state.name}
+                        />
+                        <CustomButton buttonName="Update" variant="contained" />
+                </div>
                 <Box sx={{ width: '100%' }}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -285,7 +282,7 @@ export default function ViewRegistration() {
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#1976D2', color: 'white', padding: '10px', marginBottom: '10px' }}>
                                 <Typography >Pool Parts</Typography>
                             </Box>
-                            <Box sx={{overflow:'auto'}} margin={3}>
+                            <Box sx={{ overflow: 'auto' }} margin={3}>
                                 <PartsTable handleOpen={handleOpen} handleOpenDelete={handleOpenDelete} />
                             </Box>
                         </Card>

@@ -7,11 +7,10 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { resetReducer } from "../../redux/slices/CustomSlice";
 import { toast } from 'react-toastify';
-import { login } from "../../redux/slices/LoginSlice";
-import cookie from 'react-cookies'
+import { login, resetReducer } from "../../redux/slices/LoginSlice";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Cookies from 'js-cookie';
 
 
 export default function Login() {
@@ -40,10 +39,11 @@ export default function Login() {
         useEffect(()=>{
             if(loginSliceData.success){
                 toast.success("Login successfull");
-                cookie.save('id', loginSliceData?.data?.id)
-                cookie.save('role', loginSliceData?.data?.customer_type)
-                cookie.save('name', loginSliceData?.data?.name)
-                cookie.save('token', loginSliceData?.data?.access)
+                console.log('token', loginSliceData?.data?.access)
+                Cookies.set('id', loginSliceData?.data?.id)
+                Cookies.set('role', loginSliceData?.data?.customer_type)
+                Cookies.set('name', loginSliceData?.data?.name)
+                Cookies.set('token', loginSliceData?.data?.access)
                 dispatch(resetReducer());
                 Navigate('/')
             }

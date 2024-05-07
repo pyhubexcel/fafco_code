@@ -3,7 +3,7 @@ import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, Backdrop, Box, CircularProgress, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import Logout from '@mui/icons-material/Logout';
-import cookie from 'react-cookies'
+import Cookies from 'js-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,11 +31,11 @@ const navbarLinks = [
 const Header = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
-    let token = cookie.load('token');
+    let token = Cookies.get('token');
     const open = Boolean(anchorEl);
     const dispatch = useDispatch();
     const Navigation = useNavigate();
-    const name = cookie.load("name");
+    const name = Cookies.get("name");
     const loginSliceData = useSelector((state) => state.LoginSlice?.data?.success);
     const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
     const logOutLoding = useSelector((state) => state.logOutSlice?.isLoading);
@@ -57,11 +57,16 @@ const Header = () => {
     };
 
     useEffect(() => {
-        token = cookie.load('token');
+        token = Cookies.get('token');
         console.log("testing header")
-        if (logOutState) {
-            cookie.remove('token')
-            Navigation('/')
+        if (logOutState == true) {
+            Cookies.remove('token')
+            Cookies.remove('id')
+            Cookies.remove('name')
+            Navigation('/login')
+        }
+        if (!token) {
+            Navigation('/login');
         }
     }, [loginSliceData, logOutState])
 
@@ -76,7 +81,7 @@ const Header = () => {
                     <div className="flex items-center justify-between h-16 ">
                         <div className="flex-shrink-0 w-44 cursor-pointer">
                             <Link to={`${token ? "/" : "/login"}`}>
-                            <img src={HeaderLogo} alt="logo" />
+                                <img src={HeaderLogo} alt="logo" />
                             </Link>
                         </div>
 
@@ -86,7 +91,8 @@ const Header = () => {
                                 <div className="ml-10 flex items-baseline space-x-4">
                                     {navbarLinks.map((item, i) => (
                                         <NavLink key={i} to={item.link}
-                                            className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 text-blue-500 " : ""}  hover:text-blue-500 px-5 py-2 rounded-md text-md linkEffect font-medium` }}>
+                                            className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 text-blue-500 " : ""}  hover:text-blue-500 px-5 py-2 rounded-md text-md linkEffect font-medium` }}
+                                        >
                                             {item.name}
                                         </NavLink>
                                     ))}
@@ -97,7 +103,7 @@ const Header = () => {
 
                         {token &&
                             <div className='hidden xl:block'>
-                                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center',gap:'5px' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', gap: '5px' }}>
                                     <Typography>Welcome,</Typography>
                                     <Typography>{name}</Typography>
                                     <Tooltip title="Account settings">
@@ -189,7 +195,7 @@ const Header = () => {
                 {token &&
                     <div className={`${isOpen ? 'block ' : 'hidden'} xl:hidden`}>
                         <div className="  pt-2 space-y-1 pb-2 sm:px-3">
-                            <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center',gap:'5px' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', gap: '5px' }}>
                                 <Tooltip title="Account settings">
                                     <IconButton
                                         onClick={handleClick}
@@ -203,7 +209,7 @@ const Header = () => {
                                     </IconButton>
                                 </Tooltip>
                                 <Typography>Welcome,</Typography>
-                                    <Typography>{name}</Typography>
+                                <Typography>{name}</Typography>
                             </Box>
                             <Menu
                                 anchorEl={anchorEl}
@@ -258,13 +264,12 @@ const Header = () => {
                         <Divider />
                         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                             {navbarLinks.map((item, i) => (
-                                <Link key={i} to={item.link}
-                                onClick={()=>setIsOpen(!isOpen)}
-                                    className=" hover:text-blue-600 block px-3 py-2 rounded-md text-lg font-medium"
-                                    // className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 " : ""}  hover:text-blue-600 px-5 py-2 rounded-md text-xl linkEffect font-medium` }}
+                                <NavLink key={i} to={item.link}
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    className={({ isActive }) => { return `${isActive ? "border-b-4 rounded-none border-blue-500 text-blue-500 " : ""}  hover:text-blue-500 px-5 py-2 rounded-md text-md linkEffect font-medium block w-fit` }}
                                 >
                                     {item.name}
-                                </Link>
+                                </NavLink>
                             ))}
                         </div>
                     </div>

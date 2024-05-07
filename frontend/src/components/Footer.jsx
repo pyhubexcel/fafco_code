@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link,useNavigate,useLocation } from 'react-router-dom'
 import footerLogo from '../assets/img/footer-logo.png'
 import footerUsa from '../assets/img/footer-usa.png'
-import cookie from 'react-cookies'
+import Cookies from 'js-cookie';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 
@@ -26,14 +26,26 @@ const footerArray = [
 ];
 
 export default function Footer() {
-  let token = cookie.load('token')
-
+  let token = Cookies.get('token')
+  const Navigation = useNavigate();
+  const location = useLocation();
+    const urlPath = location.pathname;
   const loginSliceSuccess = useSelector((state) => state.LoginSlice?.data?.success);
   const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
 
   useEffect(()=>{
-    token = cookie.load('token');
+    token = Cookies.get('token');
     console.log("testing footer")
+    if (logOutState == true) {
+      Cookies.remove('token')
+      Cookies.remove('id')
+      Cookies.remove('name')
+      Cookies.remove('role')
+      Navigation('/login')
+  }
+    if(!token &&  (urlPath == "/login" || urlPath !== "/register")){
+      Navigation('/login');
+  }
   },[loginSliceSuccess,logOutState])
 
 
