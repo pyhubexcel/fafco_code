@@ -56,10 +56,10 @@ const RegisteredUsers = ({ userList,getRowData }) => {
                 accessorKey: 'address',
                 header: 'Address',
             },
-            {
-                accessorKey: 'zip_code',
-                header: 'ZIP',
-            },
+            // {
+            //     accessorKey: 'zip_code',
+            //     header: 'ZIP',
+            // },
             {
                 accessorKey: 'current_dealer',
                 header: 'Current Dealer',

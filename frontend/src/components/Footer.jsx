@@ -1,4 +1,4 @@
-import { Link,useNavigate,useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import footerLogo from '../assets/img/footer-logo.png'
 import footerUsa from '../assets/img/footer-usa.png'
 import Cookies from 'js-cookie';
@@ -26,68 +26,71 @@ const footerArray = [
 ];
 
 export default function Footer() {
-  let token = Cookies.get('token')
+  let token = Cookies.get('token');
   const Navigation = useNavigate();
   const location = useLocation();
-    const urlPath = location.pathname;
+  const urlPath = location.pathname;
   const loginSliceSuccess = useSelector((state) => state.LoginSlice?.data?.success);
   const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
 
-  useEffect(()=>{
+  useEffect(() => {
     token = Cookies.get('token');
     console.log("testing footer")
-    if (logOutState == true) {
-      Cookies.remove('token')
-      Cookies.remove('id')
-      Cookies.remove('name')
-      Cookies.remove('role')
-      Navigation('/login')
-  }
-    if(!token &&  (urlPath == "/login" || urlPath !== "/register")){
+    if (logOutState === true) {
+      Cookies.remove('token');
+      Cookies.remove('id');
+      Cookies.remove('name');
+      Cookies.remove('role');
       Navigation('/login');
-  }
-  },[loginSliceSuccess,logOutState])
-
+    }
+    // if (!token && (urlPath === "/login" || urlPath !== "/register")) {
+    //   Navigation('/login');
+    // }
+  }, [loginSliceSuccess, logOutState]);
 
   return (
     <footer className="bg-[#005D92]">
-      {!token &&
-        <div className="py-6 w-9/12 m-auto gap-16 grid grid-cols-1  sm:grid-cols-2  lg:grid-cols-4  xl:grid-cols-4">
-
-
-          <div className="mb-6 md:mb-0 gap-5">
-            <div className="flex items-center">
-              <img src={footerLogo} className="h-7" alt="Logo" />
+      <div className="text-center"> {/* Center-aligns the footer content */}
+        {!token && (
+          <div className="py-6 max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-16">
+            <div className="mb-6 md:mb-0 gap-5 sm:flex-row sm:justify-center">
+              <div className="flex items-center justify-center">
+                <img src={footerLogo} className="h-7" alt="Logo" />
+              </div>
+              <hr className='my-3 w-1/2' />
+              <div className="flex items-center justify-center">
+                <img src={footerUsa} className="h-20" alt="Logo" />
+              </div>
             </div>
-            <hr className='my-3 w-1/2' />
-            <div className="flex items-center">
-              <img src={footerUsa} className="h-20" alt="Logo" />
-            </div>
+            {footerArray.map((item, i) => (
+              <div key={i}>
+                <h2 className="mb-4 text-xl font-semibold uppercase text-white">Products</h2>
+                <ul className="text-md text-[#BBFCFF]">
+                  {item.map((link, j) => (
+                    <li key={j} className="mb-4">
+                      <Link style={{ color: "#BBFCFF" }} href="#" className="hover:underline">{link.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-
-
-          {footerArray.map((item, i) => (
-            <div key={i}>
-              <h2 className="mb-4 text-xl font-semibold uppercase text-white">Products</h2>
-              <ul className="text-md text-[#BBFCFF]  ">
-                {item.map((link, j) => (
-                  <li key={j} className="mb-4">
-                    <Link style={{ color: "#BBFCFF" }} href="#" className="hover:underline">{link.name}</Link>
-                  </li>
-                ))}
-              </ul>
+        )}
+        <div className='bg-[#333333] text-white text-center text-sm py-4'>
+          <div className="max-w-screen-xl mx-auto flex justify-center gap-1">
+            <span>All Copyright © 2024</span>
+            <div className='text-blue-500'>
+              <a href='https://fafco.com/' target='_blank' rel="noopener noreferrer"> FAFCO</a>
             </div>
-          ))}
-
+            <span>, Inc. - Privacy Policy</span>
+          </div>
         </div>
-      }
-      <div className='bg-[#333333] text-white text-center text-sm py-4 flex justify-center gap-1'>
-        All Copyright © 2014
-        <div className='text-blue-500' >
-          <Link to='https://fafco.com/' target='_blank'> FAFCO</Link>
-        </div>
-        , Inc. - Privacy Policy
       </div>
     </footer>
-  )
+  );
 }
+
+
+
+
+
