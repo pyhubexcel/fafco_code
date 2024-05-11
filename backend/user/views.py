@@ -36,7 +36,7 @@ class RegisterAPI(APIView):
         if serializer.is_valid():
             user = serializer.save()
             user.is_active = False
-            user.save()
+            # user.save()
             self.send_verification_email(user)
             return Response(             
                 {"success": True, "message": "Verification link has been sent to your email. Please check your email inbox.","email": user.email},
@@ -311,16 +311,18 @@ class ProfileAPI(APIView):
             "data": serializer.data
             }
         return Response(response_data, status=status.HTTP_200_OK)
+      
 
     def post(self, request):
         data = request.data
         data["customer"] = request.user.id
+        if request.user.customer_type == Customer.Dealer:
+            data["current_dealer"] = Customer.Dealer
         serializer = ProfileSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"message": "Profile created successfully"},
-                        status=status.HTTP_200_OK)
-
+        return Response({"message": "Profile created successfully"}, status=status.HTTP_200_OK)
+  
 
 class ProfileDetailAPI(APIView):
 
