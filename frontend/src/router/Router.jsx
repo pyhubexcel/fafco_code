@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import CreateRegistration from '../pages/createRegistration/CreateRegistration';
 import UpdateAccountInfo from '../pages/updateAccountInfo/UpdateAccountInfo';
+import ProfileScreen from '../pages/Profile/Profile';
 
 export default function Router() {
   let token = Cookies.get('token');
@@ -38,6 +39,7 @@ export default function Router() {
       <Route exact path="/" element={token ? <Home /> : <Navigate to="/login" />} />
       <Route exact path="/login" element={token ? <Navigate to="/" /> : <Login />} />
       <Route exact path="/register" element={<Register />} />
+      <Route exact path="/profile" element={<ProfileScreen />} />
       <Route path="/inactiveAccount" element={token ? <Navigate to="/" /> : <InactiveAccount />} />
       <Route path="/forgetPassword" element={token ? <Navigate to="/" /> : <ResetPassword />} />
       <Route path="/registerLink" element={token ? <Navigate to="/" /> : <RegisterLink />} />

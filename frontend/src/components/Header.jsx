@@ -19,7 +19,7 @@ const navbarLinks = [
     link: '/registrationLookup',
   },
   {
-    name: ' ADDRESS VALIDATION',
+    name: ' CREATE REGISTRATION',
     link: '/addressValidation',
   },
   {
@@ -63,6 +63,9 @@ const Header = () => {
       Cookies.remove('token')
       Cookies.remove('id')
       Cookies.remove('name')
+      Cookies.remove('role')
+      Cookies.remove('phone')
+      Cookies.remove('email')
       Navigation('/login')
       dispatch(resetReducer());
     }
@@ -155,8 +158,15 @@ const Header = () => {
                   transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 >
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                    }}
+                  >
+                    <Link to="/profile" className="flex items-center">
+                      <Avatar />
+                      <span className="ml-2">Profile</span>
+                    </Link>
                   </MenuItem>
                   <MenuItem onClick={handleClose}>
                     <Avatar /> My account
@@ -247,8 +257,15 @@ const Header = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                  }}
+                >
+                  <Link to="/profile" className="flex items-center">
+                    <Avatar />
+                    <span className="ml-2">Profile</span>
+                  </Link>
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
                   <Avatar /> My account
