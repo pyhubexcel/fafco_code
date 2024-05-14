@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import axiosInstance from "../../utils/axios";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import {  useNavigate } from "react-router-dom";
 
 const inputDataArray = [
   {
@@ -14,10 +15,6 @@ const inputDataArray = [
   {
     name: 'address',
     label: 'Address',
-  },
-  {
-    name: 'zip_code',
-    label: 'Zip Code',
   },
   {
     name: 'country',
@@ -31,12 +28,13 @@ const inputDataArray = [
     name: 'owner_email',
     label: 'Email',
   },
+ 
 ]
 
 export default function CreateRegistration() {
   const [loading, setLoading] = useState(false)
   const location = useLocation()
-  // console.log(location.state);
+  const navigate = useNavigate();
   const [inputData, setInputData] = useState({
     name: '',
     address: location.state.delivery_line_1,
@@ -49,20 +47,19 @@ export default function CreateRegistration() {
 
   const registrationApi = async () => {
     const token = Cookies.get('token')
-    console.log(token, 'cccccccccccccccccccccccccccc')
+    const role = Cookies.get('role')
+ 
     try {
       setLoading(true)
       const payload = {
         name: inputData.name,
         address: inputData.address,
-        zip_code: inputData.zip_code,
+        current_dealer: role,
         country: inputData.country,
         owner_phone: inputData.owner_phone,
         owner_email: inputData.owner_email,
-        medallion: inputData.medallion,
+        // medallion: inputData.medallion,
       };
-
-      console.log(payload, 'dataaaaaa')
 
       const res = await axiosInstance.post(`/api/auth/profiles/`, payload, {
         headers: {
@@ -70,17 +67,13 @@ export default function CreateRegistration() {
           "Authorization": `Bearer ${token}`
         }
       });
-      console.log("Response:", res);
       if (res.status == 200) {
         toast.success(res.data.message)
-        // setUploadState({
-        //     uploadInput: null,
-        //     commentInput: ''
-        // })
+        navigate('/')
+        
       }
     } catch (error) {
       toast.error(error.response.data.address[0])
-      console.log("Error:", error);
     } finally {
       setLoading(false)
     }
@@ -88,7 +81,7 @@ export default function CreateRegistration() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("data....", inputData)
+
     registrationApi();
   }
 
@@ -130,81 +123,6 @@ export default function CreateRegistration() {
               checked={inputData.medallion}
             />
           </div>
-
-          {/* <div className="space-y-1">
-                        <TextField
-                            type='text'
-                            // onBlur={handleBlur}
-                            // onChange={handleChangeStreet}
-                            // value={inputData.street}
-                            name='name'
-                            // id="outlined-size-small"
-                            className="w-full"
-                            label='Name'
-                            size="small"
-                            required
-
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <TextField
-                            type='text'
-                            // onBlur={handleBlur}
-                            // onChange={handleChangeStreet}
-                            // value={inputData.street}
-                            name='street'
-                            // id="outlined-size-small"
-                            className="w-full"
-                            label='Address'
-                            size="small"
-                            required
-
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <TextField
-                            type='text'
-                            // onBlur={handleBlur}
-                            // onChange={handleChange}
-                            // value={inputData.city}
-                            name='city'
-                            // id="outlined-size-small"
-                            className="w-full"
-                            label='City'
-                            size="small"
-                            required
-
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <TextField
-                            type='text'
-                            // onBlur={handleBlur}
-                            // onChange={handleChange}
-                            // value={inputData.state}
-                            name='state'
-                            // id="outlined-size-small"
-                            className="w-full"
-                            label='State'
-                            size="small"
-                            required
-
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <TextField
-                            type='text'
-                            // onBlur={handleBlur}
-                            // onChange={handleChange}
-                            // value={inputData.zipcode}
-                            name='zipcode'
-                            // id="outlined-size-small"
-                            className="w-full"
-                            label='Zip Code'
-                            size="small"
-                            required
-                        />
-                    </div> */}
           <div className="text-center">
             <CustomButton
               loading={loading}

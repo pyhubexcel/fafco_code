@@ -2,8 +2,10 @@ import CustomButton from "../../components/ui/CustomButton";
 import axiosInstance from "../../utils/axios";
 import { Box, CircularProgress, TextField } from "@mui/material";
 import { useState } from "react";
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 export default function AddressValidation() {
     const [addressLoader, setAddressLoader] = useState(false);
@@ -21,15 +23,12 @@ export default function AddressValidation() {
 
 
     const streetApi = async (props) => {
-        console.log('props=====', props)
+       
         setAddressLoader(true)
         try {
             const res = await axiosInstance.get(`api/auth/autocomplete/?search_term=${props}`);
-            console.log("street res ===", res.data);
             setApiData(res.data);
-            console.log('apidata', apiData)
         } catch (error) {
-            console.log("Error:", error);
         }
          finally {
             setAddressLoader(false)
@@ -38,38 +37,50 @@ export default function AddressValidation() {
 
 
     const addressValidationApi = async (e) => {
-        e.preventDefault();
-        console.log('inputfileds values:', inputData.street, inputData.state)
-        setLoading(true)
-        try {
-            const res = await axiosInstance.post(`api/auth/validation/`, {
+      e.preventDefault();
 
-                street: inputData.street,
-                city: inputData.city,
-                state: inputData.state,
-                zipcode: inputData.zipcode,
-            });
-            setLoading(false)
-            setAddressData(res)
-            console.log("address validation res ===", res);
-            navigate('/createRegistration', { state: res.data })
-            if (res.data.error) {
-                toast.error(res.data.error)
-            } else {
-                toast.success("Address Verified")
-            }
-        } catch (error) {
-            toast.error("Address not Verified!!!")
-            console.log("Error:", error);
-        } finally {
-            setLoading(false)
-        }
-    }
-
+      setLoading(true)
+  
+      try {
+          const Token = Cookies.get('token');
+          const res = await axiosInstance.post(`api/auth/validation/`, {
+              street: inputData.street,
+              city: inputData.city,
+              state: inputData.state,
+              zipcode: inputData.zipcode,
+          }, {
+              headers: {
+                  'Content-Type': "application/json",
+                  Authorization: `Bearer ${Token}`
+              }
+          });
+  
+          setLoading(false);
+          setAddressData(res);
+    
+         
+          if (res.data.success===false) {
+          
+              toast.error(res.data.message);
+              navigate('/')
+          } else {
+          
+              toast.success(res.data.message); 
+              navigate('/createRegistration', { state: res.data });
+          }
+      } catch (error) {
+          toast.error("Address not Verified!!!");
+          console.log("Error:", error);
+      } finally {
+          setLoading(false);
+      }
+  }
+  
+  
     const handleChangeStreet = (event) => {
         const { name, value } = event.target;
         setInputData({ ...inputData, [name]: value });
-        console.log('inputData', inputData)
+ 
         streetApi(value)
         setShowData(true)
     };
