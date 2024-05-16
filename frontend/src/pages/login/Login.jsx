@@ -39,7 +39,7 @@ export default function Login() {
   useEffect(() => {
     if (loginSliceData.success) {
       toast.success("Login successfull");
-      console.log('token', loginSliceData?.data?.access)
+      // console.log('token', loginSliceData?.data?.access)
       Cookies.set('id', loginSliceData?.data?.id)
       Cookies.set('role', loginSliceData?.data?.customer_type)
       Cookies.set('name', loginSliceData?.data?.name)
