@@ -64,7 +64,7 @@ export default function ProfileScreen() {
             />
           </FormControl>
         </div>
-        {user.role !== '1' && (
+      
           <>
             <div className="space-y-1">
               <FormControl fullWidth variant="outlined">
@@ -110,7 +110,7 @@ export default function ProfileScreen() {
               />
             </div>
           </>
-        )}
+       
       </div>
     </div>
   );
