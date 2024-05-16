@@ -1,6 +1,6 @@
 import CustomButton from "../../components/ui/CustomButton";
 import { Checkbox, TextField } from "@mui/material";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Cookies from 'js-cookie';
 import axiosInstance from "../../utils/axios";
 import { useLocation } from "react-router-dom";
@@ -34,6 +34,7 @@ const inputDataArray = [
 export default function CreateRegistration() {
   const [loading, setLoading] = useState(false)
   const location = useLocation()
+  const[roles,setRoles]=useState('')
   const navigate = useNavigate();
   const [inputData, setInputData] = useState({
     name: '',
@@ -44,6 +45,43 @@ export default function CreateRegistration() {
     owner_email: '',
     medallion: '',
   });
+
+  const getUserApi = async () => {
+
+    try {
+      setLoading(true);
+      const token = Cookies.get('token');
+      const id = Cookies.get('id');
+
+      const res = await axiosInstance.get(`api/auth/update-profile/${id}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (res?.data) {
+        setInputData({
+          name: res?.data?.name,
+          owner_phone: res?.data?.phone,
+          owner_email: res?.data?.email,
+          address: location.state.delivery_line_1,
+
+        });
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const role = Cookies.get('role');
+    setRoles(role);
+    if (role === '2') {
+      getUserApi();
+    }
+  }, []);
 
   const registrationApi = async () => {
     const token = Cookies.get('token')
@@ -58,7 +96,7 @@ export default function CreateRegistration() {
         country: inputData.country,
         owner_phone: inputData.owner_phone,
         owner_email: inputData.owner_email,
-        // medallion: inputData.medallion,
+        medallion: inputData.medallion,
       };
 
       const res = await axiosInstance.post(`/api/auth/profiles/`, payload, {
@@ -68,8 +106,8 @@ export default function CreateRegistration() {
         }
       });
       if (res.status == 200) {
-        toast.success(res.data.message)
-        navigate('/')
+        toast.success("Profile Created")
+        navigate('/registrationLookup')
         
       }
     } catch (error) {
@@ -96,7 +134,7 @@ export default function CreateRegistration() {
   return (
     <div className="flex w-full">
       <div className="bg-white w-full sm:w-[80%] md:w-[60%] lg:w-[40%] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
-        <div className="text-3xl text-center text-blue-500 font-semibold ">Create User</div>
+        <div className="text-3xl text-center text-blue-500 font-semibold ">Create Registration</div>
         <form className="space-y-5" onSubmit={handleSubmit}>
           {inputDataArray.map((item, i) => (
             <div key={i}>
@@ -114,19 +152,21 @@ export default function CreateRegistration() {
               </div>
             </div>
           ))}
-          <div className="space-y-1">
-            <label>Medallion</label>
-            <Checkbox
-              label="Check input box"
-              onChange={handleChange}
-              name='medallion'
-              checked={inputData.medallion}
-            />
-          </div>
+           {roles === '1' && (
+            <div className="space-y-1">
+              <label>Medallion</label>
+              <Checkbox
+                label="Check input box"
+                onChange={handleChange}
+                name='medallion'
+                checked={inputData.medallion}
+              />
+            </div>
+          )}
           <div className="text-center">
             <CustomButton
               loading={loading}
-              buttonName='Create User'
+              buttonName='Create Registration'
               type="submit"
               variant='contained'
             />

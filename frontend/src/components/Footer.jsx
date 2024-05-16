@@ -41,8 +41,6 @@ export default function Footer() {
       Cookies.remove('id');
       Cookies.remove('name');
       Cookies.remove('role');
-      Cookies.remove('email');
-      Cookies.remove('phone');
       Navigation('/login');
     }
     // if (!token && (urlPath === "/login" || urlPath !== "/register")) {

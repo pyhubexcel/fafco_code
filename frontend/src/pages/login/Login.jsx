@@ -44,8 +44,7 @@ export default function Login() {
       Cookies.set('role', loginSliceData?.data?.customer_type)
       Cookies.set('name', loginSliceData?.data?.name)
       Cookies.set('token', loginSliceData?.data?.access)
-      Cookies.set('email', loginSliceData?.data?.email)
-      Cookies.set('phone', loginSliceData?.data?.phone)
+ 
       dispatch(resetReducer());
       Navigate('/')
     }

@@ -64,8 +64,6 @@ const Header = () => {
       Cookies.remove('id')
       Cookies.remove('name')
       Cookies.remove('role')
-      Cookies.remove('phone')
-      Cookies.remove('email')
       Navigation('/login')
       dispatch(resetReducer());
     }
