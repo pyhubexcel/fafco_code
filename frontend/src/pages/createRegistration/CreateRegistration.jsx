@@ -1,40 +1,50 @@
 import CustomButton from "../../components/ui/CustomButton";
-import { Checkbox, TextField } from "@mui/material";
-import { useState,useEffect } from "react";
+import { Checkbox, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { useState, useEffect } from "react";
 import Cookies from 'js-cookie';
 import axiosInstance from "../../utils/axios";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const inputDataArray = [
   {
     name: 'name',
     label: 'Name',
+    type: 'text',
   },
   {
     name: 'address',
     label: 'Address',
+    type: 'text',
   },
   {
     name: 'country',
     label: 'Country',
+    type: 'select',
+    options: ['USA', 'Canada', 'Maxico'],
   },
   {
     name: 'owner_phone',
     label: 'Phone',
+    type: 'text',
   },
   {
     name: 'owner_email',
     label: 'Email',
+    type: 'text',
   },
- 
-]
+  {
+    name: 'Current_dealer',
+    label: 'Current Dealer',
+    type: 'text',
+  },
+];
 
 export default function CreateRegistration() {
-  const [loading, setLoading] = useState(false)
-  const location = useLocation()
-  const[roles,setRoles]=useState('')
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const [roles, setRoles] = useState('');
   const navigate = useNavigate();
   const [inputData, setInputData] = useState({
     name: '',
@@ -43,11 +53,11 @@ export default function CreateRegistration() {
     country: '',
     owner_phone: '',
     owner_email: '',
-    medallion: '',
+    medallion: false,
+    Current_dealer:''
   });
 
   const getUserApi = async () => {
-
     try {
       setLoading(true);
       const token = Cookies.get('token');
@@ -59,13 +69,17 @@ export default function CreateRegistration() {
           "Authorization": `Bearer ${token}`
         }
       });
+      // console.log(res, "API Response comming------->-----")
       if (res?.data) {
         setInputData({
           name: res?.data?.name,
           owner_phone: res?.data?.phone,
           owner_email: res?.data?.email,
           address: location.state.delivery_line_1,
-
+          zip_code: location.state.components.zipcode,
+          country: 'USA',
+          Current_dealer:res.data.name,
+          medallion: false,
         });
       }
     } catch (error) {
@@ -85,19 +99,21 @@ export default function CreateRegistration() {
 
   const registrationApi = async () => {
     const token = Cookies.get('token')
-    const role = Cookies.get('role')
- 
+    const id = Cookies.get('id');
+
     try {
       setLoading(true)
       const payload = {
         name: inputData.name,
         address: inputData.address,
-        current_dealer: role,
+        // current_dealer: id,
         country: inputData.country,
         owner_phone: inputData.owner_phone,
         owner_email: inputData.owner_email,
-        medallion: inputData.medallion,
+        medallion :inputData?.medallion,
       };
+
+      
 
       const res = await axiosInstance.post(`/api/auth/profiles/`, payload, {
         headers: {
@@ -105,13 +121,22 @@ export default function CreateRegistration() {
           "Authorization": `Bearer ${token}`
         }
       });
-      if (res.status == 200) {
-        toast.success("Profile Created")
+ 
+
+
+      console.log(res.message,"data record-------->----")
+      if (res.status === 200) {
+        toast.success(res.message)
         navigate('/registrationLookup')
-        
+      }
+      else{
+        toast.error(res.message)
+        console.log("Error comming------")
+
       }
     } catch (error) {
       toast.error(error.response.data.address[0])
+      // console.log(res,"data error case-------->----")
     } finally {
       setLoading(false)
     }
@@ -119,7 +144,6 @@ export default function CreateRegistration() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     registrationApi();
   }
 
@@ -134,25 +158,67 @@ export default function CreateRegistration() {
   return (
     <div className="flex w-full">
       <div className="bg-white w-full sm:w-[80%] md:w-[60%] lg:w-[40%] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
-        <div className="text-3xl text-center text-blue-500 font-semibold ">Create Registration</div>
+        <div className="text-3xl text-center text-blue-500 font-semibold">Create Registration</div>
         <form className="space-y-5" onSubmit={handleSubmit}>
           {inputDataArray.map((item, i) => (
             <div key={i}>
-              <div className="space-y-1">
-                <TextField
-                  type='text'
-                  name={item.name}
-                  className="w-full"
-                  label={item.label}
-                  size="small"
-                  required
-                  value={inputData[item.name]}
-                  onChange={handleChange}
-                />
-              </div>
+              {item.type === 'text' ? (
+                <div className="space-y-1">
+                  <TextField
+                    type='text'
+                    name={item.name}
+                    className="w-full"
+                    label={item.label}
+                    size="small"
+                    required
+                    value={inputData[item.name]}
+                    onChange={handleChange}
+                  />
+                </div>
+              ) : (
+<FormControl fullWidth size="small">
+  <TextField
+    select
+    name={item.name}
+    label={item.label}
+    value={inputData[item.name]}
+    onChange={handleChange}
+    required
+    InputLabelProps={{
+      shrink: true,
+    }}
+    SelectProps={{
+      MenuProps: {
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "left"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "left"
+        },
+        getContentAnchorEl: null
+      }
+    }}
+    sx={{
+      '& .MuiInputBase-root': {
+        height: '36px', 
+      },
+    }}
+  >
+    {item.options.map((option, index) => (
+      <MenuItem key={index} value={option}>
+        {option}
+      </MenuItem>
+    ))}
+  </TextField>
+</FormControl>
+
+
+              )}
             </div>
           ))}
-           {roles === '1' && (
+          {roles === '1' && (
             <div className="space-y-1">
               <label>Medallion</label>
               <Checkbox
@@ -176,3 +242,7 @@ export default function CreateRegistration() {
     </div>
   )
 }
+
+
+
+

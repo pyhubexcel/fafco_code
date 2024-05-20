@@ -129,7 +129,7 @@ export default function CreateClaim() {
                 </Box>
                 <Typography>You can add pitures as needed for each part you are claiming here.</Typography>
                 <Box display={'flex'} gap={2} my={2}>
-                    <TextField size="small" placeholder="*Optional comment" />
+                    {/* <TextField size="small" placeholder="*Optional comment" /> */}
                     <TextField size="small" type="file" />
                     <CustomButton buttonName='Upload File' variant='contained' />
                 </Box>
@@ -141,7 +141,7 @@ export default function CreateClaim() {
                     <CustomButton buttonName={'Add Part'} variant='contained' />
                 </Box>
                 <Box>
-                    <Typography fontWeight={'bold'}>*If the original system had Revs, you MUST enter Revs here!</Typography>
+                    <Typography fontWeight={'bold'}>*Claimed Part</Typography>
                     <RevsTable />
                 </Box>
                 <Stack gap={2} my={2} width={400}>

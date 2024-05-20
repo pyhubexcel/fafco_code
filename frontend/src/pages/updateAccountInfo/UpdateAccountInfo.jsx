@@ -64,8 +64,11 @@ export default function UpdateAccountInfo() {
         }
       });
       if (res.status === 200) {
+        setUpdateLoading(true);
         toast.success(" changes saved");
+
         Cookies.set('name', userDetails.name)
+      
       }
     } catch (error) {
       toast.error(error.response.data.address[0]);

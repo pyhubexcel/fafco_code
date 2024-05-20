@@ -2,7 +2,7 @@ import { Box, Card, Modal, TextField, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import UploadDocsTable from "../../components/viewRegistration/UploadDocsTable";
 import { useState } from "react";
-import PartsTable from "../../components/viewRegistration/PartsTable";
+import PartsTableView from "../../components/viewRegistration/PartTableView";
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -283,7 +283,7 @@ export default function ViewRegistration() {
                 <Typography >Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: 'auto' }} margin={3}>
-                <PartsTable handleOpen={handleOpen} handleOpenDelete={handleOpenDelete} />
+                <PartsTableView />
               </Box>
             </Card>
           </CustomTabPanel>
