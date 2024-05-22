@@ -1,5 +1,10 @@
 import { useMemo } from 'react';
 import { MRT_Table, useMaterialReactTable } from 'material-react-table';
+import CustomButton from '../ui/CustomButton';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box } from '@mui/material';
 
 const data = [
     {
@@ -21,6 +26,7 @@ const data = [
 export const PartsTableView = () => {
   const columns = useMemo(
     () => [
+     
       {
         accessorKey: 'PanelId',
         header: 'Panel ID#',

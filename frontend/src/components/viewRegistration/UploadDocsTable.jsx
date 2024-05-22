@@ -31,8 +31,8 @@ export const UploadDocsTable = () => {
             header: '#', 
             Cell: () => ( 
               <div className='flex gap-4'>
-                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>}></CustomButton>
-                <CustomButton buttonName='View' variant="text" buttonIcon={ <VisibilityIcon/>}></CustomButton>
+                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon sx={{fontSize:"16px"}}/>}></CustomButton>
+                <CustomButton buttonName='View' variant="text" buttonIcon={ <VisibilityIcon sx={{fontSize:"16px"}}/>}></CustomButton>
               </div>
             ),
           },

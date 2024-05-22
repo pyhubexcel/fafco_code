@@ -33,13 +33,13 @@ export const PartsTable = ({handleOpen,handleDeleteClose}) => {
             accessorKey: 'actionButtons', 
             header: (
                 <div>
-                  <CustomButton className='flex gap-2' buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon/>} onClick={handleOpen}></CustomButton>
+                  <CustomButton className='flex gap-2' buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon sx={{fontSize:"20px"}}/>} onClick={handleOpen}></CustomButton>
                 </div>
               ), 
             Cell: () => ( 
               <div className='flex gap-4'>
-                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon/>} onClick={handleOpen}></CustomButton>
-                <CustomButton buttonName='Delete' variant="text" buttonIcon={ <DeleteIcon/>} onClick={handleDeleteClose}></CustomButton>
+                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon sx={{fontSize:"16px"}}/>} onClick={handleOpen}></CustomButton>
+                <CustomButton buttonName='Delete' variant="text" buttonIcon={ <DeleteIcon sx={{fontSize:"16px"}}/>} onClick={handleDeleteClose}></CustomButton>
               </div>
             ),
           },
