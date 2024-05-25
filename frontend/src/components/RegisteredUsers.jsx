@@ -36,6 +36,9 @@ const data = [
 const RegisteredUsers = ({ userList,getRowData }) => {
     const [userData, setUserData] = useState(null) 
     getRowData(userData);
+
+    console.log(userList,"////")
+
     const columns = useMemo(
         () => [
             {

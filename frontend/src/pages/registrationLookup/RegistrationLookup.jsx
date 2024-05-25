@@ -32,9 +32,12 @@ export default function RegistrationLookup() {
     }
 
     const getRowData = (userData) => {
-        console.log(userData, 'testing userData')
+        console.log(userData?.id, 'testing userData')
         setRowUserData(userData)
     }
+
+   
+
 
     useEffect(() => {
         lookupApi();
@@ -43,7 +46,7 @@ export default function RegistrationLookup() {
         <Card sx={{ width:'100%', margin: '20px', padding: '20px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
             <Typography sx={{ fontSize: '1.35rem', fontWeight: '700' }}>Registration Lookup</Typography>
             {!loading ?
-                <RegisteredUsers getRowData={getRowData} userList={userList} />
+                <RegisteredUsers getRowData={getRowData} userList={userList} /> 
                 :
                 <Stack spacing={1}>
                     <Skeleton variant="rectangular" width={210} height={50} />
@@ -59,8 +62,8 @@ export default function RegistrationLookup() {
 
 
             <Box sx={{ width: '200px', direction: 'flex', justifyContent: 'flex-start' }} my={2}>
-                <Link to={rowUserData ? '/viewRegistration': ''} state={rowUserData} title="view registration details">
-                    <CustomButton buttonName='View Registration' variant='contained' disable={!rowUserData } />
+                <Link to={rowUserData ? `/viewRegistration/${rowUserData.id}`: ''} state={rowUserData} title="view registration details">
+                    <CustomButton buttonName='View Registration' variant='contained' disable={!rowUserData }  />
                 </Link>
             </Box>
         </Card>

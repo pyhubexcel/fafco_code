@@ -106,8 +106,10 @@ const Header = () => {
             {token &&
               <div className='hidden xl:block'>
                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', gap: '5px' }}>
-                  <Typography>Welcome,</Typography>
-                  <Typography>{name}</Typography>
+                  <Typography>Welcome, </Typography>
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {name ? name : "User name not found"}
+                  </Typography>
                   <Tooltip title="Account settings">
                     <IconButton
                       onClick={handleClick}

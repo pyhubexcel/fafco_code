@@ -44,7 +44,7 @@ export default function Router() {
       <Route path="/forgetPassword" element={token ? <Navigate to="/" /> : <ResetPassword />} />
       <Route path="/registerLink" element={token ? <Navigate to="/" /> : <RegisterLink />} />
       <Route path="/newPassword/:email" element={token ? <Navigate to="/" /> : <NewPassword />} />
-      <Route path="/viewRegistration" element={token ? <ViewRegistration /> : <Navigate to="/login" />} />
+      <Route path="/viewRegistration/:id" element={token ? <ViewRegistration /> : <Navigate to="/login" />} />
       <Route path="/registrationLookup" element={token ? <RegistrationLookup /> : <Navigate to="/login" />} />
       <Route path="/addressValidation" element={token ? <AddressValidation /> : <Navigate to="/login" />} />
       <Route path="*" element={<PageNotfound />} />

@@ -66,7 +66,7 @@ export default function Register() {
     const dispatch = useDispatch();
     const [countryCode, setCountryCode] = useState(null);
     const RegisterSliceRes = useSelector((state) => state.RegisterSlice);
-    console.log(RegisterSliceRes.data,'RegisterSliceRes')
+    console.log(RegisterSliceRes.data, 'RegisterSliceRes')
     const RegisterSliceLoading = useSelector((state) => state.RegisterSlice.isLoading);
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
@@ -114,7 +114,7 @@ export default function Register() {
             dispatch(resetReducer())
             toast.error(RegisterSliceRes?.data?.response?.data.phone[0]);
         }
-        
+
     }, [RegisterSliceRes?.data?.success, RegisterSliceRes?.data?.response?.status == 400])
 
     return (
@@ -160,14 +160,12 @@ export default function Register() {
                                             required
                                         />
                                     )} />
-
                                 <TextField
                                     error={
                                         RegisterSliceRes?.data?.phone &&
-                                        RegisterSliceRes?.data?.phone?.length > 0
-                                        // RegisterSliceRes.data.phone == item.name  &&
+                                        RegisterSliceRes?.data?.phone?.length !== 10
                                     }
-                                    type={item.type}
+                                    type="number"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values[item.name]}
@@ -176,6 +174,9 @@ export default function Register() {
                                     label={item.placeHolder}
                                     size="small"
                                     required
+                                    inputProps={{
+                                        maxLength: 10
+                                    }}
                                 />
                             </div>
                             {errors[item.name] && touched[item.name] ? (

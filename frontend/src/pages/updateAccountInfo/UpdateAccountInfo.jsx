@@ -67,7 +67,8 @@ export default function UpdateAccountInfo() {
         setUpdateLoading(true);
         toast.success(" changes saved");
 
-        Cookies.set('name', userDetails.name)
+        Cookies.set('name', userDetails.name);
+        console.log(userDetails.name,">>>>>>>>>>>");
       
       }
     } catch (error) {

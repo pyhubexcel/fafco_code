@@ -1,59 +1,81 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FormControl, InputLabel, OutlinedInput } from "@mui/material";
 import Cookies from 'js-cookie';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CustomButton from "../../components/ui/CustomButton";
 import axiosInstance from "../../utils/axios";
+import { toast } from "react-toastify";
 
 const ProfileScreen = () => {
-  const [roles, setRoles] = useState(null);
+  const [role, setRole] = useState(null);
   const [inputData, setInputData] = useState({
     name: '',
     address: '',
-    owner_phone: '',
-    owner_email: '',
+    phone: '',
+    email: '',
   });
 
-  const getUserApi = async () => {
+  const fetchUserDetails = useCallback(async () => {
+    const token = Cookies.get('token');
+    const id = Cookies.get('id');
     try {
-      const token = Cookies.get('token');
-      const id = Cookies.get('id');
-      const res = await axiosInstance.get(`api/auth/update-profile/${id}/`, {
+      const { data } = await axiosInstance.get(`api/auth/update-profile/${id}/`, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         }
       });
-      if (res?.data) {
+
+      if (data) {
         setInputData({
-          name: res?.data?.name,
-          address: res?.data?.address,
-          owner_phone: res?.data?.phone,
-          owner_email: res?.data?.email,
+          name: data.name,
+          address: data.address,
+          phone: data.phone,
+          email: data.email,
         });
       }
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error fetching user details:", error);
     }
-  };
-
-  useEffect(() => {
-    const role = Cookies.get('role');
-    setRoles(role);
-    getUserApi();
   }, []);
 
-  const handleUpdateAddress = () => {
-    console.log('Update Address:', inputData.address);
-    // Add logic to update the address in the backend
-  };
 
-  const handleChange = (event) => {
+  useEffect(() => {
+    const userRole = Cookies.get('role');
+    setRole(userRole);
+    fetchUserDetails();
+  }, [ ]);
+
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setInputData(prevInputData => ({
+    setInputData((prevInputData) => ({
       ...prevInputData,
       [name]: value
     }));
+  };
+
+  const handleUpdateUserDetails = async () => {
+    const id = Cookies.get('id');
+    const token = Cookies.get('token');
+    try {
+      const response = await axiosInstance.patch(`/api/auth/update-profile/${id}/`, {
+        name: inputData.name,
+        phone: inputData.phone
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        }
+      });
+      if (response.status == 200) {
+        Cookies.remove('name')
+        Cookies.set('name', inputData.name)
+        toast.success('Profile Updated')
+      } 
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error(error.response.data.phone[0])
+    }
   };
 
   return (
@@ -61,20 +83,20 @@ const ProfileScreen = () => {
       <div className="text-blue-500 flex justify-center">
         <AccountCircleIcon sx={{ fontSize: '130px' }} />
       </div>
-      <div className="text-3xl text-center text-blue-500 font-semibold">USER PROFILE</div>
-
+      <div className="text-3xl text-center text-blue-500 font-semibold">{inputData.name}</div>
       <div className="space-y-5">
         <div className="space-y-1">
-          <p className="w-full text-center">Role: {roles === '1' ? 'Dealer' : 'Homeowner'}</p>
+          <p className="w-full text-center font-semibold text-md">Role: {role === '1' ? 'Dealer' : 'Homeowner'}</p>
         </div>
         <div className="space-y-1">
           <FormControl fullWidth variant="outlined">
             <InputLabel htmlFor="name">Name</InputLabel>
             <OutlinedInput
               id="name"
+              name="name"
               value={inputData.name}
               label="Name"
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
           </FormControl>
         </div>
@@ -83,9 +105,10 @@ const ProfileScreen = () => {
             <InputLabel htmlFor="email">Email</InputLabel>
             <OutlinedInput
               id="email"
-              value={inputData.owner_email}
+              name="email"
+              value={inputData.email}
               label="Email"
-              onChange={handleChange}
+              readOnly
             />
           </FormControl>
         </div>
@@ -94,9 +117,10 @@ const ProfileScreen = () => {
             <InputLabel htmlFor="phone">Phone</InputLabel>
             <OutlinedInput
               id="phone"
-              value={inputData.owner_phone}
+              name="phone"
+              value={inputData.phone}
               label="Phone"
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
           </FormControl>
         </div>
@@ -105,17 +129,18 @@ const ProfileScreen = () => {
             <InputLabel htmlFor="address">Change Address</InputLabel>
             <OutlinedInput
               id="address"
+              name="address"
               value={inputData.address}
               label="Change Address"
-              onChange={(e) => setInputData({ ...inputData, address: e.target.value })}
+              onChange={handleInputChange}
             />
           </FormControl>
         </div>
         <div className="text-center">
           <CustomButton
-            buttonName='Update Address'
-            variant='outlined'
-            onClick={handleUpdateAddress}
+            buttonName="Update Profile"
+            variant="outlined"
+            onClick={handleUpdateUserDetails}
           />
         </div>
       </div>

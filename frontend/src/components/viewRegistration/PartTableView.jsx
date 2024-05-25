@@ -6,27 +6,24 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box } from '@mui/material';
 
-const data = [
+
+export const PartsTableView = (userData) => {
+
+  console.log(userData,"PartsTableView userData....!");
+
+  const data = [
     {
-      PanelId: 'ABC123',
-      Part: '12345',
-      Description: 'Sample description 1',
-      Barcode: 'BAR123',
-      InstallDate: '2024-04-28',
-    },
-    {
-      PanelId: 'DEF456',
-      Part: '67890',
-      Description: 'Sample description 2',
-      Barcode: 'BAR456',
-      InstallDate: '2024-04-29',
-    },
+      PanelId: userData.data.id,
+      Part: userData.data.part_number,
+      Description: userData.data.part_description,
+      Barcode: userData.data.barcode,
+      InstallDate: userData.data.date_installed,
+    }
   ];
 
-export const PartsTableView = () => {
   const columns = useMemo(
     () => [
-     
+
       {
         accessorKey: 'PanelId',
         header: 'Panel ID#',
@@ -74,14 +71,14 @@ export const PartsTableView = () => {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
         fontWeight: 'bold',
-        bgcolor:'lightgrey',
-        py :'2px',
+        bgcolor: 'lightgrey',
+        py: '2px',
       },
     },
     muiTableBodyCellProps: {
       sx: {
         border: '1px solid rgba(81, 81, 81, .5)',
-        py :'2px',
+        py: '2px',
       },
     },
   });

@@ -20,6 +20,8 @@ export default function Login() {
   const loginSliceData = useSelector((state) => state.LoginSlice.data);
   const loginSliceState = useSelector((state) => state.LoginSlice);
 
+  console.log(loginSliceData,"klklklklklklklklklklklkl")
+
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
     useFormik({
       initialValues: {

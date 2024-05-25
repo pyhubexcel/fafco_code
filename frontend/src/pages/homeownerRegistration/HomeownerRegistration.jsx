@@ -106,8 +106,9 @@ export default function ViewRegistration() {
     commentInput: "",
   });
 
+  console.log(uploadState,"this is nothing..!")
+
   const location = useLocation();
-  console.log(location.state, "locationnnnnnnn");
 
   const [partInput, setPartInput] = useState({
     profile_id: location.state.id,
@@ -161,25 +162,48 @@ export default function ViewRegistration() {
     }
   };
 
-  const getDocumentData = async () => {
+  const [docDetails, setDocDetails] = useState([]);
+
+  const getDocumentData = async (userId) => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(`/api/claims/upload/document/2/`, {
+      const res = await axiosInstance.get(`/api/claims/upload/document/${userId}/`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res);
+      setDocDetails(res.data);
+      console.log(res.data,"this is the all data...>!")
     } catch (error) {
       console.log("Error:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const [partDetails, setPartsDetails] = useState([]);
+
+  const getpart_detailOfUser = async (userId) => {
+    try {
+      const res = await axiosInstance.get(`api/parts/part_detail/${userId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setPartsDetails(res.data)
+    } catch (error) {
+      console.log()
+    }
+  }
+
   useEffect(() => {
-    getDocumentData();
-  }, []);
+    if (location.state.id) {
+      getpart_detailOfUser(location.state.id);
+      getDocumentData(location.state.id);
+    }
+  }, [])
 
   const createPartApi = async () => {
     try {
@@ -341,7 +365,7 @@ export default function ViewRegistration() {
                 <Typography>Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: "auto" }} margin={3}>
-                <PartsTableView />
+                <PartsTableView  data={partDetails} />
               </Box>
             </Card>
           </CustomTabPanel>
@@ -366,7 +390,7 @@ export default function ViewRegistration() {
               </Box>
               <Box margin={3}>
                 <Box sx={{ overflow: "auto" }}>
-                  <UploadDocsTable />
+                  <UploadDocsTable userData={docDetails} />
                 </Box>
                 <form onSubmit={handleSubmit}>
                   <Box width={"400px"}>
