@@ -184,6 +184,9 @@ export default function ViewRegistration() {
 
   const [partDetails, setPartsDetails] = useState([]);
 
+
+
+  
   const getpart_detailOfUser = async (userId) => {
     try {
       const res = await axiosInstance.get(`api/parts/part_detail/${userId}/`, {
@@ -200,6 +203,7 @@ export default function ViewRegistration() {
 
   useEffect(() => {
     if (location.state.id) {
+      console.log(location.state,"##############");
       getpart_detailOfUser(location.state.id);
       getDocumentData(location.state.id);
     }

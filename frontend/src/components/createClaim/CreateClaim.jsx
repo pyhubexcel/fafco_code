@@ -73,7 +73,6 @@ const style = {
 
 export default function CreateClaim() {
   const { id } = useParams();
-  console.log(id, "%%%");
   const token = Cookies.get("token");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -87,7 +86,8 @@ export default function CreateClaim() {
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedProblem, setSelectedProblem] = useState("");
   const [optionData, setOptionData] = useState([]);
-  const [profile_id, setProfile_id] = useState("");
+  const [partsData, setPartsData] = useState([]);
+  const [deleteStatus, setDeleteStatus] = useState("");
   const [formValues, setFormValues] = useState({
     repairDate: "",
     barcode: "",
@@ -96,11 +96,6 @@ export default function CreateClaim() {
     comment: "",
     ref: "",
   });
-
-  useEffect(() => {
-    const pro_id = localStorage.getItem("profileid");
-    setProfile_id(pro_id);
-  }, [profile_id]);
 
   const [csvPartFormValues, setCsvPartFormValues] = useState({
     part_description: "",
@@ -118,11 +113,10 @@ export default function CreateClaim() {
       barcode: "",
       part_number: "",
       active: "",
-      // profile_id: "",
     });
     setOpen(false);
   };
-  const handleOpenDelete = () => setOpenDelete(true);
+  // const handleOpenDelete = () => setOpenDelete(true);
   const handleDeleteClose = () => setOpenDelete(false);
   const [partNumbers, setPartNumbers] = useState([]);
   const [selectedPart, setSelectedPart] = useState(null);
@@ -212,7 +206,6 @@ export default function CreateClaim() {
   // };
 
   const handleCreateParts = async () => {
-    console.log("heo;;;;;");
     try {
       const res = await axiosInstance.post(
         `api/parts/part/`,
@@ -224,19 +217,48 @@ export default function CreateClaim() {
           },
         }
       );
-      console.log(res, "resddddd");
-      if (res.status === 200 && res.statusText === "OK") {
+      if (res.status === 200) {
         toast.success("Added successfully", {
           theme: "colored",
           position: "top-center",
           autoClose: 1000,
         });
         setOpen(false);
+        handleShowParts();
+        setCsvPartFormValues({
+          part_description: "",
+          product_line: "",
+          installing_dealer: "",
+          barcode: "",
+          part_number: "",
+          active: "",
+        });
       }
     } catch (error) {
       console.log(error, "error");
     }
   };
+
+  const handleShowParts = async () => {
+    try {
+      const res = await axiosInstance.get(
+        `api/parts/part-detail/${Number(id)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setPartsData(res.data);
+      console.log(res.data, "handleShowParts");
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+
+  useEffect(() => {
+    handleShowParts();
+  }, [deleteStatus]);
 
   const handleActionChange = (event) => {
     setSelectedAction(event.target.value);
@@ -259,8 +281,6 @@ export default function CreateClaim() {
     fetchPartNumbers();
   }, []);
 
-  console.log(profile_id, "$$$$$$$$$$$$$$$out");
-
   const fetchPartNumbers = async () => {
     try {
       const response = await axiosInstance.get(`api/parts/partcsv/`);
@@ -276,8 +296,8 @@ export default function CreateClaim() {
       (part) => part.part_number === selectedPartNumber
     );
 
+    console.log();
     if (selectedPartData) {
-      console.log(profile_id, "$$$$$$$$$$$$$$$ins");
       setSelectedPart(selectedPartData);
       setCsvPartFormValues({
         part_description: selectedPartData.part_description,
@@ -297,7 +317,6 @@ export default function CreateClaim() {
         barcode: "",
         part_number: "",
         active: "",
-        // profile_id: "",
       });
     }
   };
@@ -320,6 +339,20 @@ export default function CreateClaim() {
       InstallDate: "2024-04-29",
     },
   ];
+
+  const handleDeleteParts = async (registration, id) => {
+    try {
+      setDeleteStatus("");
+      const response = await axiosInstance.delete(
+        `api/parts/part_details/${Number(registration)}/${Number(id)}`
+      );
+      if (response.status === 200 && response.statusText === "OK") {
+        setDeleteStatus(response.data.status);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -356,7 +389,8 @@ export default function CreateClaim() {
           <Typography>Choose Part:</Typography>
           <PartsTable
             handleOpen={handleOpen}
-            handleOpenDelete={handleOpenDelete}
+            handleDeleteParts={handleDeleteParts}
+            partsData={partsData}
           />
         </Box>
         <Box display={"flex"} gap={2} my={2}>
@@ -499,6 +533,7 @@ export default function CreateClaim() {
                     <Select
                       value={csvPartFormValues.partNumber}
                       onChange={handlePartNumberChange}
+                      sx={{ py: "8px" }}
                     >
                       {partNumbers.map((part) => (
                         <MenuItem key={part.id} value={part.part_number}>
@@ -523,12 +558,7 @@ export default function CreateClaim() {
                       type={item.type}
                       variant="standard"
                       value={csvPartFormValues[item.key]}
-                      disabled={
-                        item.name === "Part Description" ||
-                        "Product Line" ||
-                        "Installing Dealer" ||
-                        "Barcode"
-                      }
+                      disabled
                       onChange={(e) =>
                         setCsvPartFormValues((prevValues) => ({
                           ...prevValues,
@@ -538,9 +568,7 @@ export default function CreateClaim() {
                       style={{
                         borderBottom: "1px solid gray",
                         width: "100%",
-                        padding: "4px",
                         fontSize: "15px",
-                        margin: "5px 0 5px",
                         backgroundColor: "transparent",
                       }}
                     />

@@ -1,75 +1,208 @@
-import { useMemo } from 'react';
-import {
-  MRT_Table, 
-  useMaterialReactTable,
-} from 'material-react-table';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CustomButton from '../ui/CustomButton';
-const data = [
-    {
-      actionButtons: null,
-      PanelId: 'ABC123',
-      Part: '12345',
-      Description: 'Sample description 1',
-      Barcode: 'BAR123',
-      InstallDate: '2024-04-28',
-    },
-    {
-      actionButtons: null,
-      PanelId: 'DEF456',
-      Part: '67890',
-      Description: 'Sample description 2',
-      Barcode: 'BAR456',
-      InstallDate: '2024-04-29',
-    },
-  ];
+// import { useMemo } from "react";
+// import { MRT_Table, useMaterialReactTable } from "material-react-table";
+// import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import CustomButton from "../ui/CustomButton";
 
-export const PartsTable = ({handleOpen,handleDeleteClose}) => {
+// export const PartsTable = ({ handleOpen, handleDeleteParts, partsData }) => {
+//   const columns = useMemo(
+//     () => [
+//       {
+//         accessorKey: "actionButtons",
+//         header: (
+//           <div>
+//             <CustomButton
+//               className="flex gap-2"
+//               buttonName="New"
+//               variant="text"
+//               buttonIcon={<AddCircleOutlineIcon sx={{ fontSize: "20px" }} />}
+//               onClick={handleOpen}
+//             ></CustomButton>
+//           </div>
+//         ),
+//         Cell: () => (
+//           <div className="flex gap-4">
+//             <CustomButton
+//               buttonName="Edit"
+//               variant="text"
+//               buttonIcon={<EditIcon sx={{ fontSize: "16px" }} />}
+//               onClick={handleOpen}
+//             ></CustomButton>
+//             <CustomButton
+//               buttonName="Delete"
+//               variant="text"
+//               buttonIcon={<DeleteIcon sx={{ fontSize: "16px" }} />}
+//               onClick={() => handleDeleteParts()}
+//             ></CustomButton>
+//           </div>
+//         ),
+//       },
+//       {
+//         accessorKey: "id",
+//         header: "Panel ID#",
+//       },
+//       {
+//         accessorKey: "part_number",
+//         header: "Part No",
+//       },
+//       {
+//         accessorKey: "part_description",
+//         header: "Description",
+//       },
+//       {
+//         accessorKey: "barcode",
+//         header: "Barcode",
+//       },
+//       {
+//         accessorKey: "date_installed",
+//         header: "Install Date",
+//       },
+//       {
+//         accessorKey: "product_line",
+//         header: "Product Line",
+//       },
+//       {
+//         accessorKey: "part_problem",
+//         header: "Part Problem",
+//       },
+//       {
+//         accessorKey: "active",
+//         header: "Active",
+//       },
+//       {
+//         accessorKey: "claim_action",
+//         header: "Claim Action",
+//       },
+//     ],
+//     []
+//   );
+
+//   const table = useMaterialReactTable({
+//     columns,
+//     data: partsData,
+//     enableColumnActions: false,
+//     enableColumnFilters: false,
+//     enablePagination: false,
+//     enableSorting: false,
+//     mrtTheme: (theme) => ({
+//       baseBackgroundColor: theme.palette.background.default,
+//     }),
+//     muiTableBodyRowProps: { hover: true },
+//     muiTableProps: {
+//       sx: {
+//         border: "1px solid rgba(81, 81, 81, .5)",
+//         caption: {
+//           captionSide: "top",
+//         },
+//       },
+//     },
+//     muiTableHeadCellProps: {
+//       sx: {
+//         border: "1px solid rgba(81, 81, 81, .5)",
+//         fontWeight: "bold",
+//         bgcolor: "lightgrey",
+//         py: "2px",
+//       },
+//     },
+//     muiTableBodyCellProps: {
+//       sx: {
+//         border: "1px solid rgba(81, 81, 81, .5)",
+//         py: "2px",
+//       },
+//     },
+//   });
+
+//   return <MRT_Table table={table} />;
+// };
+
+// export default PartsTable;
+
+import { useMemo } from "react";
+import { MRT_Table, useMaterialReactTable } from "material-react-table";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CustomButton from "../ui/CustomButton";
+
+export const PartsTable = ({ handleOpen, handleDeleteParts, partsData }) => {
   const columns = useMemo(
     () => [
-        {
-            accessorKey: 'actionButtons', 
-            header: (
-                <div>
-                  <CustomButton className='flex gap-2' buttonName='New' variant="text" buttonIcon={<AddCircleOutlineIcon sx={{fontSize:"20px"}}/>} onClick={handleOpen}></CustomButton>
-                </div>
-              ), 
-            Cell: () => ( 
-              <div className='flex gap-4'>
-                <CustomButton buttonName='Edit' variant="text" buttonIcon={<EditIcon sx={{fontSize:"16px"}}/>} onClick={handleOpen}></CustomButton>
-                <CustomButton buttonName='Delete' variant="text" buttonIcon={ <DeleteIcon sx={{fontSize:"16px"}}/>} onClick={handleDeleteClose}></CustomButton>
-              </div>
-            ),
-          },
       {
-        accessorKey: 'PanelId',
-        header: 'Panel ID#',
+        accessorKey: "actionButtons",
+        header: (
+          <div>
+            <CustomButton
+              className="flex gap-2"
+              buttonName="New"
+              variant="text"
+              buttonIcon={<AddCircleOutlineIcon sx={{ fontSize: "20px" }} />}
+              onClick={handleOpen}
+            ></CustomButton>
+          </div>
+        ),
+        Cell: ({ row }) => (
+          <div className="flex gap-4">
+            <CustomButton
+              buttonName="Edit"
+              variant="text"
+              buttonIcon={<EditIcon sx={{ fontSize: "16px" }} />}
+              onClick={handleOpen}
+            ></CustomButton>
+            <CustomButton
+              buttonName="Delete"
+              variant="text"
+              buttonIcon={<DeleteIcon sx={{ fontSize: "16px" }} />}
+              onClick={() =>
+                handleDeleteParts(row.original.registration, row.original.id)
+              }
+            ></CustomButton>
+          </div>
+        ),
       },
       {
-        accessorKey: 'Part',
-        header: 'Part#',
+        accessorKey: "id",
+        header: "Panel ID#",
       },
       {
-        accessorKey: 'Description',
-        header: 'Description',
+        accessorKey: "part_number",
+        header: "Part No",
       },
       {
-        accessorKey: 'Barcode',
-        header: 'Barcode',
+        accessorKey: "part_description",
+        header: "Description",
       },
       {
-        accessorKey: 'InstallDate',
-        header: 'Install Date',
+        accessorKey: "barcode",
+        header: "Barcode",
+      },
+      {
+        accessorKey: "date_installed",
+        header: "Install Date",
+      },
+      {
+        accessorKey: "product_line",
+        header: "Product Line",
+      },
+      {
+        accessorKey: "part_problem",
+        header: "Part Problem",
+      },
+      {
+        accessorKey: "active",
+        header: "Active",
+      },
+      {
+        accessorKey: "claim_action",
+        header: "Claim Action",
       },
     ],
-    [],
+    []
   );
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: partsData,
     enableColumnActions: false,
     enableColumnFilters: false,
     enablePagination: false,
@@ -80,26 +213,24 @@ export const PartsTable = ({handleOpen,handleDeleteClose}) => {
     muiTableBodyRowProps: { hover: true },
     muiTableProps: {
       sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
+        border: "1px solid rgba(81, 81, 81, .5)",
         caption: {
-          captionSide: 'top',
+          captionSide: "top",
         },
       },
     },
     muiTableHeadCellProps: {
       sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
-        fontWeight: 'bold',
-        bgcolor:'lightgrey',
-        py :'2px',
-        // px :'5px',
+        border: "1px solid rgba(81, 81, 81, .5)",
+        fontWeight: "bold",
+        bgcolor: "lightgrey",
+        py: "2px",
       },
     },
     muiTableBodyCellProps: {
       sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
-        py :'2px',
-        // px :'5px',
+        border: "1px solid rgba(81, 81, 81, .5)",
+        py: "2px",
       },
     },
   });
