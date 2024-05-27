@@ -18,7 +18,7 @@ import CustomButton from "../ui/CustomButton";
 import RevsTable from "./RevsTable";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import CommonSelect from "../Common/CommonSelect";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -86,8 +86,8 @@ export default function CreateClaim() {
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedProblem, setSelectedProblem] = useState("");
   const [optionData, setOptionData] = useState([]);
+  const [resStatus, setResStatus] = useState("");
   const [partsData, setPartsData] = useState([]);
-  const [deleteStatus, setDeleteStatus] = useState("");
   const [formValues, setFormValues] = useState({
     repairDate: "",
     barcode: "",
@@ -96,6 +96,10 @@ export default function CreateClaim() {
     comment: "",
     ref: "",
   });
+  const [idAndRegistrationForUpdate, setIdAndRegistrationForUpdate] = useState({
+    id: "",
+    registration_no: "",
+  });
 
   const [csvPartFormValues, setCsvPartFormValues] = useState({
     part_description: "",
@@ -103,20 +107,28 @@ export default function CreateClaim() {
     installing_dealer: "",
     barcode: "",
     active: "",
+    part_number: "",
     profile_id: "",
+    registration_id: "",
+    id: "",
   });
+
   const handleClose = () => {
     setCsvPartFormValues({
       part_description: "",
       product_line: "",
       installing_dealer: "",
       barcode: "",
-      part_number: "",
       active: "",
+      part_number: "",
+      profile_id: "",
+      registration_id: "",
+      id: "",
     });
     setOpen(false);
   };
   // const handleOpenDelete = () => setOpenDelete(true);
+
   const handleDeleteClose = () => setOpenDelete(false);
   const [partNumbers, setPartNumbers] = useState([]);
   const [selectedPart, setSelectedPart] = useState(null);
@@ -230,8 +242,11 @@ export default function CreateClaim() {
           product_line: "",
           installing_dealer: "",
           barcode: "",
-          part_number: "",
           active: "",
+          part_number: "",
+          profile_id: "",
+          registration_id: "",
+          id: "",
         });
       }
     } catch (error) {
@@ -249,6 +264,7 @@ export default function CreateClaim() {
           },
         }
       );
+
       setPartsData(res.data);
       console.log(res.data, "handleShowParts");
     } catch (error) {
@@ -258,7 +274,7 @@ export default function CreateClaim() {
 
   useEffect(() => {
     handleShowParts();
-  }, [deleteStatus]);
+  }, [resStatus]);
 
   const handleActionChange = (event) => {
     setSelectedAction(event.target.value);
@@ -295,8 +311,6 @@ export default function CreateClaim() {
     const selectedPartData = partNumbers.find(
       (part) => part.part_number === selectedPartNumber
     );
-
-    console.log();
     if (selectedPartData) {
       setSelectedPart(selectedPartData);
       setCsvPartFormValues({
@@ -307,16 +321,21 @@ export default function CreateClaim() {
         part_number: selectedPartData.part_number,
         active: selectedPartData.active,
         profile_id: id,
+        registration_id: idAndRegistrationForUpdate.registration_no,
+        id: idAndRegistrationForUpdate.id,
       });
     } else {
       setSelectedPart(null);
       setCsvPartFormValues({
         part_description: "",
-        productLine: "",
-        installingDealer: "",
+        product_line: "",
+        installing_dealer: "",
         barcode: "",
-        part_number: "",
         active: "",
+        part_number: "",
+        profile_id: "",
+        registration_id: "",
+        id: "",
       });
     }
   };
@@ -342,12 +361,72 @@ export default function CreateClaim() {
 
   const handleDeleteParts = async (registration, id) => {
     try {
-      setDeleteStatus("");
+      setResStatus("");
       const response = await axiosInstance.delete(
-        `api/parts/part_details/${Number(registration)}/${Number(id)}`
+        `api/parts/part-details/${Number(registration)}/${Number(id)}`
       );
       if (response.status === 200 && response.statusText === "OK") {
-        setDeleteStatus(response.data.status);
+        setResStatus(response.data.status);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleEditParts = async (registration, id) => {
+    try {
+      const response = await axiosInstance.get(
+        `api/parts/part-details/${Number(registration)}/${Number(id)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const partDetails = response.data;
+        setCsvPartFormValues({
+          part_description: partDetails.part_description,
+          product_line: partDetails.product_line,
+          installing_dealer: partDetails.installing_dealer,
+          barcode: partDetails.barcode || "",
+          part_number: partDetails.part_number,
+          active: partDetails.active,
+        });
+        setIdAndRegistrationForUpdate({
+          id: partDetails.id,
+          registration_no: partDetails.registration,
+        });
+        setOpen(true);
+      } else {
+        console.error("Failed to fetch part details");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleUpdateParts = async () => {
+    try {
+      const res = await axiosInstance.patch(
+        `api/parts/part-details/${Number(
+          csvPartFormValues.registration_id
+        )}/${Number(csvPartFormValues.id)}`,
+        csvPartFormValues,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setResStatus("");
+      if (res.status === 200) {
+        toast.success("Part updated successfully");
+        setResStatus(res.data.status);
+        setOpen(false);
+      } else {
+        console.error("Failed to update part");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -391,6 +470,7 @@ export default function CreateClaim() {
             handleOpen={handleOpen}
             handleDeleteParts={handleDeleteParts}
             partsData={partsData}
+            handleEditParts={handleEditParts}
           />
         </Box>
         <Box display={"flex"} gap={2} my={2}>
@@ -526,14 +606,15 @@ export default function CreateClaim() {
                         fontWeight: "bold",
                         padding: "2px",
                         backgroundColor: "transparent",
+                        fontSize: "15px",
                       }}
                     >
-                      Part Number
+                      -- part number --
                     </InputLabel>
                     <Select
-                      value={csvPartFormValues.partNumber}
+                      value={csvPartFormValues.part_number}
                       onChange={handlePartNumberChange}
-                      sx={{ py: "8px" }}
+                      sx={{ py: "1px" }}
                     >
                       {partNumbers.map((part) => (
                         <MenuItem key={part.id} value={part.part_number}>
@@ -579,6 +660,7 @@ export default function CreateClaim() {
             <Box display={"flex"} justifyContent={"end"} gap={2}>
               <CustomButton buttonName={"Cancel"} onClick={handleClose} />
               <CustomButton buttonName={"Create"} onClick={handleCreateParts} />
+              <CustomButton buttonName={"update"} onClick={handleUpdateParts} />
             </Box>
           </Box>
         </Modal>

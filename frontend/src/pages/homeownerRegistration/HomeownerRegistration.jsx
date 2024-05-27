@@ -1,7 +1,7 @@
 import { Box, Card, Modal, TextField, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import UploadDocsTable from "../../components/viewRegistration/UploadDocsTable";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import PartsTableView from "../../components/viewRegistration/PartTableView";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -20,7 +20,6 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 300,
   bgcolor: "background.paper",
-  // border: '2px solid #000',
   boxShadow: 10,
   p: 2,
 };
@@ -41,11 +40,6 @@ const modalInputs = [
     label: "Product Line",
     type: "text",
   },
-  // {
-  //     name: 'dealer',
-  //     label: 'Installing Dealer',
-  //     type: 'text'
-  // },
   {
     name: "barcode",
     label: "Barcode",
@@ -56,11 +50,7 @@ const modalInputs = [
     label: "Problem",
     type: "text",
   },
-  // {
-  //     name: 'action',
-  //     label: 'Action',
-  //     type: 'text'
-  // },
+  
 ];
 
 function CustomTabPanel(props) {
@@ -130,6 +120,10 @@ export default function ViewRegistration() {
   const handleClose = () => setOpen(false);
   const handleOpenDelete = () => setOpenDelete(true);
   const handleDeleteClose = () => setOpenDelete(false);
+  const [partDetails, setPartsDetails] = useState([]);
+  const [docDetails, setDocDetails] = useState([]);
+
+  
 
   const uploadApi = async () => {
     try {
@@ -162,7 +156,6 @@ export default function ViewRegistration() {
     }
   };
 
-  const [docDetails, setDocDetails] = useState([]);
 
   const getDocumentData = async (userId) => {
     try {
@@ -181,10 +174,6 @@ export default function ViewRegistration() {
       setLoading(false);
     }
   };
-
-  const [partDetails, setPartsDetails] = useState([]);
-
-
 
   
   const getpart_detailOfUser = async (userId) => {
@@ -369,7 +358,7 @@ export default function ViewRegistration() {
                 <Typography>Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: "auto" }} margin={3}>
-                <PartsTableView  data={partDetails} />
+                <PartsTableView  data={partDetails}/>
               </Box>
             </Card>
           </CustomTabPanel>

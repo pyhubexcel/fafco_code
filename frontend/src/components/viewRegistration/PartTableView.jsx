@@ -1,51 +1,47 @@
-import { useMemo } from 'react';
-import { MRT_Table, useMaterialReactTable } from 'material-react-table';
-import CustomButton from '../ui/CustomButton';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Box } from '@mui/material';
+import { useContext, useMemo } from "react";
+import { MRT_Table, useMaterialReactTable } from "material-react-table";
 
-
-export const PartsTableView = (userData) => {
-
-  console.log(userData,"PartsTableView userData....!");
-
-  const data = [
-    {
-      PanelId: userData.data.id,
-      Part: userData.data.part_number,
-      Description: userData.data.part_description,
-      Barcode: userData.data.barcode,
-      InstallDate: userData.data.date_installed,
-    }
-  ];
-
+export const PartsTableView = ({data}) => {
   const columns = useMemo(
     () => [
-
       {
-        accessorKey: 'PanelId',
-        header: 'Panel ID#',
+        accessorKey: "id",
+        header: "Panel ID#",
       },
       {
-        accessorKey: 'Part',
-        header: 'Part#',
+        accessorKey: "part_number",
+        header: "Part No",
       },
       {
-        accessorKey: 'Description',
-        header: 'Description',
+        accessorKey: "part_description",
+        header: "Description",
       },
       {
-        accessorKey: 'Barcode',
-        header: 'Barcode',
+        accessorKey: "barcode",
+        header: "Barcode",
       },
       {
-        accessorKey: 'InstallDate',
-        header: 'Install Date',
+        accessorKey: "date_installed",
+        header: "Install Date",
+      },
+      {
+        accessorKey: "product_line",
+        header: "Product Line",
+      },
+      {
+        accessorKey: "part_problem",
+        header: "Part Problem",
+      },
+      {
+        accessorKey: "active",
+        header: "Active",
+      },
+      {
+        accessorKey: "claim_action",
+        header: "Claim Action",
       },
     ],
-    [],
+    []
   );
 
   const table = useMaterialReactTable({
@@ -61,24 +57,24 @@ export const PartsTableView = (userData) => {
     muiTableBodyRowProps: { hover: true },
     muiTableProps: {
       sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
+        border: "1px solid rgba(81, 81, 81, .5)",
         caption: {
-          captionSide: 'top',
+          captionSide: "top",
         },
       },
     },
     muiTableHeadCellProps: {
       sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
-        fontWeight: 'bold',
-        bgcolor: 'lightgrey',
-        py: '2px',
+        border: "1px solid rgba(81, 81, 81, .5)",
+        fontWeight: "bold",
+        bgcolor: "lightgrey",
+        py: "2px",
       },
     },
     muiTableBodyCellProps: {
       sx: {
-        border: '1px solid rgba(81, 81, 81, .5)',
-        py: '2px',
+        border: "1px solid rgba(81, 81, 81, .5)",
+        py: "2px",
       },
     },
   });

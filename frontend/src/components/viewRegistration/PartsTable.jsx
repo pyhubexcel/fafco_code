@@ -125,7 +125,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomButton from "../ui/CustomButton";
 
-export const PartsTable = ({ handleOpen, handleDeleteParts, partsData }) => {
+export const PartsTable = ({
+  handleOpen,
+  handleDeleteParts,
+  partsData,
+  handleEditParts,
+}) => {
   const columns = useMemo(
     () => [
       {
@@ -147,7 +152,9 @@ export const PartsTable = ({ handleOpen, handleDeleteParts, partsData }) => {
               buttonName="Edit"
               variant="text"
               buttonIcon={<EditIcon sx={{ fontSize: "16px" }} />}
-              onClick={handleOpen}
+              onClick={() =>
+                handleEditParts(row.original.registration, row.original.id)
+              }
             ></CustomButton>
             <CustomButton
               buttonName="Delete"
