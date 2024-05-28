@@ -16,10 +16,19 @@ class ClaimAPI(APIView):
         response.success_message = "Fetched Data."
         return response
 
+    
     def post(self, request):
+        open_claims = Claim.objects.filter(
+            registration__customer=request.user.id,
+            status__in=[Claim.Received, Claim.Submitted, Claim.Processed, Claim.Credited]
+        ).exists()
+
+        if open_claims:
+            message = "You already have an open claim. Would you like to add additional parts to it?"
+            return Response({"message": message}, status=200)
+        
         data = request.data
-        profile = get_object_or_404(Profile, customer=request.user.id,
-                                    pk=data["profile_id"])
+        profile = get_object_or_404(Profile, customer=request.user, pk=data.get("profile_id"))
         data["registration"] = profile.id
         serializer = ClaimSerializer(data=data)
         if serializer.is_valid():
@@ -31,6 +40,21 @@ class ClaimAPI(APIView):
         response.success_message = "Error occured."
         return response
 
+    # def post(self, request):
+    #     data = request.data
+    #     profile = get_object_or_404(Profile, customer=request.user.id,
+    #                                 pk=data["profile_id"])
+    #     data["registration"] = profile.id
+    #     serializer = ClaimSerializer(data=data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         response = Response(serializer.data, status=200)
+    #         response.success_message = "Part created successfully."
+    #         return response
+    #     response = Response(serializer.errors, status=200)
+    #     response.success_message = "Error occured."
+    #     return response
+
 
 class ClaimDetailAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -41,18 +65,41 @@ class ClaimDetailAPI(APIView):
         response = Response(serializer.data, status=200)
         response.success_message = "Fetched Data."
         return response
+     
+
+
+    # def patch(self, request, pk):
+    #     claim = get_object_or_404(Claim, pk=pk)
+
+    #     # Allow updates only for denied claims to resubmit or voided claims to un-void
+    #     if claim.status == Claim.Denied or claim.status == Claim.Voided:
+    #         serializer = ClaimSerializer(claim, data=request.data, partial=True)
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             return Response(serializer.data, status=200)
+    #         return Response(serializer.errors, status=400)
+    #     else:
+    #         return Response({"message": "Cannot update claim unless it is Denied or Voided."}, status=400)
+
+
 
     def patch(self, request, pk):
-        claims = get_object_or_404(Claim, pk=pk)
-        serializer = ClaimSerializer(claims, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            response = Response(serializer.data, status=200)
-            response.success_message = "Updated Data."
+        claim = get_object_or_404(Claim, pk=pk)
+        if claim.status == Claim.Denied or claim.status == Claim.Voided:
+
+            serializer = ClaimSerializer(claim, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                response = Response(serializer.data, status=200)
+                response.success_message = "Updated Data."
+                return response
+            response = Response(serializer.errors, status=200)
+            response.success_message = "Error Occured."
             return response
-        response = Response(serializer.errors, status=200)
-        response.success_message = "Error Occured."
-        return response
+
+        else:
+            return Response({"message": "Cannot update claim unless it is Denied or Voided."}, status=400)
+
 
     def delete(self, request, pk):
         claims = get_object_or_404(Claim, pk=pk)
@@ -68,7 +115,6 @@ class UploadClaimeDocumentAPI(APIView):
         serializer = UploadClaimSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors)
-        print(data)
         serializer.save()
         return Response({"message":"document is uploaded successfully"})
 

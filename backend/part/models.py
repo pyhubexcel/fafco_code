@@ -5,6 +5,26 @@ from claim.models import Claim
 
 class Part(models.Model):
 
+    FREEZE_DAMAGE = 1
+    DIMPLE_LEAK_REV_ONLY = 2
+    HEADER_LEAK = 3
+    PANEL_LEAK = 4
+    PANEL_SPLIT = 5
+    PANEL_TOO_LONG = 6
+    PANEL_TOO_SHORT = 7
+    VRV_FAIL = 8
+
+    PART_PROBLEM = [
+        (FREEZE_DAMAGE, 'Freeze Damage'),
+        (DIMPLE_LEAK_REV_ONLY, 'Dimple Leak - Rev Only'),
+        (HEADER_LEAK, 'Header Leak'),
+        (PANEL_LEAK, 'Panel Leak'),
+        (PANEL_SPLIT, 'Panel Split'),
+        (PANEL_TOO_LONG, 'Panel too long'),
+        (PANEL_TOO_SHORT, 'Panel too short'),
+        (VRV_FAIL, 'VRV Fail'),
+    ]
+
     Repair = 1
     replace = 2
     CLAIM_ACTION = [
@@ -13,19 +33,32 @@ class Part(models.Model):
     ]
 
     rmaid = models.ForeignKey(Claim, on_delete=models.CASCADE,
-                              related_name='Claim')
-    registration = models.ForeignKey(Profile, on_delete=models.CASCADE)
+                              related_name='Claim',blank=True,null=True)
+    registration = models.ForeignKey(Profile, on_delete=models.CASCADE,blank=True,null=True)
     part_number = models.CharField(max_length=6)
     part_description = models.CharField(max_length=255)
     product_line = models.CharField(max_length=255)
     installing_dealer = models.ForeignKey(Customer, on_delete=models.SET_NULL,
                                           related_name='installing_dealer',
-                                          null=True)
-    date_installed = models.DateField(auto_now_add=True)
-    barcode = models.CharField(max_length=15)
+                                          blank=True, null=True)
+    date_installed = models.DateField(auto_now_add=True,blank=True, null=True)
+    barcode = models.CharField(max_length=15,blank=True, null=True)
     active = models.BooleanField(default=True)
     problem_code = models.CharField(max_length=255, blank=True, null=True)
-    claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION)
+    claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION, blank=True, null=True)
+    part_problem = models.PositiveSmallIntegerField(choices=PART_PROBLEM,blank=True,null=True)
+
 
     def __str__(self) -> str:
         return self.registration.customer.username
+
+
+class Partcsv(models.Model):
+    part_number = models.CharField(max_length=50, unique=True)
+    part_description = models.CharField(max_length=255)
+    product_line = models.CharField(max_length=255)
+    barcode = models.CharField(max_length=15,blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return self.part_number

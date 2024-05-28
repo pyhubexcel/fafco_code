@@ -5,7 +5,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 
 
-def send_verification_email(self, user):
+def send_verification_email(user):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     verification_url = f"http://{settings.BACKEND_IP}/api/auth/verify/{uid}/{token}/"

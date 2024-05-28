@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Customer, Profile
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -31,11 +32,21 @@ class LoginSerializer(serializers.ModelSerializer):
        fields = ('username','password')
 
 
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = '__all__'
 
+    def validate(self, data):
+        request = self.context.get('request')
+        if request:
+            customer = request.user
+
+            # Check if the medallion field is set to True and the user is not a dealer
+            if data.get('medallion') and customer.customer_type != Customer.Dealer:
+                raise serializers.ValidationError("Only dealers can set the medallion field to True.")
+        return data
 
 class UpdatePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField()

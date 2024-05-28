@@ -1,11 +1,13 @@
 from smartystreets_python_sdk.us_street import Lookup as StreetLookup
-from smartystreets_python_sdk import (SharedCredentials,
-                                      ClientBuilder,
-                                      exceptions)
+from smartystreets_python_sdk import (
+    SharedCredentials,
+    ClientBuilder
+)
 from django.conf import settings
+from django.core.mail import send_mail
 
 
-def singleaddressvalidation(address_data):
+def singleaddressvalidation(address_data, user_id):
     key = settings.KEY
     hostname = settings.HOSTNAME
 
@@ -16,16 +18,20 @@ def singleaddressvalidation(address_data):
     lookup.city = address_data.get("city")
     lookup.state = address_data.get("state")
     lookup.zipcode = address_data.get("zipcode")
-
-    try:
-        client.send_lookup(lookup)
-    except exceptions.SmartyException as error:
-        return {error: "An error occurred during address validation."}
-
+    client.send_lookup(lookup)
     result = lookup.result
 
     if not result:
-        return {"error": "No candidates found. The address is not valid."}
+        send_mail(
+            'Manual Address Verification Needed',
+            f'Registration ID:{user_id}\n'
+            f'Address Info: {address_data.get("street")},{address_data.get("city")}, {address_data.get("state")} {address_data.get("zipcode")}',
+            settings.EMAIL_HOST_USER,
+            [settings.NET_ADMIN_USER],
+            fail_silently=False,
+        )
+        return {"success": False,
+                "message": "Any claims opened with an unverifield address with not be processed untill the address is manually validated by Customer Care"}
 
     first_candidate = result[0]
 

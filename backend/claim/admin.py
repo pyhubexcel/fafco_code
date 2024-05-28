@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Claim
-# Register your models here.
-
+from .models import Claim,UploadClaimDocument
 
 admin.site.register(Claim)
+admin.site.register(UploadClaimDocument)

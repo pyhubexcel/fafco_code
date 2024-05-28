@@ -37,7 +37,7 @@ class Claim(models.Model):
 
 class UploadClaimDocument(models.Model):
     document_note = models.CharField(max_length=255)
-    document = models.FileField(upload_to ='uploads/') 
+    document = models.FileField(upload_to ='documents/upload') 
     uploaded_at = models.DateTimeField(auto_now_add=True)
     rmaid = models.ForeignKey(
         Claim, on_delete=models.CASCADE,null=True,blank=True,

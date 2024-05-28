@@ -120,15 +120,20 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
 AUTH_USER_MODEL = 'user.Customer'
+
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
 
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
@@ -142,3 +147,4 @@ FE_DOMAIN = os.getenv('FE_DOMAIN')
 KEY = os.getenv('KEY')
 HOSTNAME = 'localhost'
 BACKEND_IP = os.getenv('BACKEND_IP')
+NET_ADMIN_USER = os.getenv('NET_ADMIN_USER')

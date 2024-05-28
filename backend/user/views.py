@@ -24,41 +24,32 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render
 from utils.mail_send import send_verification_email
+from utils.msg import MESSAGE
+from django.db.models import Max
+
 
 
 class RegisterAPI(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
+
         data = request.data
         data["username"] = data["email"]
         serializer = CustomerSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
             user.is_active = False
-            # user.save()
-            self.send_verification_email(user)
+            user.save()
+            send_verification_email(user)
             return Response(             
-                {"success": True, "message": "Verification link has been sent to your email. Please check your email inbox.","email": user.email},
+                {"success": True, "message": MESSAGE,"email": user.email},
                 status=status.HTTP_200_OK,
             )
         else:
             errors = serializer.errors
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def send_verification_email(self, user):
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        verification_url = f"http://{settings.BACKEND_IP}/api/auth/verify/{uid}/{token}/"
-        click_here_link = f'<a href="{verification_url}">click here</a>'
-        send_mail(
-            "Verify Your Email",
-            f"Click the link to verify your email: {click_here_link}",
-            settings.EMAIL_HOST_USER,
-            [user.email],
-            fail_silently=False,
-            html_message=f"Click the link to verify your email: {click_here_link}",
-        )
 
 class ResendVerificationEmailAPIView(APIView):
     def post(self, request):
@@ -70,9 +61,9 @@ class ResendVerificationEmailAPIView(APIView):
                     {"status": "Failed", "message": "User is already active."},
                     status=status.HTTP_200_OK,
                 )
-            RegisterAPI.send_verification_email(self, user)
+            send_verification_email(user)
             return Response(
-                {"success":True, "message": "Verification link has been resent to your email. Please check your email inbox."},
+                {"success":True, "message": "Verification link has been resend to your email. Please check your email inbox."},
                 status=status.HTTP_200_OK,
             )
         except Customer.DoesNotExist:
@@ -101,6 +92,7 @@ class LoginAPI(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
+
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data.get('username')
@@ -129,6 +121,8 @@ class LoginAPI(APIView):
 
             data = {
                 'id': user.id,
+                'email': user.email,
+                'phone': str(user.phone),
                 'customer_type': user.customer_type,
                 'name': user.name,
                 'refresh': str(refresh),
@@ -304,23 +298,37 @@ class ProfileAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        Profiles = Profile.objects.all()
+        Profiles = Profile.objects.filter(customer=request.user.id)
         serializer = ProfileSerializer(Profiles, many=True)
         response_data = {
             "message": "Fetched Data.",
             "data": serializer.data
             }
         return Response(response_data, status=status.HTTP_200_OK)
-      
 
+    
     def post(self, request):
         data = request.data
         data["customer"] = request.user.id
-        if request.user.customer_type == Customer.Dealer:
-            data["current_dealer"] = Customer.Dealer
-        serializer = ProfileSerializer(data=data)
+        data["current_dealer"] = request.user.id
+        address = data.get("address")
+        existing_profile = Profile.objects.filter(address=address).first()
+        if existing_profile:
+            if existing_profile.current_dealer.id == request.user.id:
+                return Response(
+                    {"message": "The address is previously registered. Redirecting to viewRegistration."},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {"message": "The address is already registered by another user. Please contact customer service."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        serializer = ProfileSerializer(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
         return Response({"message": "Profile created successfully"}, status=status.HTTP_200_OK)
   
 
@@ -378,7 +386,10 @@ class AutocompleteAPIView(APIView):
 
 
 class SingleAddressValidationAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         address_data = request.data
-        validation_result = singleaddressvalidation(address_data)
+        user_id = request.user.id
+        validation_result = singleaddressvalidation(address_data, user_id)
         return Response(validation_result)
