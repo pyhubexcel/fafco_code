@@ -28,18 +28,18 @@ export const PartsTableView = ({data}) => {
         accessorKey: "product_line",
         header: "Product Line",
       },
-      {
-        accessorKey: "part_problem",
-        header: "Part Problem",
-      },
-      {
-        accessorKey: "active",
-        header: "Active",
-      },
-      {
-        accessorKey: "claim_action",
-        header: "Claim Action",
-      },
+      // {
+      //   accessorKey: "part_problem",
+      //   header: "Part Problem",
+      // },
+      // {
+      //   accessorKey: "active",
+      //   header: "Active",
+      // },
+      // {
+      //   accessorKey: "claim_action",
+      //   header: "Claim Action",
+      // },
     ],
     []
   );

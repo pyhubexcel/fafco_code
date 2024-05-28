@@ -12,6 +12,8 @@ import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
 import CreateClaim from "../../components/createClaim/CreateClaim";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
+import { MyContext } from "../../context/ContextProvider";
 
 const style = {
   position: "absolute",
@@ -86,6 +88,8 @@ function a11yProps(index) {
 }
 
 export default function ViewRegistration() {
+  const{partsData}=useContext(MyContext)
+  const allPartsData = useSelector((state) => state.view);
   const token = Cookies.get("token");
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -157,46 +161,46 @@ export default function ViewRegistration() {
   };
 
 
-  const getDocumentData = async (userId) => {
-    try {
-      setLoading(true);
-      const res = await axiosInstance.get(`/api/claims/upload/document/${userId}/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setDocDetails(res.data);
-      console.log(res.data,"this is the all data...>!")
-    } catch (error) {
-      console.log("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const getDocumentData = async (userId) => {
+  //   try {
+  //     setLoading(true);
+  //     const res = await axiosInstance.get(`/api/claims/upload/document/${userId}/`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setDocDetails(res.data);
+  //     console.log(res.data,"this is the all data...>!")
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   
-  const getpart_detailOfUser = async (userId) => {
-    try {
-      const res = await axiosInstance.get(`api/parts/part_detail/${userId}/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      setPartsDetails(res.data)
-    } catch (error) {
-      console.log()
-    }
-  }
+  // const getpart_detailOfUser = async (userId) => {
+  //   try {
+  //     const res = await axiosInstance.get(`api/parts/part_detail/${userId}/`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     setPartsDetails(res.data)
+  //   } catch (error) {
+  //     console.log()
+  //   }
+  // }
 
-  useEffect(() => {
-    if (location.state.id) {
-      console.log(location.state,"##############");
-      getpart_detailOfUser(location.state.id);
-      getDocumentData(location.state.id);
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (location.state.id) {
+  //     console.log(location.state,"##############");
+  //     getpart_detailOfUser(location.state.id);
+  //     getDocumentData(location.state.id);
+  //   }
+  // }, [])
 
   const createPartApi = async () => {
     try {
@@ -358,7 +362,7 @@ export default function ViewRegistration() {
                 <Typography>Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: "auto" }} margin={3}>
-                <PartsTableView  data={partDetails}/>
+                <PartsTableView  data={partsData}/>
               </Box>
             </Card>
           </CustomTabPanel>

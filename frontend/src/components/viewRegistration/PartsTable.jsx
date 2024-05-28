@@ -118,12 +118,14 @@
 
 // export default PartsTable;
 
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { MRT_Table, useMaterialReactTable } from "material-react-table";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomButton from "../ui/CustomButton";
+import { MyContext } from "../../context/ContextProvider";
+import Loader from "../loader";
 
 export const PartsTable = ({
   handleOpen,
@@ -131,6 +133,7 @@ export const PartsTable = ({
   partsData,
   handleEditParts,
 }) => {
+  const{isLoading}=useContext(MyContext)
   const columns = useMemo(
     () => [
       {
@@ -191,22 +194,22 @@ export const PartsTable = ({
         accessorKey: "product_line",
         header: "Product Line",
       },
-      {
-        accessorKey: "part_problem",
-        header: "Part Problem",
-      },
-      {
-        accessorKey: "active",
-        header: "Active",
-      },
-      {
-        accessorKey: "claim_action",
-        header: "Claim Action",
-      },
+      // {
+      //   accessorKey: "part_problem",
+      //   header: "Part Problem",
+      // },
+      // {
+      //   accessorKey: "active",
+      //   header: "Active",
+      // },
+      // {
+      //   accessorKey: "claim_action",
+      //   header: "Claim Action",
+      // },
     ],
     []
   );
-
+  
   const table = useMaterialReactTable({
     columns,
     data: partsData,
