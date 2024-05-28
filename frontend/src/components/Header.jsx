@@ -19,7 +19,7 @@ const navbarLinks = [
     link: '/registrationLookup',
   },
   {
-    name: ' ADDRESS VALIDATION',
+    name: ' CREATE REGISTRATION',
     link: '/addressValidation',
   },
   {
@@ -63,6 +63,7 @@ const Header = () => {
       Cookies.remove('token')
       Cookies.remove('id')
       Cookies.remove('name')
+      Cookies.remove('role')
       Navigation('/login')
       dispatch(resetReducer());
     }
@@ -105,8 +106,10 @@ const Header = () => {
             {token &&
               <div className='hidden xl:block'>
                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', gap: '5px' }}>
-                  <Typography>Welcome,</Typography>
-                  <Typography>{name}</Typography>
+                  <Typography>Welcome, </Typography>
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {name ? name : "User name not found"}
+                  </Typography>
                   <Tooltip title="Account settings">
                     <IconButton
                       onClick={handleClick}
@@ -155,8 +158,15 @@ const Header = () => {
                   transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 >
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                    }}
+                  >
+                    <Link to="/profile" className="flex items-center">
+                      <Avatar />
+                      <span className="ml-2">Profile</span>
+                    </Link>
                   </MenuItem>
                   <MenuItem onClick={handleClose}>
                     <Avatar /> My account
@@ -247,8 +257,15 @@ const Header = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                  }}
+                >
+                  <Link to="/profile" className="flex items-center">
+                    <Avatar />
+                    <span className="ml-2">Profile</span>
+                  </Link>
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
                   <Avatar /> My account
@@ -280,4 +297,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header;

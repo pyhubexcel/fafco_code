@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import CreateRegistration from '../pages/createRegistration/CreateRegistration';
 import UpdateAccountInfo from '../pages/updateAccountInfo/UpdateAccountInfo';
+import ProfileScreen from '../pages/Profile/Profile';
 
 export default function Router() {
   let token = Cookies.get('token');
@@ -31,18 +32,19 @@ export default function Router() {
     }
   }, [loginSliceData, logoOutState])
 
-  console.log("testing routes token are comming---->---- ", token, loginSliceData, logoOutState)
+  // console.log("testing routes token are comming---->---- ", token, loginSliceData, logoOutState)
 
   return (
     <Routes>
       <Route exact path="/" element={token ? <Home /> : <Navigate to="/login" />} />
       <Route exact path="/login" element={token ? <Navigate to="/" /> : <Login />} />
       <Route exact path="/register" element={<Register />} />
+      <Route exact path="/profile" element={<ProfileScreen />} />
       <Route path="/inactiveAccount" element={token ? <Navigate to="/" /> : <InactiveAccount />} />
       <Route path="/forgetPassword" element={token ? <Navigate to="/" /> : <ResetPassword />} />
       <Route path="/registerLink" element={token ? <Navigate to="/" /> : <RegisterLink />} />
       <Route path="/newPassword/:email" element={token ? <Navigate to="/" /> : <NewPassword />} />
-      <Route path="/viewRegistration" element={token ? <ViewRegistration /> : <Navigate to="/login" />} />
+      <Route path="/viewRegistration/:id" element={token ? <ViewRegistration /> : <Navigate to="/login" />} />
       <Route path="/registrationLookup" element={token ? <RegistrationLookup /> : <Navigate to="/login" />} />
       <Route path="/addressValidation" element={token ? <AddressValidation /> : <Navigate to="/login" />} />
       <Route path="*" element={<PageNotfound />} />

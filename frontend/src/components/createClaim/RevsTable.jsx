@@ -3,11 +3,10 @@ import {
   MRT_Table, 
   useMaterialReactTable,
 } from 'material-react-table';
-const data = [
-    
-  ];
 
-export const RevsTable = () => {
+
+export const RevsTable = ({data}) => {
+  console.log(data,"res");
   const columns = useMemo(
     () => [
       {

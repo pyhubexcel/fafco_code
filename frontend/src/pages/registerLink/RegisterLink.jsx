@@ -17,12 +17,12 @@ export default function RegisterLink() {
           "Content-Type": "application/json",
         }
       });
-      // if(res.data.success){
-      //     toast.success("email resent successfully");
-      // }
-      // else{
-      //     toast.error("please make registration first");
-      // }
+      if (res.data.success) {
+        toast.success("email resend successfully");
+      }
+      else {
+        toast.error("please make registration first");
+      }
     } catch (error) {
       toast.error("please make registration first");
     }
