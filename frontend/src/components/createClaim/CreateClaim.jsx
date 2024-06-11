@@ -83,18 +83,18 @@ export default function CreateClaim() {
     commentInput: "",
   });
   const fileInputRef = useRef(null);
-  const [selectedAction, setSelectedAction] = useState("");
-  const [selectedProblem, setSelectedProblem] = useState("");
+  // const [selectedAction, setSelectedAction] = useState("");
+  // const [selectedProblem, setSelectedProblem] = useState("");
   const [resStatus, setResStatus] = useState("");
   const [partsData, setPartsData] = useState([]);
-  const [formValues, setFormValues] = useState({
-    repairDate: "",
-    barcode: "",
-    uploadFile: null,
-    uploadList: "",
-    comment: "",
-    ref: "",
-  });
+  // const [formValues, setFormValues] = useState({
+  //   repairDate: "",
+  //   barcode: "",
+  //   uploadFile: null,
+  //   uploadList: "",
+  //   comment: "",
+  //   ref: "",
+  // });
   const [idAndRegistrationForUpdate, setIdAndRegistrationForUpdate] = useState({
     id: "",
     registration_no: "",
@@ -112,20 +112,20 @@ export default function CreateClaim() {
     id: "",
   });
 
-  const optionData = [
-    { id: 1, value: "FREEZE DAMAGE" },
-    { id: 2, value: "DIMPLE LEAK REV ONLY" },
-    { id: 3, value: "HEADER LEAK" },
-    { id: 4, value: "PANEL LEAK" },
-    { id: 5, value: "PANEL SPLIT" },
-    { id: 6, value: "PANEL TOO LONG" },
-    { id: 7, value: "PANEL TOO SHORT" },
-    { id: 8, value: "VRV FAIL" },
-  ];
-  const optionDataAction = [
-    { id: 1, value: "Repair" },
-    { id: 2, value: "Replace" },
-  ];
+  // const optionData = [
+  //   { id: 1, value: "FREEZE DAMAGE" },
+  //   { id: 2, value: "DIMPLE LEAK REV ONLY" },
+  //   { id: 3, value: "HEADER LEAK" },
+  //   { id: 4, value: "PANEL LEAK" },
+  //   { id: 5, value: "PANEL SPLIT" },
+  //   { id: 6, value: "PANEL TOO LONG" },
+  //   { id: 7, value: "PANEL TOO SHORT" },
+  //   { id: 8, value: "VRV FAIL" },
+  // ];
+  // const optionDataAction = [
+  //   { id: 1, value: "Repair" },
+  //   { id: 2, value: "Replace" },
+  // ];
 
   const handleClose = () => {
     setCsvPartFormValues({
@@ -167,33 +167,33 @@ export default function CreateClaim() {
     setOpen(true);
   };
 
-  const handleSubmitFile = async () => {
-    try {
-      setLoading(true);
-      const data = {
-        document_note: uploadState.uploadFile,
-        document: uploadState.uploadInput,
-      };
+  // const handleSubmitFile = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const data = {
+  //       document_note: uploadState.uploadFile,
+  //       document: uploadState.uploadInput,
+  //     };
 
-      const res = await axiosInstance.post(`api/claims/claim/`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status == 200) {
-        toast.success("Document Uploaded");
-        setUploadState({
-          uploadInput: null,
-          commentInput: "",
-        });
-      }
-    } catch (error) {
-      console.log("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const res = await axiosInstance.post(`api/claims/claim/`, data, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (res.status == 200) {
+  //       toast.success("Document Uploaded");
+  //       setUploadState({
+  //         uploadInput: null,
+  //         commentInput: "",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // const uploadApi = async () => {
   //   try {
@@ -290,13 +290,13 @@ export default function CreateClaim() {
     handleShowParts();
   }, [resStatus]);
 
-  const handleActionChange = (event) => {
-    setSelectedAction(event.target.value);
-  };
+  // const handleActionChange = (event) => {
+  //   setSelectedAction(event.target.value);
+  // };
 
-  const handleProblemChange = (event) => {
-    setSelectedProblem(event.target.value);
-  };
+  // const handleProblemChange = (event) => {
+  //   setSelectedProblem(event.target.value);
+  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -458,7 +458,7 @@ export default function CreateClaim() {
           boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
         }}
       >
-        <Box
+        {/* <Box
           sx={{
             width: "50%",
             display: "flex",
@@ -477,7 +477,7 @@ export default function CreateClaim() {
             value={formValues.repairDate}
             onChange={handleInputChange}
           />
-        </Box>
+        </Box> */}
         <Box sx={{ overflow: "auto" }}>
           <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
             Choose Part:
@@ -489,7 +489,7 @@ export default function CreateClaim() {
             handleEditParts={handleEditParts}
           />
         </Box>
-        <Box display={"flex"} gap={5} my={4}>
+        {/* <Box display={"flex"} gap={5} my={4}>
           <Box>
             <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
               Action:
@@ -537,19 +537,6 @@ export default function CreateClaim() {
             </Typography>
             <form onSubmit={handleSubmitFile}>
               <Box sx={{ display: "flex", flexWrap: "wrap" }} gap={2}>
-                {/* <FormControl>
-              <TextField
-                size="small"
-                type="text"
-                placeholder="*Optional Comment"
-                onChange={(e) =>
-                  setUploadState((prevState) => ({
-                    ...prevState,
-                    commentInput: e.target.value,
-                  }))
-                }
-              />
-            </FormControl> */}
                 <FormControl>
                   <TextField
                     size="small"
@@ -563,18 +550,23 @@ export default function CreateClaim() {
                     }
                   />
                 </FormControl>
-                {/* <Box sx={{ alignItems: "right" }}>
-              <CustomButton
-                buttonName="Upload File"
-                variant="contained"
-                type={"submit"}
-              />
-            </Box> */}
+                <Box sx={{ alignItems: "right" }}>
+                  <CustomButton
+                    buttonName="Upload File"
+                    variant="contained"
+                    type={"submit"}
+                  />
+                </Box>
               </Box>
             </form>
           </Box>
         </Box>
-        <Box display={"flex"} width={"100%"} justifyContent={"space-between"} alignItems={"center"}>
+        <Box
+          display={"flex"}
+          width={"100%"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
           <Box width={"52%"}>
             <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
               Upload List:
@@ -620,12 +612,12 @@ export default function CreateClaim() {
             </Box>
           </Box>
         </Box>
-        <Box sx={{ overflow: "auto"}} mt={8}>
+        <Box sx={{ overflow: "auto" }} mt={8}>
           <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
             *Claimed Part
           </Typography>
           <RevsTable data={data} />
-        </Box>
+        </Box> */}
 
         <Modal
           open={open}

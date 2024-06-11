@@ -34,7 +34,6 @@ export default function RegistrationLookup() {
   };
 
   const getRowData = (userData) => {
-    console.log(userData?.id, "testing userData");
     setRowUserData(userData);
   };
 
@@ -43,7 +42,7 @@ export default function RegistrationLookup() {
   }, []);
 
   const handleShowParts = (id) => {
-    sessionStorage.setItem("idd",id)
+    localStorage.setItem("idd",id)
     fetchAllClaimParts(id);
   };
 

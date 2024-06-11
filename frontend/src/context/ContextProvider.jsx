@@ -10,8 +10,9 @@ const ContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const token = Cookies.get("token");
 
+
+
   const fetchAllClaimParts = async (id) => {
-    console.log("helllooooooooooo");
     try {
       const res = await axiosInstance.get(
         `api/parts/part-detail/${Number(id)}`,
@@ -28,13 +29,12 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  const viewPartId = localStorage.getItem("idd");
   useEffect(() => {
-    const viewPartId = sessionStorage.getItem("idd");
     if (viewPartId !== null || undefined || "") {
-      console.log("hiiiiiiiiiiiiiiii");
       fetchAllClaimParts(viewPartId);
     }
-  }, [resStatus]);
+  }, [resStatus,viewPartId]);
 
   return (
     <MyContext.Provider

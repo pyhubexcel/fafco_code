@@ -1,7 +1,12 @@
-import { useContext, useMemo } from "react";
-import { MRT_Table, useMaterialReactTable } from "material-react-table";
+import { useMemo, useState } from "react";
+import {
+  MRT_Table,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
-export const PartsTableView = ({data}) => {
+export const PartsTableView = ({ data, setSelectedPart }) => {
   const columns = useMemo(
     () => [
       {
@@ -47,10 +52,26 @@ export const PartsTableView = ({data}) => {
   const table = useMaterialReactTable({
     columns,
     data,
+    enableColumnFilterModes: false,
+    enableDensityToggle: false,
+    enableFullScreenToggle: false,
+    enableGlobalFilter: true,
+    enableRowSelection: true,
+    enableMultiRowSelection: false,
+    enableHiding: false,
     enableColumnActions: false,
-    enableColumnFilters: false,
-    enablePagination: false,
     enableSorting: false,
+    initialState: { showColumnFilters: false, showGlobalFilter: false },
+    renderTopToolbar: ({ table }) => {
+      const selectedRow = table.getSelectedRowModel();
+      if (
+        selectedRow &&
+        selectedRow.rows.length > 0 &&
+        !selectedRow.selectAction
+      ) {
+        setSelectedPart(selectedRow.rows[0].original.part_number);
+      }
+    },
     mrtTheme: (theme) => ({
       baseBackgroundColor: theme.palette.background.default,
     }),
@@ -79,7 +100,7 @@ export const PartsTableView = ({data}) => {
     },
   });
 
-  return <MRT_Table table={table} />;
+  return <MaterialReactTable table={table} />;
 };
 
 export default PartsTableView;

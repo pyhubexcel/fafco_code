@@ -1,58 +1,43 @@
-import { Box, Card, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  FormControl,
+  Stack,
+  TextField,
+  TextareaAutosize,
+  Typography,
+} from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import UploadDocsTable from "../../components/viewRegistration/UploadDocsTable";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import PartsTableView from "../../components/viewRegistration/PartTableView";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-// import ViewRegistrationComp from "../../components/viewRegistration/ViewRegistration";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
 import CreateClaim from "../../components/createClaim/CreateClaim";
 import Cookies from "js-cookie";
-import { useSelector } from "react-redux";
 import { MyContext } from "../../context/ContextProvider";
+import CommonSelect from "../../components/Common/CommonSelect";
+import RevsTable from "../../components/createClaim/RevsTable";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 300,
-  bgcolor: "background.paper",
-  boxShadow: 10,
-  p: 2,
-};
 
-const modalInputs = [
-  {
-    name: "partNumber",
-    label: "Part Number",
-    type: "text",
-  },
-  {
-    name: "description",
-    label: "Part Description",
-    type: "text",
-  },
-  {
-    name: "product",
-    label: "Product Line",
-    type: "text",
-  },
-  {
-    name: "barcode",
-    label: "Barcode",
-    type: "text",
-  },
-  {
-    name: "problem",
-    label: "Problem",
-    type: "text",
-  },
-  
+
+const optionData = [
+  { id: 1, value: "FREEZE DAMAGE" },
+  { id: 2, value: "DIMPLE LEAK REV ONLY" },
+  { id: 3, value: "HEADER LEAK" },
+  { id: 4, value: "PANEL LEAK" },
+  { id: 5, value: "PANEL SPLIT" },
+  { id: 6, value: "PANEL TOO LONG" },
+  { id: 7, value: "PANEL TOO SHORT" },
+  { id: 8, value: "VRV FAIL" },
+];
+const optionDataAction = [
+  { id: 1, value: "Repair" },
+  { id: 2, value: "Replace" },
 ];
 
 function CustomTabPanel(props) {
@@ -66,8 +51,8 @@ function CustomTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+        <Box padding={{ xs: 1, sm: 3 }}>
+          <Box>{children}</Box>
         </Box>
       )}
     </div>
@@ -88,46 +73,48 @@ function a11yProps(index) {
 }
 
 export default function ViewRegistration() {
-  const{partsData}=useContext(MyContext)
-  const allPartsData = useSelector((state) => state.view);
+  const { partsData } = useContext(MyContext);
   const token = Cookies.get("token");
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
+  const fileInputRef = useRef(null);
+  const location = useLocation();
+  const [docDetails, setDocDetails] = useState([]);
+  const [uploadFileList, setUploadFileList] = useState([]);
+  const [selectedPart, setSelectedPart] = useState(null);
+  const [allFormData, setAllFormData] = useState("");
   const [uploadState, setUploadState] = useState({
     uploadInput: null,
-    commentInput: "",
   });
-
-  console.log(uploadState,"this is nothing..!")
-
-  const location = useLocation();
-
-  const [partInput, setPartInput] = useState({
-    profile_id: location.state.id,
-    partNumber: "",
-    description: "",
-    dealer: location.state.current_dealer,
-    product: "",
-    date_installed: new Date().toISOString().split("T")[0], // Set today's date
+  const [formValues, setFormValues] = useState({
+    repairDate: "",
+    action_id: "",
+    problem_id: "",
     barcode: "",
-    problem: "",
-    action: 1,
+    uploadFile: null,
+    uploadList: "",
+    comment: "",
   });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const handleOpenDelete = () => setOpenDelete(true);
-  const handleDeleteClose = () => setOpenDelete(false);
-  const [partDetails, setPartsDetails] = useState([]);
-  const [docDetails, setDocDetails] = useState([]);
+  const handleInputChange = (event, name) => {
+    const { value, type } = event.target;
+    if (type === "file") {
+      setFormValues({
+        ...formValues,
+        [name]: event.target.files[0],
+      });
+    } else {
+      setFormValues({
+        ...formValues,
+        [name]: value,
+      });
+    }
+  };
 
-  
 
   const uploadApi = async () => {
     try {
@@ -160,80 +147,30 @@ export default function ViewRegistration() {
     }
   };
 
-
-  // const getDocumentData = async (userId) => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await axiosInstance.get(`/api/claims/upload/document/${userId}/`, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     setDocDetails(res.data);
-  //     console.log(res.data,"this is the all data...>!")
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  
-  // const getpart_detailOfUser = async (userId) => {
-  //   try {
-  //     const res = await axiosInstance.get(`api/parts/part_detail/${userId}/`, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     setPartsDetails(res.data)
-  //   } catch (error) {
-  //     console.log()
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (location.state.id) {
-  //     console.log(location.state,"##############");
-  //     getpart_detailOfUser(location.state.id);
-  //     getDocumentData(location.state.id);
-  //   }
-  // }, [])
-
-  const createPartApi = async () => {
+  const handleSubmitFile = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const data = {
-        profile_id: partInput.profile_id,
-        part_number: partInput.partNumber,
-        part_description: partInput.description,
-        product_line: partInput.product,
-        installing_dealer: partInput.dealer,
-        date_installed: partInput.date_installed,
-        barcode: partInput.barcode,
-        problem_code: partInput.problem,
-        claim_action: partInput.action,
-        rmaid: partInput.rmaid,
-        active: partInput.active,
+        document_note: uploadState.uploadFile,
+        document: uploadState.uploadInput,
       };
 
-      const res = await axiosInstance.post(`api/parts/part/`, data, {
+      const res = await axiosInstance.post(`api/claims/claim/`, data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
       if (res.status == 200) {
-        toast.success("Part created successful");
+        toast.success("Document Uploaded");
         setUploadState({
           uploadInput: null,
           commentInput: "",
         });
       }
     } catch (error) {
-      toast.error("api failed!!!");
+      console.log("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -250,6 +187,7 @@ export default function ViewRegistration() {
       console.error("Error uploading:", error);
     }
   };
+
 
   const handleFileUploadChange = (e) => {
     const file = e.target.files[0];
@@ -268,22 +206,60 @@ export default function ViewRegistration() {
     }));
   };
 
-  const handlePartChange = (e) => {
-    const { name, value } = e.target;
-    setPartInput((prevState) => ({
+
+  const handleFileUploadChangeShowParts = (e) => {
+    setUploadState((prevState) => ({
       ...prevState,
-      [name]: value,
+      uploadInput: e.target.files[0],
     }));
+    // setUploadFileList([...uploadFileList, uploadState.uploadInput.name]);
   };
 
-  const handlePartSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await createPartApi();
-    } catch (error) {
-      console.log(error);
-    }
+
+  const handleAddPart = () => {
+    const partData = {
+      part_number: selectedPart,
+      repairDate: formValues.repairDate,
+      barcode: formValues.barcode,
+      action: formValues.action_id,
+      problem: formValues.problem_id,
+      uploadFileList: uploadFileList,
+      comment: formValues.comment,
+    };
+    setAllFormData(partData);
+    setSelectedPart("");
+    setUploadFileList([]);
+    setUploadState({
+      uploadInput: null,
+    });
+    setFormValues({
+      repairDate: "",
+      action_id: "",
+      problem_id: "",
+      barcode: "",
+      uploadFile: null,
+      uploadList: "",
+      comment: "",
+    });
   };
+  const data = [
+    {
+      actionButtons: null,
+      PanelId: "ABC123",
+      Part: "12345",
+      Description: "Sample description 1",
+      Barcode: "BAR123",
+      InstallDate: "2024-04-28",
+    },
+    {
+      actionButtons: null,
+      PanelId: "DEF456",
+      Part: "67890",
+      Description: "Sample description 2",
+      Barcode: "BAR456",
+      InstallDate: "2024-04-29",
+    },
+  ];
 
   return (
     <Box
@@ -347,6 +323,7 @@ export default function ViewRegistration() {
               sx={{
                 boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                 marginBottom: "20px",
+                width: "100%",
               }}
             >
               <Box
@@ -362,7 +339,180 @@ export default function ViewRegistration() {
                 <Typography>Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: "auto" }} margin={3}>
-                <PartsTableView  data={partsData}/>
+                <Stack
+                  my={2}
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={{ xs: 1, sm: 2, md: 4 }}
+                  alignItems={{sm:"center"}}
+                  width={{ xs: "100%", sm: "50%" }}
+                >
+                  <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                    Enter Repair Date:
+                  </Typography>
+                  <TextField
+                    type="date"
+                    name="repairDate"
+                    size="small"
+                    value={formValues.repairDate}
+                    onChange={(e) => handleInputChange(e, "repairDate")}
+                  />
+                </Stack>
+                <PartsTableView
+                  data={partsData}
+                  setSelectedPart={setSelectedPart}
+                />
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={{ xs: 1, sm: 2, md: 4 }}
+                  my={4}
+                >
+                  <Box>
+                    <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                      Action:
+                    </Typography>
+                    <CommonSelect
+                      name={"action_id"}
+                      value={formValues.action_id}
+                      placeholder={"Select Action"}
+                      onChange={(e) => handleInputChange(e, "action_id")}
+                      options={optionDataAction.map((option) => ({
+                        value: option.id,
+                        label: option.value,
+                      }))}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                      Problem:
+                    </Typography>
+                    <CommonSelect
+                      name={"problem_id"}
+                      value={formValues.problem_id}
+                      placeholder={"Select Problem"}
+                      onChange={(e) => handleInputChange(e, "problem_id")}
+                      options={optionData.map((option) => ({
+                        value: option.id,
+                        label: option.value,
+                      }))}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                      Barcode:
+                    </Typography>
+                    <TextField
+                      size="small"
+                      name="barcode"
+                      placeholder="Barcode"
+                      value={formValues.barcode}
+                      onChange={(e) => handleInputChange(e, "barcode")}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                      You can add pictures as needed for each part you are
+                      claiming here:
+                    </Typography>
+                    <form onSubmit={handleSubmitFile}>
+                      <Box sx={{ display: "flex", flexWrap: "wrap" }} gap={2}>
+                        <FormControl>
+                          <TextField
+                            size="small"
+                            ref={fileInputRef}
+                            type="file"
+                            onChange={handleFileUploadChangeShowParts}
+                          />
+                        </FormControl>
+                        <Box sx={{ alignItems: "right" }}>
+                          <CustomButton
+                            buttonName="Upload File"
+                            variant="contained"
+                            type={"submit"}
+                          />
+                        </Box>
+                      </Box>
+                    </form>
+                  </Box>
+                </Stack>
+                <Stack
+                  width={"100%"}
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={{ xs: 1, sm: 2, md: 4 }}
+                >
+                  <Box width={{ xs: "100%", sm: "50%" }}>
+                    <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                      Uploaded File List:
+                    </Typography>
+                    <Box
+                      style={{
+                        width: "100%",
+                        border: "1px solid gray",
+                        borderRadius: "5px",
+                        padding: "4px",
+                        height: "80px",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                      }}
+                    >
+                      {uploadFileList?.map((ele, index) => (
+                        <div key={index}>
+                          <Typography
+                            fontSize={"12px"}
+                            fontWeight={"bold"}
+                            border={"1px solid gray"}
+                            borderRadius={"5px"}
+                            my={1}
+                            width={"max-content"}
+                            py={"1px"}
+                            px={1}
+                          >
+                            {ele}
+                          </Typography>
+                        </div>
+                      ))}
+                    </Box>
+
+                    <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                      <CustomButton
+                        buttonName={"Add Part"}
+                        variant="contained"
+                        onClick={handleAddPart}
+                      />
+                    </Box>
+                  </Box>
+                  <Box width={{ xs: "100%", sm: "45%" }}>
+                    <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                      Add Comment:
+                    </Typography>
+                    <TextareaAutosize
+                      aria-label="minimum height"
+                      minRows={4}
+                      style={{
+                        width: "100%",
+                        border: "1px solid gray",
+                        borderRadius: "5px",
+                        padding: "4px",
+                      }}
+                      placeholder="Add comment ..."
+                      name="comment"
+                      value={formValues.comment}
+                      onChange={(e) => handleInputChange(e, "comment")}
+                    />
+
+                    <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                      <CustomButton
+                        buttonName="Submit Claim"
+                        variant="contained"
+                      />
+                    </Box>
+                  </Box>
+                </Stack>
+                <Box sx={{ overflow: "auto" }} mt={8}>
+                  <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                    *Claimed Part
+                  </Typography>
+                  <RevsTable data={data} />
+                </Box>
               </Box>
             </Card>
           </CustomTabPanel>
@@ -423,41 +573,7 @@ export default function ViewRegistration() {
             <CreateClaim />
           </CustomTabPanel>
         </Box>
-        {/* <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
-                    <ViewRegistrationComp />
-                </Card> */}
       </Card>
-      <Box>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <form onSubmit={handlePartSubmit}>
-            <Box sx={style}>
-              {modalInputs.map((item, index) => (
-                <TextField
-                  key={index}
-                  size="small"
-                  fullWidth
-                  label={item.label}
-                  type={item.type}
-                  variant="standard"
-                  sx={{ marginBottom: "15px" }}
-                  name={item.name}
-                  value={partInput[item.name]}
-                  onChange={handlePartChange}
-                />
-              ))}
-              <Box display={"flex"} justifyContent={"end"} gap={2}>
-                <CustomButton buttonName={"cancel"} onClick={handleClose} />
-                <CustomButton buttonName={"Create"} type={"submit"} />
-              </Box>
-            </Box>
-          </form>
-        </Modal>
-      </Box>
     </Box>
   );
 }
