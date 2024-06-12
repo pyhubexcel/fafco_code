@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
-  MRT_Table,
+  // MRT_Table,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+// import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 export const PartsTableView = ({ data, setSelectedPart }) => {
   const columns = useMemo(
@@ -69,7 +69,9 @@ export const PartsTableView = ({ data, setSelectedPart }) => {
         selectedRow.rows.length > 0 &&
         !selectedRow.selectAction
       ) {
-        setSelectedPart(selectedRow.rows[0].original.part_number);
+        setSelectedPart(selectedRow.rows[0].original);
+      } else {
+        setSelectedPart(null)
       }
     },
     mrtTheme: (theme) => ({

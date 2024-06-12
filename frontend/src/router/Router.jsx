@@ -32,8 +32,6 @@ export default function Router() {
     }
   }, [loginSliceData, logoOutState])
 
-  // console.log("testing routes token are comming---->---- ", token, loginSliceData, logoOutState)
-
   return (
     <Routes>
       <Route exact path="/" element={token ? <Home /> : <Navigate to="/login" />} />

@@ -58,7 +58,6 @@ const Header = () => {
 
   useEffect(() => {
     token = Cookies.get('token');
-    console.log("testing header")
     if (logOutState == true) {
       Cookies.remove('token')
       Cookies.remove('id')

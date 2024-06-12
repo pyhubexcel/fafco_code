@@ -68,12 +68,10 @@ export default function UpdateAccountInfo() {
         toast.success(" changes saved");
 
         Cookies.set('name', userDetails.name);
-        console.log(userDetails.name,">>>>>>>>>>>");
       
       }
     } catch (error) {
       toast.error(error.response.data.address[0]);
-      console.log("Error:", error);
     } finally {
       setUpdateLoading(false);
     }

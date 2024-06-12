@@ -69,7 +69,6 @@ export default function AddressValidation() {
       }
     } catch (error) {
       toast.error("Address not Verified!!!");
-      console.log("Error:", error);
     } finally {
       setLoading(false);
     }

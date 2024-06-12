@@ -14,21 +14,17 @@ export default function ResetPassword() {
         email: "",
       },
       onSubmit: async (values) => {
-        console.log("values===");
-        console.log("values===", values);
         setLoading(true);
         const payload = {
           email: values.email,
         }
         try {
           const res = await axiosInstance.post('api/auth/forgot-password/', payload);
-          console.log("res ===res", res);
           if (res.status === 200) {
             toast.success("mail sent successfully")
           }
         } catch (error) {
           toast.error(error?.response?.data?.detail)
-          console.log("Error:", error);
         } finally {
           setLoading(false)
         }

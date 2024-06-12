@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import UploadDocsTable from "../../components/viewRegistration/UploadDocsTable";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import PartsTableView from "../../components/viewRegistration/PartTableView";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -134,7 +134,7 @@ export default function ViewRegistration() {
       );
       if (res.status == 200) {
         toast.success("Document Uploaded");
-        getDocumentData();
+        // getDocumentData();
         setUploadState({
           uploadInput: null,
           commentInput: "",
@@ -216,9 +216,46 @@ export default function ViewRegistration() {
   };
 
 
+  const submitClaim = async () => {
+
+    const partData = {
+      action: formValues.action_id,
+      problem: formValues.problem_id,
+      comment: formValues.comment,
+    };
+    try {
+      const response = await axiosInstance.post("api/claims/claim/", partData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (response) {
+        getClaimedPart()
+        setFormValues({
+          repairDate: "",
+          action_id: "",
+          problem_id: "",
+          barcode: "",
+          uploadFile: null,
+          uploadList: "",
+          comment: "",
+        });
+      }
+
+    } catch (error) {
+      throw new Error("Failed to submit claim. Please try again later.")
+    }
+
+  }
+
+  const getClaimedPart = () => {
+
+  }
+
   const handleAddPart = () => {
     const partData = {
-      part_number: selectedPart,
+      part_number: selectedPart.part_number,
       repairDate: formValues.repairDate,
       barcode: formValues.barcode,
       action: formValues.action_id,
@@ -260,6 +297,14 @@ export default function ViewRegistration() {
       InstallDate: "2024-04-29",
     },
   ];
+
+  useEffect(() => {
+    if (selectedPart) {
+      setFormValues((prev) => ({ ...prev, barcode: selectedPart.barcode }))
+    } else if (selectedPart == null) {
+      setFormValues((prev) => ({ ...prev, barcode: "" }))
+    }
+  }, [selectedPart])
 
   return (
     <Box
@@ -361,6 +406,8 @@ export default function ViewRegistration() {
                   data={partsData}
                   setSelectedPart={setSelectedPart}
                 />
+                {partsData.length > 0 &&
+                  <>
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={{ xs: 1, sm: 2, md: 4 }}
@@ -373,6 +420,7 @@ export default function ViewRegistration() {
                     <CommonSelect
                       name={"action_id"}
                       value={formValues.action_id}
+                        disabled={selectedPart == null}
                       placeholder={"Select Action"}
                       onChange={(e) => handleInputChange(e, "action_id")}
                       options={optionDataAction.map((option) => ({
@@ -383,11 +431,12 @@ export default function ViewRegistration() {
                   </Box>
                   <Box>
                     <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                      Problem:
+                        Problem:
                     </Typography>
                     <CommonSelect
                       name={"problem_id"}
                       value={formValues.problem_id}
+                        disabled={selectedPart == null}
                       placeholder={"Select Problem"}
                       onChange={(e) => handleInputChange(e, "problem_id")}
                       options={optionData.map((option) => ({
@@ -403,9 +452,10 @@ export default function ViewRegistration() {
                     <TextField
                       size="small"
                       name="barcode"
+                        readOnly
                       placeholder="Barcode"
                       value={formValues.barcode}
-                      onChange={(e) => handleInputChange(e, "barcode")}
+                        // onChange={(e) => handleInputChange(e, "barcode")}
                     />
                   </Box>
                   <Box>
@@ -476,7 +526,7 @@ export default function ViewRegistration() {
                       <CustomButton
                         buttonName={"Add Part"}
                         variant="contained"
-                        onClick={handleAddPart}
+                          // onClick={handleAddPart}
                       />
                     </Box>
                   </Box>
@@ -503,10 +553,13 @@ export default function ViewRegistration() {
                       <CustomButton
                         buttonName="Submit Claim"
                         variant="contained"
+                          onClick={submitClaim}
                       />
                     </Box>
                   </Box>
                 </Stack>
+                  </>
+                }
                 <Box sx={{ overflow: "auto" }} mt={8}>
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claimed Part

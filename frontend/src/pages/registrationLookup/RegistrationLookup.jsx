@@ -85,7 +85,7 @@ export default function RegistrationLookup() {
             buttonName="View Registration"
             variant="contained"
             disable={!rowUserData}
-            onClick={handleShowParts(rowUserData?.id)}
+            onClick={() => handleShowParts(rowUserData?.id)}
           />
         </Link>
       </Box>

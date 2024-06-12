@@ -2,24 +2,20 @@ import {
   Box,
   Card,
   FormControl,
-  FormLabel,
   InputLabel,
   MenuItem,
   Modal,
   Select,
-  Stack,
-  TextField,
-  TextareaAutosize,
   Typography,
 } from "@mui/material";
 import Cookies from "js-cookie";
 import PartsTable from "../viewRegistration/PartsTable";
 import CustomButton from "../ui/CustomButton";
-import RevsTable from "./RevsTable";
+// import RevsTable from "./RevsTable";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
-import { useContext, useEffect, useRef, useState } from "react";
-import CommonSelect from "../Common/CommonSelect";
+import { useCallback, useEffect, useRef, useState } from "react";
+// import CommonSelect from "../Common/CommonSelect";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -74,15 +70,15 @@ const style = {
 export default function CreateClaim() {
   const { id } = useParams();
   const token = Cookies.get("token");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [payload, setPayload] = useState({});
+  // const [payload, setPayload] = useState({});
   const [openDelete, setOpenDelete] = useState(false);
-  const [uploadState, setUploadState] = useState({
-    uploadFile: null,
-    commentInput: "",
-  });
-  const fileInputRef = useRef(null);
+  // const [uploadState, setUploadState] = useState({
+  //   uploadFile: null,
+  //   commentInput: "",
+  // });
+  // const fileInputRef = useRef(null);
   // const [selectedAction, setSelectedAction] = useState("");
   // const [selectedProblem, setSelectedProblem] = useState("");
   const [resStatus, setResStatus] = useState("");
@@ -280,7 +276,6 @@ export default function CreateClaim() {
       );
 
       setPartsData(res.data);
-      console.log(res.data, "handleShowParts");
     } catch (error) {
       console.log(error, "error");
     }
@@ -288,6 +283,7 @@ export default function CreateClaim() {
 
   useEffect(() => {
     handleShowParts();
+    fetchPartNumbers()
   }, [resStatus]);
 
   // const handleActionChange = (event) => {
@@ -298,27 +294,24 @@ export default function CreateClaim() {
   //   setSelectedProblem(event.target.value);
   // };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormValues({ ...formValues, [name]: value });
+  // };
 
   // const handleFileChange = (e) => {
   //   setFormValues({ ...formValues, uploadFile: e.target.files[0] });
   // };
 
-  useEffect(() => {
-    fetchPartNumbers();
-  }, []);
 
-  const fetchPartNumbers = async () => {
+  const fetchPartNumbers = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`api/parts/partcsv/`);
       setPartNumbers(response.data);
     } catch (error) {
       console.error("Error:", error);
     }
-  };
+  }, []);
 
   const handlePartNumberChange = (event) => {
     const selectedPartNumber = event.target.value;
@@ -354,24 +347,24 @@ export default function CreateClaim() {
     }
   };
 
-  const data = [
-    {
-      actionButtons: null,
-      PanelId: "ABC123",
-      Part: "12345",
-      Description: "Sample description 1",
-      Barcode: "BAR123",
-      InstallDate: "2024-04-28",
-    },
-    {
-      actionButtons: null,
-      PanelId: "DEF456",
-      Part: "67890",
-      Description: "Sample description 2",
-      Barcode: "BAR456",
-      InstallDate: "2024-04-29",
-    },
-  ];
+  // const data = [
+  //   {
+  //     actionButtons: null,
+  //     PanelId: "ABC123",
+  //     Part: "12345",
+  //     Description: "Sample description 1",
+  //     Barcode: "BAR123",
+  //     InstallDate: "2024-04-28",
+  //   },
+  //   {
+  //     actionButtons: null,
+  //     PanelId: "DEF456",
+  //     Part: "67890",
+  //     Description: "Sample description 2",
+  //     Barcode: "BAR456",
+  //     InstallDate: "2024-04-29",
+  //   },
+  // ];
 
   const handleDeleteParts = async (registration, id) => {
     try {

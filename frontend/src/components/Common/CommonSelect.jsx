@@ -7,6 +7,7 @@ const CommonSelect = ({
   onChange,
   options,
   fullWidth = true,
+  disabled = false
 }) => {
   return (
     <FormControl fullWidth={fullWidth}>
@@ -16,6 +17,7 @@ const CommonSelect = ({
         onChange={onChange}
         displayEmpty
         size="small"
+        disabled={disabled}
       >
         {placeholder && (
           <MenuItem value="" disabled>

@@ -65,8 +65,6 @@ const RegisteredUsers = ({ userList, getRowData }) => {
     },
     renderTopToolbar: ({ table }) => {
       setUserData(table?.getSelectedRowModel()?.rows[0]?.original);
-      // console.log(table.getSelectedRowModel().rows[0]?.original);
-      console.log(userData, "userData");
     },
   });
 

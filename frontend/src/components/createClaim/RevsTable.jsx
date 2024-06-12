@@ -5,8 +5,7 @@ import {
 } from 'material-react-table';
 
 
-export const RevsTable = ({data}) => {
-  console.log(data,"res");
+export const RevsTable = ({ data }) => {
   const columns = useMemo(
     () => [
       {
