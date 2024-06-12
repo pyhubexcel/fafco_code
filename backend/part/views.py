@@ -21,20 +21,53 @@ class PartAPI(APIView):
     #     response = Response(serializer.data, status=200)
     #     response.success_message = "Fetched Data."
     #     return response
+    # def post(self, request):
+    #     data = request.data
+    #     parts = get_object_or_404(Profile, customer=request.user.id,
+    #                               pk=data["profile_id"])
+        
+    #     data["registration"] = parts.id
+    #     serializer = PartSerializer(data=data)
+    #     serializer.id and serializer.part_number 
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         response = Response(serializer.data, status=200)
+    #         response.success_message = "Part created successfully"
+    #         return response
+    #     response = Response(serializer.errors, status=200)
+    #     response.success_message = "Error occured."
+    #     return response
+    
+
+
     def post(self, request):
         data = request.data
         parts = get_object_or_404(Profile, customer=request.user.id,
-                                  pk=data["profile_id"])
+                                pk=data["profile_id"])
+        
         data["registration"] = parts.id
+        
         serializer = PartSerializer(data=data)
+        
         if serializer.is_valid():
-            serializer.save()
-            response = Response(serializer.data, status=200)
+            part = serializer.save()
+            
+            part_number = str(part.part_number).zfill(8)  
+            serial_number = str(part.id).zfill(6)  
+            barcode = f"{serial_number}-{part_number}" 
+            part.barcode = barcode 
+            part.save()  
+            response_data = serializer.data
+            response_data["barcode"] = barcode
+            response = Response(response_data, status=200)
             response.success_message = "Part created successfully"
             return response
-        response = Response(serializer.errors, status=200)
-        response.success_message = "Error occured."
-        return response
+        else:
+            response = Response(serializer.errors, status=200)
+            response.success_message = "Error occurred."
+            return response
+
+
 
 
 class PartListAPI(APIView):

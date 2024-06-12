@@ -5,32 +5,32 @@ from claim.models import Claim
 
 class Part(models.Model):
 
-    FREEZE_DAMAGE = 1
-    DIMPLE_LEAK_REV_ONLY = 2
-    HEADER_LEAK = 3
-    PANEL_LEAK = 4
-    PANEL_SPLIT = 5
-    PANEL_TOO_LONG = 6
-    PANEL_TOO_SHORT = 7
-    VRV_FAIL = 8
+    # FREEZE_DAMAGE = 1
+    # DIMPLE_LEAK_REV_ONLY = 2
+    # HEADER_LEAK = 3
+    # PANEL_LEAK = 4
+    # PANEL_SPLIT = 5
+    # PANEL_TOO_LONG = 6
+    # PANEL_TOO_SHORT = 7
+    # VRV_FAIL = 8
 
-    PART_PROBLEM = [
-        (FREEZE_DAMAGE, 'Freeze Damage'),
-        (DIMPLE_LEAK_REV_ONLY, 'Dimple Leak - Rev Only'),
-        (HEADER_LEAK, 'Header Leak'),
-        (PANEL_LEAK, 'Panel Leak'),
-        (PANEL_SPLIT, 'Panel Split'),
-        (PANEL_TOO_LONG, 'Panel too long'),
-        (PANEL_TOO_SHORT, 'Panel too short'),
-        (VRV_FAIL, 'VRV Fail'),
-    ]
+    # PART_PROBLEM = [
+    #     (FREEZE_DAMAGE, 'Freeze Damage'),
+    #     (DIMPLE_LEAK_REV_ONLY, 'Dimple Leak - Rev Only'),
+    #     (HEADER_LEAK, 'Header Leak'),
+    #     (PANEL_LEAK, 'Panel Leak'),
+    #     (PANEL_SPLIT, 'Panel Split'),
+    #     (PANEL_TOO_LONG, 'Panel too long'),
+    #     (PANEL_TOO_SHORT, 'Panel too short'),
+    #     (VRV_FAIL, 'VRV Fail'),
+    # ]
 
-    Repair = 1
-    replace = 2
-    CLAIM_ACTION = [
-        (Repair, 'Repair'),
-        (replace, 'replace'),
-    ]
+    # Repair = 1
+    # replace = 2
+    # CLAIM_ACTION = [
+    #     (Repair, 'Repair'),
+    #     (replace, 'replace'),
+    # ]
 
     rmaid = models.ForeignKey(Claim, on_delete=models.CASCADE,
                               related_name='Claim',blank=True,null=True)
@@ -42,11 +42,11 @@ class Part(models.Model):
                                           related_name='installing_dealer',
                                           blank=True, null=True)
     date_installed = models.DateField(auto_now_add=True,blank=True, null=True)
-    barcode = models.CharField(max_length=15,blank=True, null=True)
+    barcode = models.CharField(max_length=16,blank=True, null=True)
     active = models.BooleanField(default=True)
     problem_code = models.CharField(max_length=255, blank=True, null=True)
-    claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION, blank=True, null=True)
-    part_problem = models.PositiveSmallIntegerField(choices=PART_PROBLEM,blank=True,null=True)
+    # claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION, blank=True, null=True)
+    # part_problem = models.PositiveSmallIntegerField(choices=PART_PROBLEM,blank=True,null=True)
 
 
     def __str__(self) -> str:
