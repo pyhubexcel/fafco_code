@@ -4,33 +4,7 @@ import {
   useMaterialReactTable,
 } from "material-react-table";
 
-const data = [
-  {
-    id: 1,
-    Name: "John Doe",
-    owner_email: "john@example.com",
-    address: "123 Main St",
-    zip_code: "12345",
-    current_dealer: "Dealer A",
-  },
-  {
-    id: 2,
-    Name: "Jane Smith",
-    owner_email: "jane@example.com",
-    address: "456 Elm St",
-    zip_code: "67890",
-    current_dealer: "Dealer B",
-  },
-  {
-    id: 3,
-    Name: "Alice Johnson",
-    owner_email: "alice@example.com",
-    address: "789 Oak St",
-    zip_code: "54321",
-    current_dealer: "Dealer C",
-  },
-  // Add more dummy data as needed
-];
+
 
 const RegisteredUsers = ({ userList, getRowData }) => {
   const [userData, setUserData] = useState(null);
@@ -76,7 +50,7 @@ const RegisteredUsers = ({ userList, getRowData }) => {
     enableFullScreenToggle: false,
     enableGlobalFilter: true,
     enableRowSelection: true,
-    // enableColumnFilters:false,
+    enableMultiRowSelection: false,
     enableHiding: false,
     enableColumnActions: false,
     enableSorting: false,
@@ -91,8 +65,6 @@ const RegisteredUsers = ({ userList, getRowData }) => {
     },
     renderTopToolbar: ({ table }) => {
       setUserData(table?.getSelectedRowModel()?.rows[0]?.original);
-      // console.log(table.getSelectedRowModel().rows[0]?.original);
-      console.log(userData, "userData");
     },
   });
 

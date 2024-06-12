@@ -35,7 +35,6 @@ export default function Footer() {
 
   useEffect(() => {
     token = Cookies.get('token');
-    console.log("testing footer")
     if (logOutState === true) {
       Cookies.remove('token');
       Cookies.remove('id');

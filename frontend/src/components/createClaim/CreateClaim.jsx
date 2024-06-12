@@ -2,24 +2,20 @@ import {
   Box,
   Card,
   FormControl,
-  FormLabel,
   InputLabel,
   MenuItem,
   Modal,
   Select,
-  Stack,
-  TextField,
-  TextareaAutosize,
   Typography,
 } from "@mui/material";
 import Cookies from "js-cookie";
 import PartsTable from "../viewRegistration/PartsTable";
 import CustomButton from "../ui/CustomButton";
-import RevsTable from "./RevsTable";
+// import RevsTable from "./RevsTable";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
-import { useContext, useEffect, useRef, useState } from "react";
-import CommonSelect from "../Common/CommonSelect";
+import { useCallback, useEffect, useRef, useState } from "react";
+// import CommonSelect from "../Common/CommonSelect";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -74,28 +70,27 @@ const style = {
 export default function CreateClaim() {
   const { id } = useParams();
   const token = Cookies.get("token");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [payload, setPayload] = useState({});
+  // const [payload, setPayload] = useState({});
   const [openDelete, setOpenDelete] = useState(false);
-  const [uploadState, setUploadState] = useState({
-    uploadFile: null,
-    commentInput: "",
-  });
-  const fileInputRef = useRef(null);
-  const [selectedAction, setSelectedAction] = useState("");
-  const [selectedProblem, setSelectedProblem] = useState("");
-  const [optionData, setOptionData] = useState([]);
+  // const [uploadState, setUploadState] = useState({
+  //   uploadFile: null,
+  //   commentInput: "",
+  // });
+  // const fileInputRef = useRef(null);
+  // const [selectedAction, setSelectedAction] = useState("");
+  // const [selectedProblem, setSelectedProblem] = useState("");
   const [resStatus, setResStatus] = useState("");
   const [partsData, setPartsData] = useState([]);
-  const [formValues, setFormValues] = useState({
-    repairDate: "",
-    barcode: "",
-    uploadFile: null,
-    uploadList: "",
-    comment: "",
-    ref: "",
-  });
+  // const [formValues, setFormValues] = useState({
+  //   repairDate: "",
+  //   barcode: "",
+  //   uploadFile: null,
+  //   uploadList: "",
+  //   comment: "",
+  //   ref: "",
+  // });
   const [idAndRegistrationForUpdate, setIdAndRegistrationForUpdate] = useState({
     id: "",
     registration_no: "",
@@ -112,6 +107,21 @@ export default function CreateClaim() {
     registration_id: "",
     id: "",
   });
+
+  // const optionData = [
+  //   { id: 1, value: "FREEZE DAMAGE" },
+  //   { id: 2, value: "DIMPLE LEAK REV ONLY" },
+  //   { id: 3, value: "HEADER LEAK" },
+  //   { id: 4, value: "PANEL LEAK" },
+  //   { id: 5, value: "PANEL SPLIT" },
+  //   { id: 6, value: "PANEL TOO LONG" },
+  //   { id: 7, value: "PANEL TOO SHORT" },
+  //   { id: 8, value: "VRV FAIL" },
+  // ];
+  // const optionDataAction = [
+  //   { id: 1, value: "Repair" },
+  //   { id: 2, value: "Replace" },
+  // ];
 
   const handleClose = () => {
     setCsvPartFormValues({
@@ -153,33 +163,33 @@ export default function CreateClaim() {
     setOpen(true);
   };
 
-  const handleSubmitFile = async () => {
-    try {
-      setLoading(true);
-      const data = {
-        document_note: uploadState.uploadFile,
-        document: uploadState.uploadInput,
-      };
+  // const handleSubmitFile = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const data = {
+  //       document_note: uploadState.uploadFile,
+  //       document: uploadState.uploadInput,
+  //     };
 
-      const res = await axiosInstance.post(`api/claims/claim/`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status == 200) {
-        toast.success("Document Uploaded");
-        setUploadState({
-          uploadInput: null,
-          commentInput: "",
-        });
-      }
-    } catch (error) {
-      console.log("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const res = await axiosInstance.post(`api/claims/claim/`, data, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (res.status == 200) {
+  //       toast.success("Document Uploaded");
+  //       setUploadState({
+  //         uploadInput: null,
+  //         commentInput: "",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // const uploadApi = async () => {
   //   try {
@@ -266,7 +276,6 @@ export default function CreateClaim() {
       );
 
       setPartsData(res.data);
-      console.log(res.data, "handleShowParts");
     } catch (error) {
       console.log(error, "error");
     }
@@ -274,37 +283,35 @@ export default function CreateClaim() {
 
   useEffect(() => {
     handleShowParts();
+    fetchPartNumbers()
   }, [resStatus]);
 
-  const handleActionChange = (event) => {
-    setSelectedAction(event.target.value);
-  };
+  // const handleActionChange = (event) => {
+  //   setSelectedAction(event.target.value);
+  // };
 
-  const handleProblemChange = (event) => {
-    setSelectedProblem(event.target.value);
-  };
+  // const handleProblemChange = (event) => {
+  //   setSelectedProblem(event.target.value);
+  // };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormValues({ ...formValues, [name]: value });
+  // };
 
   // const handleFileChange = (e) => {
   //   setFormValues({ ...formValues, uploadFile: e.target.files[0] });
   // };
 
-  useEffect(() => {
-    fetchPartNumbers();
-  }, []);
 
-  const fetchPartNumbers = async () => {
+  const fetchPartNumbers = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`api/parts/partcsv/`);
       setPartNumbers(response.data);
     } catch (error) {
       console.error("Error:", error);
     }
-  };
+  }, []);
 
   const handlePartNumberChange = (event) => {
     const selectedPartNumber = event.target.value;
@@ -340,24 +347,24 @@ export default function CreateClaim() {
     }
   };
 
-  const data = [
-    {
-      actionButtons: null,
-      PanelId: "ABC123",
-      Part: "12345",
-      Description: "Sample description 1",
-      Barcode: "BAR123",
-      InstallDate: "2024-04-28",
-    },
-    {
-      actionButtons: null,
-      PanelId: "DEF456",
-      Part: "67890",
-      Description: "Sample description 2",
-      Barcode: "BAR456",
-      InstallDate: "2024-04-29",
-    },
-  ];
+  // const data = [
+  //   {
+  //     actionButtons: null,
+  //     PanelId: "ABC123",
+  //     Part: "12345",
+  //     Description: "Sample description 1",
+  //     Barcode: "BAR123",
+  //     InstallDate: "2024-04-28",
+  //   },
+  //   {
+  //     actionButtons: null,
+  //     PanelId: "DEF456",
+  //     Part: "67890",
+  //     Description: "Sample description 2",
+  //     Barcode: "BAR456",
+  //     InstallDate: "2024-04-29",
+  //   },
+  // ];
 
   const handleDeleteParts = async (registration, id) => {
     try {
@@ -444,7 +451,7 @@ export default function CreateClaim() {
           boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
         }}
       >
-        <Box
+        {/* <Box
           sx={{
             width: "50%",
             display: "flex",
@@ -453,7 +460,7 @@ export default function CreateClaim() {
           }}
           my={2}
         >
-          <Typography sx={{ fontSize: "1.05rem", fontWeight: "600" }}>
+          <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
             Enter Repair Date:
           </Typography>
           <TextField
@@ -463,9 +470,11 @@ export default function CreateClaim() {
             value={formValues.repairDate}
             onChange={handleInputChange}
           />
-        </Box>
+        </Box> */}
         <Box sx={{ overflow: "auto" }}>
-          <Typography>Choose Part:</Typography>
+          <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+            Choose Part:
+          </Typography>
           <PartsTable
             handleOpen={handleOpen}
             handleDeleteParts={handleDeleteParts}
@@ -473,31 +482,39 @@ export default function CreateClaim() {
             handleEditParts={handleEditParts}
           />
         </Box>
-        <Box display={"flex"} gap={2} my={2}>
+        {/* <Box display={"flex"} gap={5} my={4}>
           <Box>
-            <Typography>Action:</Typography>
+            <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+              Action:
+            </Typography>
             <CommonSelect
               value={selectedAction}
+              placeholder={"Select Action"}
               onChange={handleActionChange}
-              options={optionData.map((option) => ({
+              options={optionDataAction.map((option) => ({
                 value: option.value,
-                label: option.label,
+                label: option.value,
               }))}
             />
           </Box>
           <Box>
-            <Typography>Problem:</Typography>
+            <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+              Problem:
+            </Typography>
             <CommonSelect
               value={selectedProblem}
+              placeholder={"Select Problem"}
               onChange={handleProblemChange}
               options={optionData.map((option) => ({
-                value: option.value,
-                label: option.label,
+                value: option.id,
+                label: option.value,
               }))}
             />
           </Box>
           <Box>
-            <Typography>Barcode:</Typography>
+            <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+              Barcode:
+            </Typography>
             <TextField
               size="small"
               name="barcode"
@@ -506,88 +523,95 @@ export default function CreateClaim() {
               onChange={handleInputChange}
             />
           </Box>
+          <Box>
+            <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+              You can add pictures as needed for each part you are claiming
+              here:
+            </Typography>
+            <form onSubmit={handleSubmitFile}>
+              <Box sx={{ display: "flex", flexWrap: "wrap" }} gap={2}>
+                <FormControl>
+                  <TextField
+                    size="small"
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={(e) =>
+                      setUploadState((prevState) => ({
+                        ...prevState,
+                        uploadInput: e.target.files[0],
+                      }))
+                    }
+                  />
+                </FormControl>
+                <Box sx={{ alignItems: "right" }}>
+                  <CustomButton
+                    buttonName="Upload File"
+                    variant="contained"
+                    type={"submit"}
+                  />
+                </Box>
+              </Box>
+            </form>
+          </Box>
         </Box>
-        <Typography>
-          You can add pictures as needed for each part you are claiming here.
-        </Typography>
-        <form onSubmit={handleSubmitFile}>
-          <Box sx={{ display: "flex", flexWrap: "wrap" }} gap={2} my={2}>
-            <FormControl>
-              <TextField
-                size="small"
-                type="text"
-                placeholder="*Optional Comment"
-                onChange={(e) =>
-                  setUploadState((prevState) => ({
-                    ...prevState,
-                    commentInput: e.target.value,
-                  }))
-                }
-              />
-            </FormControl>
-            <FormControl>
-              <TextField
-                size="small"
-                ref={fileInputRef}
-                type="file"
-                onChange={(e) =>
-                  setUploadState((prevState) => ({
-                    ...prevState,
-                    uploadInput: e.target.files[0],
-                  }))
-                }
-              />
-            </FormControl>
-            <Box sx={{ alignItems: "right" }}>
-              <CustomButton
-                buttonName="Upload File"
-                variant="contained"
-                type={"submit"}
-              />
+        <Box
+          display={"flex"}
+          width={"100%"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          <Box width={"52%"}>
+            <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+              Upload List:
+            </Typography>
+            <TextareaAutosize
+              aria-label="minimum height"
+              minRows={3}
+              style={{
+                width: "100%",
+                border: "1px solid gray",
+                borderRadius: "5px",
+                padding: "4px",
+              }}
+              placeholder="upload List"
+              name="uploadList"
+              value={formValues.uploadList}
+              onChange={handleInputChange}
+            />
+            <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+              <CustomButton buttonName={"Add Part"} variant="contained" />
             </Box>
           </Box>
-        </form>
-        <Box display={"flex"}>
-          <Typography>Upload List:</Typography>
-          <TextareaAutosize
-            aria-label="minimum height"
-            minRows={3}
-            style={{
-              width: "100%",
-              border: "1px solid gray",
-              borderRadius: "5px",
-            }}
-            name="uploadList"
-            value={formValues.uploadList}
-            onChange={handleInputChange}
-          />
+          <Box width={"45%"}>
+            <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+              Add Comment:
+            </Typography>
+            <TextareaAutosize
+              aria-label="minimum height"
+              minRows={3}
+              style={{
+                width: "100%",
+                border: "1px solid gray",
+                borderRadius: "5px",
+                padding: "4px",
+              }}
+              placeholder="Optional - Add comment if needed"
+              name="comment"
+              value={formValues.comment}
+              onChange={handleInputChange}
+            />
+            <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+              <CustomButton buttonName="Submit Claim" variant="contained" />
+            </Box>
+          </Box>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
-          <CustomButton buttonName={"Add Part"} variant="contained" />
-        </Box>
-        <Box sx={{ overflow: "auto" }}>
-          <Typography fontWeight={"bold"}>*Claimed Part</Typography>
+        <Box sx={{ overflow: "auto" }} mt={8}>
+          <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+            *Claimed Part
+          </Typography>
           <RevsTable data={data} />
-        </Box>
-        <Stack gap={2} my={2} width={400}>
-          <TextField
-            size="small"
-            name="comment"
-            placeholder="Optional - Add comment if needed"
-            value={formValues.comment}
-            onChange={handleInputChange}
-          />
-          <TextField
-            size="small"
-            name="ref"
-            placeholder="Optional - Ref#"
-            value={formValues.ref}
-            onChange={handleInputChange}
-          />
-        </Stack>
-        <Box width={200}>
-          <CustomButton buttonName="Submit Claim" variant="contained" />
-        </Box>
+        </Box> */}
+
         <Modal
           open={open}
           onClose={handleClose}

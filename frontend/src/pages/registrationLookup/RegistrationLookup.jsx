@@ -3,17 +3,17 @@ import RegisteredUsers from "../../components/RegisteredUsers";
 import CustomButton from "../../components/ui/CustomButton";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Cookies from "js-cookie";
+import { MyContext } from "../../context/ContextProvider";
 
 export default function RegistrationLookup() {
   const [loading, setLoading] = useState(false);
   const [userList, setUserList] = useState([]);
   const [rowUserData, setRowUserData] = useState(null);
-
-
+  const { fetchAllClaimParts } = useContext(MyContext);
 
   const lookupApi = async () => {
     try {
@@ -34,7 +34,6 @@ export default function RegistrationLookup() {
   };
 
   const getRowData = (userData) => {
-    console.log(userData?.id, "testing userData");
     setRowUserData(userData);
   };
 
@@ -42,8 +41,11 @@ export default function RegistrationLookup() {
     lookupApi();
   }, []);
 
+  const handleShowParts = (id) => {
+    localStorage.setItem("idd",id)
+    fetchAllClaimParts(id);
+  };
 
-  
   return (
     <Card
       sx={{
@@ -83,6 +85,7 @@ export default function RegistrationLookup() {
             buttonName="View Registration"
             variant="contained"
             disable={!rowUserData}
+            onClick={() => handleShowParts(rowUserData?.id)}
           />
         </Link>
       </Box>

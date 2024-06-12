@@ -12,8 +12,6 @@ export default function NewPassword() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { email } = useParams();
-    console.log({email : email}, 'encodedEmail')
-
     const navigate = useNavigate();
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
         useFormik({
@@ -28,7 +26,6 @@ export default function NewPassword() {
                     confirmPassword: values.confirmpassword,
                     email: email
                 }
-                console.log(payload,'values==values')
                 try {
                     const res = await axiosInstance.post('api/auth/reset/confirm/', payload);
                     if (res.status === 200) {

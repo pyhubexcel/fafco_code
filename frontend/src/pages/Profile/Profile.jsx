@@ -73,7 +73,6 @@ const ProfileScreen = () => {
         toast.success('Profile Updated')
       } 
     } catch (error) {
-      console.error('Error updating profile:', error);
       toast.error(error.response.data.phone[0])
     }
   };
