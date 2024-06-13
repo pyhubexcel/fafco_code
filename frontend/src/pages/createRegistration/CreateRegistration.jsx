@@ -171,7 +171,7 @@ export default function CreateRegistration() {
                     size="small"
                     required
                     value={inputData[item.name]}
-                    onChange={handleChange}
+                    onChange={!(item.name=="address") && handleChange}
                   />
                 </div>
               ) : (

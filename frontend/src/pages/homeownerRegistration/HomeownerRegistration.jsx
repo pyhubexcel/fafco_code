@@ -473,13 +473,13 @@ export default function ViewRegistration() {
                             onChange={handleFileUploadChangeShowParts}
                           />
                         </FormControl>
-                        <Box sx={{ alignItems: "right" }}>
+                        {/* <Box sx={{ alignItems: "right" }}>
                           <CustomButton
                             buttonName="Upload File"
                             variant="contained"
                             type={"submit"}
                           />
-                        </Box>
+                        </Box> */}
                       </Box>
                     </form>
                   </Box>
