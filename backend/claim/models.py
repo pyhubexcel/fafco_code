@@ -1,20 +1,24 @@
 from django.db import models
 from user.models import Customer, Profile
+from part.models import Part
+from user.models import Profile
+# from MultiFileField.field import MultiFileField
+import json
 
 
 class Claim(models.Model):
 
-    Received = 0
+    Draft = 0
     Submitted = 1
-    Processed = 3
+    Pending = 3
     Credited = 6
     Denied = 7
     Voided = 99
 
     Claim_status = [
-        (Received, 'Received'),
+        (Draft, 'Draft'),
         (Submitted, 'Submitted'),
-        (Processed, 'Processed'),
+        (Pending, 'Pending'),
         (Credited, 'Credited'),
         (Denied, 'Denied'),
         (Voided, 'Voided')
@@ -42,33 +46,31 @@ class Claim(models.Model):
 
     Repair = 1
     replace = 2
+
     CLAIM_ACTION = [
         (Repair, 'Repair'),
         (replace, 'replace'),
     ]
-
-    registration = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    dealer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
-    date_entered = models.DateField(auto_now_add=True)
-    service_date = models.DateField(auto_now=True)
+    parts = models.ManyToManyField(Part, related_name='multiple_claims', blank=True,null=True)
+    part_id= models.ForeignKey(Part, on_delete=models.CASCADE,blank=True,null=True)
     status = models.SmallIntegerField(choices=Claim_status,blank=True, null=True)
-    status_code = models.SmallIntegerField()
-    date_finalized = models.DateField(blank=True, null=True)
-    csr_note = models.TextField(blank=True, null=True)
-    user_note = models.TextField(blank=True, null=True)
-    dealer_ref_number = models.CharField(max_length=255, blank=True, null=True)
+    add_comment = models.TextField(blank=True, null=True)
     claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION, blank=True, null=True)
     part_problem = models.PositiveSmallIntegerField(choices=PART_PROBLEM,blank=True,null=True)
+    # documents = models.FileField(upload_to='documents/', blank=True, null=True)
+    documents = models.JSONField(default=list, blank=True)
 
     def __str__(self) -> str:
         return self.registration.customer.username
+
+
 
 
 class UploadClaimDocument(models.Model):
     document_note = models.CharField(max_length=255)
     document = models.FileField(upload_to ='documents/upload') 
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    rmaid = models.ForeignKey(
-        Claim, on_delete=models.CASCADE,null=True,blank=True,
-        related_name='rmaid'
+    regid = models.ForeignKey(
+        Profile, on_delete=models.CASCADE,null=True,blank=True,
+        related_name='profile'
     )

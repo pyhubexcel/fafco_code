@@ -19,3 +19,15 @@ class UploadClaimSerializer(serializers.ModelSerializer):
         if instance.document:
             return generate_absolute_uri(request, instance.document.url)
         return ""
+
+
+
+class ClaimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Claim
+        fields = '__all__'
+        read_only_fields = ('documents',)  
+
+        
+class SubmitClaimSerializer(serializers.Serializer):
+    profile_id = serializers.IntegerField()

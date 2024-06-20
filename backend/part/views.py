@@ -26,6 +26,7 @@ class PartAPI(APIView):
     #     parts = get_object_or_404(Profile, customer=request.user.id,
     #                               pk=data["profile_id"])
         
+        
     #     data["registration"] = parts.id
     #     serializer = PartSerializer(data=data)
     #     serializer.id and serializer.part_number 
@@ -52,9 +53,9 @@ class PartAPI(APIView):
         if serializer.is_valid():
             part = serializer.save()
             
-            part_number = str(part.part_number).zfill(8)  
-            serial_number = str(part.id).zfill(6)  
-            barcode = f"{serial_number}-{part_number}" 
+            part_number = str(part.part_number).zfill(6)  
+            serial_number = str(part.id).zfill(8)  
+            barcode = f"{part_number}-{serial_number}" 
             part.barcode = barcode 
             part.save()  
             response_data = serializer.data
@@ -84,6 +85,7 @@ class PartupdatedeleteAPI(APIView):
     
 
     def get(self, request, profile_id, part_id):
+        
         
         part = get_object_or_404(Part, registration=profile_id, pk=part_id)
         data = {
