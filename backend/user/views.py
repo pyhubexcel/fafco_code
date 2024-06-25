@@ -316,12 +316,12 @@ class ProfileAPI(APIView):
         if existing_profile:
             if existing_profile.current_dealer.id == request.user.id:
                 return Response(
-                    {"message": "The address is previously registered. Redirecting to viewRegistration."},
+                    {"message": "This address is already registered by you"},
                     status=status.HTTP_200_OK
                 )
             else:
                 return Response(
-                    {"message": "The address is already registered by another user. Please contact customer service."},
+                    {"message": "The address is already registered by another user"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -348,20 +348,22 @@ class ProfileDetailAPI(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk):
-        user_profile = get_object_or_404(Profile,
-                                         customer=request.user.id, pk=pk)
+        user_profile = get_object_or_404(Profile, customer=request.user.id, pk=pk)
 
-        serializer = ProfileSerializer(
-            user_profile, data=request.data,
-            partial=True
-        )
-        serializer.is_valid(raise_exception=False)
-        serializer.save()
-        response_data = {
-         "message": "Updated Successfully",
-         "data": serializer.data,
-        }
-        return Response(response_data, status=status.HTTP_200_OK)
+        allowed_fields = {'name'}
+        data = {key: value for key, value in request.data.items() if key in allowed_fields}
+
+        serializer = ProfileSerializer(user_profile, data=data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            response_data = {
+                "message": "Name Updated Successfully",
+                # "data": serializer.data,p 
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk):
         user = get_object_or_404(Profile, customer=request.user.id, pk=pk)

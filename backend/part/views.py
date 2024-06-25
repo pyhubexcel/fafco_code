@@ -119,12 +119,27 @@ class PartupdatedeleteAPI(APIView):
         serializer = PartSerializer(part, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            response = Response(serializer.data, status=200)
+
+            part_number_str = str(part.part_number).zfill(6)
+            serial_number_str = str(part.id).zfill(8)
+            part.barcode = f"{part_number_str}-{serial_number_str}"
+            part.save()
+
+            response_data = serializer.data
+            response_data["barcode"] = part.barcode
+            response = Response(response_data, status=200)
             response.success_message = "Updated Data Successfully"
             return response
+        
         response = Response(serializer.errors, status=200)
-        response.success_message = "Error Occured."
+        response.success_message = "Error Occurred."
         return response
+    #         response = Response(serializer.data, status=200)
+    #         response.success_message = "Updated Data Successfully"
+    #         return response
+    #     response = Response(serializer.errors, status=200)
+    #     response.success_message = "Error Occured."
+    #     return response
 
     def delete(self, request, profile_id, part_id):
         part = get_object_or_404(Part, pk=part_id, registration=profile_id)

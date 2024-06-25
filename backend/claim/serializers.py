@@ -14,11 +14,11 @@ class UploadClaimSerializer(serializers.ModelSerializer):
         model = UploadClaimDocument
         fields = '__all__'
 
-    def get_document(self, instance):
-        request = self.context.get("request")
-        if instance.document:
-            return generate_absolute_uri(request, instance.document.url)
-        return ""
+    # def get_document(self, instance):
+    #     request = self.context.get("request")
+    #     if instance.document:
+    #         return generate_absolute_uri(request, instance.document.url)
+    #     return ""
 
 
 
