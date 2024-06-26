@@ -116,8 +116,8 @@ class UploadClaimeDocumentAPI(APIView):
         response_serializer = UploadClaimSerializer(document)
         return Response({
             "message": "Document uploaded successfully",
-            # "document_id": document.id,
-            # "data": response_serializer.data
+            "document_id": document.id,
+            "data": response_serializer.data
         }, status=201)
 
 
@@ -134,15 +134,7 @@ class UploadClaimeDocumentAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def get(self, request, profile_id=None, document_id=None):
-        if document_id:
-            try:
-                document = UploadClaimDocument.objects.get(id=document_id, regid__customer=request.user)
-                serializer = UploadClaimSerializer(document)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            except UploadClaimDocument.DoesNotExist:
-                return Response({"error": "Document not found."}, status=status.HTTP_404_NOT_FOUND)
-        
+    def get(self, request, profile_id=None):
         if profile_id:
             try:
                 profile = Profile.objects.get(id=profile_id, customer=request.user)
@@ -152,7 +144,8 @@ class UploadClaimeDocumentAPI(APIView):
             except Profile.DoesNotExist:
                 return Response({"error": "Profile not found."}, status=status.HTTP_404_NOT_FOUND)
         
-        return Response({"error": "Profile ID or Document ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Profile ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
 
     # def get(self, request, pk):
     #     claims_docs = get_object_or_404(UploadClaimDocument, pk=pk)
@@ -224,39 +217,6 @@ class AddPartToClaimAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
-class RetriveAddPartToClaimAPIView(APIView):
-
-    def get(self, request, profile_id, part_id):
-        try:
-            profile = Profile.objects.get(id=profile_id)
-        except Profile.DoesNotExist:
-            return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        try:
-            part = Part.objects.get(id=part_id)
-        except Part.DoesNotExist:
-            return Response({"error": "Part not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        # Filtering Claims related to the given Part and Profile
-        claims = Claim.objects.filter(part=part, part__registration__profile=profile)
-        serializer = ClaimSerializer(claims, many=True)
-        
-        response_data = []
-        for claim in claims:
-            response_data.append({
-                "ramid_id": claim.id,
-                "claim_action": claim.claim_action,
-                "part_problem": claim.part_problem,
-                "part_id": claim.part.id,
-                "part_number": part.part_number,
-                "regid": part.registration.id,
-                "add_comment": claim.add_comment,
-                "status": claim.status
-            })
-
-        return Response(response_data, status=status.HTTP_200_OK)
-
-
 
 class SubmitClaimAPIView(APIView):
 
@@ -289,7 +249,7 @@ class SubmitClaimAPIView(APIView):
                 "part_id": claim.part_id.id,
                 "action": claim.claim_action,
                 "problem": claim.part_problem,
-                "status": claim.status,
+                "status": claim.get_status_display(),
                 "add_comment": claim.add_comment,
             }
             response_data.append(claim_data)
