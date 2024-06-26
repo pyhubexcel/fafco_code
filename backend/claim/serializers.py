@@ -14,8 +14,20 @@ class UploadClaimSerializer(serializers.ModelSerializer):
         model = UploadClaimDocument
         fields = '__all__'
 
-    def get_document(self, instance):
-        request = self.context.get("request")
-        if instance.document:
-            return generate_absolute_uri(request, instance.document.url)
-        return ""
+    # def get_document(self, instance):
+    #     request = self.context.get("request")
+    #     if instance.document:
+    #         return generate_absolute_uri(request, instance.document.url)
+    #     return ""
+
+
+
+class ClaimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Claim
+        fields = '__all__'
+        read_only_fields = ('documents',)  
+
+        
+class SubmitClaimSerializer(serializers.Serializer):
+    profile_id = serializers.IntegerField()
