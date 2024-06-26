@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import HeaderLogo from '../assets/img/Fafco-Portal-Logo.jpg'
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Avatar, Backdrop, Box, CircularProgress, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { logOutUser, resetReducer } from "../redux/slices/LogoutSlice"
+import { MyContext } from '../context/ContextProvider';
 
 const navbarLinks = [
   {
@@ -22,10 +23,10 @@ const navbarLinks = [
     name: ' CREATE REGISTRATION',
     link: '/addressValidation',
   },
-  {
-    name: ' UPDATE ACCOUNT',
-    link: '/updateInfo',
-  },
+  // {
+  //   name: ' UPDATE ACCOUNT',
+  //   link: '/updateInfo',
+  // },
 ]
 
 const Header = () => {
@@ -39,6 +40,7 @@ const Header = () => {
   const loginSliceData = useSelector((state) => state.LoginSlice?.data?.success);
   const logOutState = useSelector((state) => state.logOutSlice?.data?.success);
   const logOutLoding = useSelector((state) => state.logOutSlice?.isLoading);
+  const { updateName,setUpdateName } = useContext(MyContext);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -66,10 +68,13 @@ const Header = () => {
       Navigation('/login')
       dispatch(resetReducer());
     }
+    if(updateName){
+      setUpdateName(false)
+    }
     // if (!token) {
     //     Navigation('/login');
     // }
-  }, [loginSliceData, logOutState])
+  }, [loginSliceData, logOutState,updateName])
 
   return (
     <div className=" bg-white px-7 py-1 shadow-md ">
@@ -167,10 +172,10 @@ const Header = () => {
                       <span className="ml-2">Profile</span>
                     </Link>
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
+                  {/* <MenuItem onClick={handleClose}>
                     <Avatar /> My account
-                  </MenuItem>
-                  <Divider />
+                  </MenuItem> */}
+                  {/* <Divider /> */}
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
@@ -266,10 +271,10 @@ const Header = () => {
                     <span className="ml-2">Profile</span>
                   </Link>
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                {/* <MenuItem onClick={handleClose}>
                   <Avatar /> My account
-                </MenuItem>
-                <Divider />
+                </MenuItem> */}
+                {/* <Divider /> */}
                 <MenuItem onClick={handleLogout}>
                   <ListItemIcon>
                     <Logout fontSize="small" />

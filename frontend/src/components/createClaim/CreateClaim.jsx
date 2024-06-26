@@ -428,6 +428,7 @@ export default function CreateClaim() {
         }
       );
       setResStatus("");
+      console.log(res,"res")
       if (res.status === 200) {
         toast.success("Part updated successfully");
         setResStatus(res.data.status);

@@ -109,3 +109,7 @@ justify-content: start !important;
 .example::-webkit-scrollbar-thumb:hover {
   background: #555; /* Color of the thumb on hover */
 }
+
+.css-4ohuce-MuiTypography-root{
+  max-width: 100% !important;
+}

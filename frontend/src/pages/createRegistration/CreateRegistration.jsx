@@ -127,13 +127,13 @@ export default function CreateRegistration() {
       });
 
       if (res.status === 200) {
-        toast.success(res.message);
+        toast.success(res.data.message);
         navigate("/registrationLookup");
       } else {
-        toast.error(res.message);
+        toast.error(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.address[0]);
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

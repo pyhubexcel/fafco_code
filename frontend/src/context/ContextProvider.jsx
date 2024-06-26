@@ -9,6 +9,7 @@ const ContextProvider = ({ children }) => {
   const [resStatus, setResStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const token = Cookies.get("token");
+  const [updateName,setUpdateName]=useState(false)
 
 
 
@@ -44,6 +45,8 @@ const ContextProvider = ({ children }) => {
         setResStatus,
         fetchAllClaimParts,
         isLoading,
+        updateName,
+        setUpdateName
       }}
     >
       {children}

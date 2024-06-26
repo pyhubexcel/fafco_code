@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { FormControl, InputLabel, OutlinedInput } from "@mui/material";
 import Cookies from 'js-cookie';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CustomButton from "../../components/ui/CustomButton";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
+import { MyContext } from "../../context/ContextProvider";
 
 const ProfileScreen = () => {
   const [role, setRole] = useState(null);
@@ -14,6 +15,7 @@ const ProfileScreen = () => {
     phone: '',
     email: '',
   });
+  const { setUpdateName } = useContext(MyContext);
 
   const fetchUserDetails = useCallback(async () => {
     const token = Cookies.get('token');
@@ -71,6 +73,7 @@ const ProfileScreen = () => {
         Cookies.remove('name')
         Cookies.set('name', inputData.name)
         toast.success('Profile Updated')
+        setUpdateName(true)
       } 
     } catch (error) {
       toast.error(error.response.data.phone[0])

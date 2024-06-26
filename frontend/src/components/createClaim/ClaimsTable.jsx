@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { MRT_Table, useMaterialReactTable } from "material-react-table";
 
-export const RevsTable = ({ data }) => {
+export const ClaimsTable = ({ data }) => {
+  console.log(data,"lhgjc")
   const columns = useMemo(
     () => [
       {
@@ -9,7 +10,7 @@ export const RevsTable = ({ data }) => {
         header: "Reg Id",
       },
       {
-        accessorKey: "PartId",
+        accessorKey: "part_id",
         header: "Part Id",
       },
       {
@@ -17,25 +18,21 @@ export const RevsTable = ({ data }) => {
         header: "Ram Id",
       },
       {
-        accessorKey: "Action",
+        accessorKey: "action",
         header: "Action",
       },
       {
-        accessorKey: "Problem",
+        accessorKey: "problem",
         header: "Problem",
-      },
-      {
-        accessorKey: "Part",
-        header: "Part No",
       },
       {
         accessorKey: "status",
         header: "Status",
       },
-      // {
-      //   accessorKey: 'Barcode',
-      //   header: 'Barcode',
-      // },
+      {
+        accessorKey: "add_comment",
+        header: "Comments",
+      },
     ],
     []
   );
@@ -80,4 +77,4 @@ export const RevsTable = ({ data }) => {
   return <MRT_Table table={table} />;
 };
 
-export default RevsTable;
+export default ClaimsTable;
