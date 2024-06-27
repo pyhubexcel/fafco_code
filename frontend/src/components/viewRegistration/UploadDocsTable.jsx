@@ -65,6 +65,10 @@ export const UploadDocsTable = ({ data, handleEditParts, handleViewParts }) => {
         accessorKey: "regid",
         header: "Reg Id",
       },
+      {
+        accessorKey: "document",
+        header: "Document",
+      }
     ],
     []
   );

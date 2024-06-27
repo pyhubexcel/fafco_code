@@ -55,6 +55,18 @@ const style = {
   borderRadius: "10px",
   margin: "auto",
 };
+const styles = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "60%",
+  bgcolor: "background.paper",
+  boxShadow: 10,
+  p: 4,
+  borderRadius: "10px",
+  margin: "auto",
+};
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -125,6 +137,7 @@ export default function ViewRegistration() {
 
   const [tableLoading, setTableLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(true);
+  const [imageData, setImageData] = useState(null);
 
   useEffect(() => {
     if (uploadState.uploadInput !== null) {
@@ -190,6 +203,7 @@ export default function ViewRegistration() {
             regid: detail.regid,
             uploaded: convertDateFormat(detail.uploaded_at),
             documentnote: detail.document_note,
+            document: detail.document,
           };
           return data;
         });
@@ -210,7 +224,6 @@ export default function ViewRegistration() {
         profile_id: id,
       };
 
-      console.log(data, "===========");
       const res = await axiosInstance.post(
         `api/claims/upload/document/`,
         data,
@@ -222,6 +235,7 @@ export default function ViewRegistration() {
         }
       );
       if (res.status == 201) {
+        toast.success(res.data.message);
         getDocumentData();
         console.log(res, "------");
         // const data = {
@@ -240,7 +254,7 @@ export default function ViewRegistration() {
         if (fileInput) {
           fileInput.value = null;
         }
-        toast.success(res.data.message);
+        
       }
     } catch (error) {
       console.log("Error:", error);
@@ -355,6 +369,7 @@ export default function ViewRegistration() {
       );
       console.log(response.data.claims, "===+++++");
       if (response.status == 200) {
+        toast.success(response.data.message);
         getClaimedPart();
         setClaimedPartData([]);
         setShowSubmit(true);
@@ -367,7 +382,7 @@ export default function ViewRegistration() {
         //   uploadList: "",
         //   comment: "",
         // });
-        toast.success(response.data.message);
+        
       }
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
@@ -403,41 +418,55 @@ export default function ViewRegistration() {
     setTableLoading(false);
   };
 
-  const handleAddPart = () => {
-    const partData = {
-      part_id: selectedPart.id,
-      // repairDate: formValues.repairDate,
-      // barcode: formValues.barcode,
-      claim_action: formValues.action_id,
-      part_problem: formValues.problem_id,
-      documents: uploadFileList,
-      //comment: formValues.comment,
-      add_comment: formValues.comment,
-      profile: id,
-    };
-    const element = document.getElementsByClassName(
-      "css-cdprif-MuiButtonBase-root-MuiButton-root"
-    );
-    if (element.length > 0) {
-      const elements = element[0];
-      elements.click();
+  const errorField=()=>{
+    if(formValues.action_id === '' && formValues.problem_id === ''){
+      toast.error("Action and Problem Fields are required")
+    }else if (formValues.action_id === ''){
+      toast.error("Action Field is required")
+    }else{
+      toast.error("Problem Field is required")
     }
-    setAllFormData(partData);
-    AddPartApi(partData);
-    setSelectedPart(null);
-    setUploadFileList([]);
-    setUploadState({
-      uploadInput: null,
-    });
-    setFormValues({
-      repairDate: "",
-      action_id: "",
-      problem_id: "",
-      barcode: "",
-      uploadFile: null,
-      uploadList: "",
-      comment: "",
-    });
+  }
+
+  const handleAddPart = () => {
+    if (formValues.action_id !== '' && formValues.problem_id !== '') {
+      const partData = {
+        part_id: selectedPart.id,
+        // repairDate: formValues.repairDate,
+        // barcode: formValues.barcode,
+        claim_action: formValues.action_id,
+        part_problem: formValues.problem_id,
+        documents: uploadFileList,
+        //comment: formValues.comment,
+        add_comment: formValues.comment,
+        profile: id,
+      };
+      const element = document.getElementsByClassName(
+        "css-cdprif-MuiButtonBase-root-MuiButton-root"
+      );
+      if (element.length > 0) {
+        const elements = element[0];
+        elements.click();
+      }
+      setAllFormData(partData);
+      AddPartApi(partData);
+      setSelectedPart(null);
+      setUploadFileList([]);
+      setUploadState({
+        uploadInput: null,
+      });
+      setFormValues({
+        repairDate: "",
+        action_id: "",
+        problem_id: "",
+        barcode: "",
+        uploadFile: null,
+        uploadList: "",
+        comment: "",
+      });
+    }else{
+      errorField()
+    }
   };
 
   const AddPartApi = async (partData) => {
@@ -540,12 +569,16 @@ export default function ViewRegistration() {
   };
 
   const handleEditParts = (data) => {
-    console.log(data, "hgcfg");
+    setUploadDocEditState({
+      commentInput: data.documentnote,
+      uploadInput: data.document,
+    });
     setEditDocDetails({
       documentid: data.documentid,
       documentnote: data.documentnote,
       regid: data.regid,
       uploaded: data.uploaded,
+      document: data.document,
     });
     setOpenEditDoc(true);
   };
@@ -554,7 +587,7 @@ export default function ViewRegistration() {
     console.log(uploadDocEditState, "values");
     const data = {
       document_note: uploadDocEditState.commentInput,
-      document: uploadDocEditState.uploadFile,
+      document: uploadDocEditState.uploadInput,
       profile_id: id,
     };
     try {
@@ -563,15 +596,16 @@ export default function ViewRegistration() {
         data,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
         }
       );
       console.log(response.data, "===+++++");
       if (response.status == 200) {
-        getDocumentData();
         toast.success(response.data.message);
+        getDocumentData();
+        
       }
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
@@ -581,14 +615,35 @@ export default function ViewRegistration() {
 
   const handleClose = () => {
     setOpenEditDoc(false);
+    setEditDocDetails(null);
   };
 
-  const handleViewParts = () => {
+  const fetchImage = async (data) => {
+    try {
+      const response = await axiosInstance.get(data, {
+        responseType: "blob",
+      });
+
+      const reader = new FileReader();
+      reader.readAsDataURL(response.data);
+
+      reader.onloadend = () => {
+        setImageData(reader.result);
+      };
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  const handleViewParts = (data) => {
+    fetchImage(data.document);
     setOpenViewDoc(true);
   };
 
   const handleViewClose = () => {
     setOpenViewDoc(false);
+    setEditDocDetails(null);
+    setImageData(null);
   };
 
   return (
@@ -709,7 +764,7 @@ export default function ViewRegistration() {
                           fontWeight={"bold"}
                           color={"gray"}
                         >
-                          Action:
+                          <span style={{color:"red"}}>*</span>Action:
                         </Typography>
                         <CommonSelect
                           name={"action_id"}
@@ -729,7 +784,7 @@ export default function ViewRegistration() {
                           fontWeight={"bold"}
                           color={"gray"}
                         >
-                          Problem:
+                          <span style={{color:"red"}}>*</span>Problem:
                         </Typography>
                         <CommonSelect
                           name={"problem_id"}
@@ -1010,8 +1065,18 @@ export default function ViewRegistration() {
               >
                 <Box sx={style}>
                   <form onSubmit={handleSubmit}>
-                    <Box width={"400px"} my={2}>
-                      <Box my={2}>
+                    <Box my={2}>
+                      <Box gap={1} my={2}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontSize: "15px",
+                            fontWeight: "600",
+                            color: "gray",
+                          }}
+                        >
+                          Upload Doc:
+                        </Typography>
                         <TextField
                           type="file"
                           ref={fileInputRef}
@@ -1019,11 +1084,20 @@ export default function ViewRegistration() {
                           onChange={handleFileUploadEditChange}
                         />
                       </Box>
-                      <Box display={"flex"} alignItems={"center"} gap={1}>
-                        <Typography>Comment:</Typography>
+                      <Box gap={1}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontSize: "15px",
+                            fontWeight: "600",
+                            color: "gray",
+                          }}
+                        >
+                          Comment:
+                        </Typography>
                         <TextField
+                          style={{ width: "100%" }}
                           size="small"
-                          width="50%"
                           placeholder="Enter document name"
                           value={uploadDocEditState.commentInput}
                           onChange={handleUploadEditChange}
@@ -1046,12 +1120,22 @@ export default function ViewRegistration() {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
               >
-                <Box sx={style}>
-                  <Box width={"400px"} my={2}>
+                <Box sx={styles}>
+                  <Box my={2}>
                     <Box my={2}>
-                      <Typography>Document Note</Typography>
-                      <Typography>Uploaded</Typography>
-                      <Typography>Reg Id</Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          color: "gray",
+                        }}
+                      >
+                        Preview the Doc:
+                      </Typography>
+                      <Box>
+                        <img src={imageData} alt="doc" />
+                      </Box>
                     </Box>
                   </Box>
                   <Box display={"flex"} justifyContent={"center"} gap={2}>
