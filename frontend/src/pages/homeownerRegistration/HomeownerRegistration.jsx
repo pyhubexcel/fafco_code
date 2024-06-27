@@ -1,6 +1,7 @@
 import {
   Box,
   Card,
+  CircularProgress,
   FormControl,
   Modal,
   Stack,
@@ -122,7 +123,8 @@ export default function ViewRegistration() {
   const [openEditDoc, setOpenEditDoc] = useState(false);
   const [openViewDoc, setOpenViewDoc] = useState(false);
 
-  const [tableLoading,setTableLoading] = useState(false)
+  const [tableLoading, setTableLoading] = useState(false);
+  const [showSubmit, setShowSubmit] = useState(true);
 
   useEffect(() => {
     if (uploadState.uploadInput !== null) {
@@ -164,7 +166,7 @@ export default function ViewRegistration() {
     const seconds = String(date.getSeconds()).padStart(2, "0");
     const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     return formattedDate;
-}
+  }
 
   useEffect(() => {
     getDocumentData();
@@ -172,7 +174,7 @@ export default function ViewRegistration() {
   }, []);
 
   const getDocumentData = async () => {
-    setTableLoading(true)
+    setTableLoading(true);
     try {
       const response = await axiosInstance.get(`api/claims/documents/${id}/`, {
         headers: {
@@ -192,7 +194,7 @@ export default function ViewRegistration() {
           return data;
         });
         setDocDetails(data1);
-        setTableLoading(false)
+        setTableLoading(false);
       }
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
@@ -355,6 +357,7 @@ export default function ViewRegistration() {
       if (response.status == 200) {
         getClaimedPart();
         setClaimedPartData([]);
+        setShowSubmit(true);
         // setFormValues({
         //   repairDate: "",
         //   action_id: "",
@@ -372,6 +375,7 @@ export default function ViewRegistration() {
   };
 
   const getClaimedPart = async () => {
+    setTableLoading(true);
     try {
       const response = await axiosInstance.get(
         `api/claims/retrieve-claims/${id}/`
@@ -396,6 +400,7 @@ export default function ViewRegistration() {
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
     }
+    setTableLoading(false);
   };
 
   const handleAddPart = () => {
@@ -444,6 +449,7 @@ export default function ViewRegistration() {
         },
       });
       if (res.status == 201) {
+        setShowSubmit(false);
         toast.success("Part Uploaded");
         const data = {
           Action: optionDataAction[res.data.claim_action - 1].value,
@@ -549,7 +555,7 @@ export default function ViewRegistration() {
     const data = {
       document_note: uploadDocEditState.commentInput,
       document: uploadDocEditState.uploadFile,
-      profile_id:id,
+      profile_id: id,
     };
     try {
       const response = await axiosInstance.put(
@@ -564,7 +570,7 @@ export default function ViewRegistration() {
       );
       console.log(response.data, "===+++++");
       if (response.status == 200) {
-        getDocumentData()
+        getDocumentData();
         toast.success(response.data.message);
       }
     } catch (error) {
@@ -875,6 +881,7 @@ export default function ViewRegistration() {
                           <CustomButton
                             buttonName={"Add Part"}
                             variant="contained"
+                            disable={selectedPart === null}
                             onClick={handleAddPart}
                           />
                         </Box>
@@ -886,7 +893,7 @@ export default function ViewRegistration() {
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claimed Part
                   </Typography>
-                 
+
                   <RevsTable data={claimedPartData} />
                 </Box>
 
@@ -913,6 +920,7 @@ export default function ViewRegistration() {
                     <CustomButton
                       buttonName="Submit Claim"
                       variant="contained"
+                      disable={showSubmit}
                       onClick={submitClaim}
                     />
                   </Box>
@@ -921,8 +929,13 @@ export default function ViewRegistration() {
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claims
                   </Typography>
-                  {tableLoading? "loading/....":
-                  <ClaimsTable data={claimsData} />}
+                  {tableLoading ? (
+                    <Box textAlign={"center"}>
+                      <CircularProgress size={"1rem"} />
+                    </Box>
+                  ) : (
+                    <ClaimsTable data={claimsData} />
+                  )}
                 </Box>
               </Box>
             </Card>
@@ -948,11 +961,17 @@ export default function ViewRegistration() {
               </Box>
               <Box margin={3}>
                 <Box sx={{ overflow: "auto" }}>
-                  <UploadDocsTable
-                    data={docDetails}
-                    handleEditParts={handleEditParts}
-                    handleViewParts={handleViewParts}
-                  />
+                  {tableLoading ? (
+                    <Box textAlign={"center"}>
+                      <CircularProgress size={"1rem"} />
+                    </Box>
+                  ) : (
+                    <UploadDocsTable
+                      data={docDetails}
+                      handleEditParts={handleEditParts}
+                      handleViewParts={handleViewParts}
+                    />
+                  )}
                 </Box>
                 <form onSubmit={handleSubmit}>
                   <Box width={"400px"}>

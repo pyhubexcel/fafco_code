@@ -1,6 +1,7 @@
 import {
   Box,
   Card,
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -14,11 +15,12 @@ import CustomButton from "../ui/CustomButton";
 // import RevsTable from "./RevsTable";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 // import CommonSelect from "../Common/CommonSelect";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { MyContext } from "../../context/ContextProvider";
 
 const modalInputs = [
   {
@@ -70,6 +72,7 @@ const style = {
 export default function CreateClaim() {
   const { id } = useParams();
   const token = Cookies.get("token");
+  const { setShowPartsData } = useContext(MyContext);
   // const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   // const [payload, setPayload] = useState({});
@@ -142,6 +145,7 @@ export default function CreateClaim() {
   const handleDeleteClose = () => setOpenDelete(false);
   const [partNumbers, setPartNumbers] = useState([]);
   const [selectedPart, setSelectedPart] = useState(null);
+  const [tableLoading,setTableLoading] = useState(false)
 
   // const getOptionData = async () => {
   //   try {
@@ -262,9 +266,12 @@ export default function CreateClaim() {
     } catch (error) {
       console.log(error, "error");
     }
+    setShowPartsData(false)
   };
 
   const handleShowParts = async () => {
+    setTableLoading(true)
+    setShowPartsData(true)
     try {
       const res = await axiosInstance.get(
         `api/parts/part-detail/${Number(id)}`,
@@ -279,11 +286,12 @@ export default function CreateClaim() {
     } catch (error) {
       console.log(error, "error");
     }
+    setTableLoading(false)
   };
 
   useEffect(() => {
     handleShowParts();
-    fetchPartNumbers()
+    fetchPartNumbers();
   }, [resStatus]);
 
   // const handleActionChange = (event) => {
@@ -373,11 +381,13 @@ export default function CreateClaim() {
         `api/parts/part-details/${Number(registration)}/${Number(id)}`
       );
       if (response.status === 200 && response.statusText === "OK") {
+        setShowPartsData(true)
         setResStatus(response.data.status);
       }
     } catch (error) {
       console.error("Error:", error);
     }
+    setShowPartsData(false)
   };
 
   const handleEditParts = async (registration, id) => {
@@ -439,6 +449,7 @@ export default function CreateClaim() {
     } catch (error) {
       console.error("Error:", error);
     }
+    setShowPartsData(false)
   };
 
   return (
@@ -476,12 +487,13 @@ export default function CreateClaim() {
           <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
             Choose Part:
           </Typography>
+          {tableLoading? <Box textAlign={"center"}><CircularProgress size={"1rem"}/></Box>:
           <PartsTable
             handleOpen={handleOpen}
             handleDeleteParts={handleDeleteParts}
             partsData={partsData}
             handleEditParts={handleEditParts}
-          />
+          />}
         </Box>
         {/* <Box display={"flex"} gap={5} my={4}>
           <Box>

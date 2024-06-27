@@ -27,7 +27,7 @@ export const UploadDocsTable = ({ data, handleEditParts, handleViewParts }) => {
     () => [
       {
         accessorKey: "actionButtons",
-        header: "#",
+        header: "Actions",
         Cell: ({ row }) => (
           <div className="flex gap-4">
             <CustomButton

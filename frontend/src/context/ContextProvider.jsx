@@ -9,7 +9,8 @@ const ContextProvider = ({ children }) => {
   const [resStatus, setResStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const token = Cookies.get("token");
-  const [updateName,setUpdateName]=useState(false)
+  const [updateName,setUpdateName]=useState(false);
+  const [showPartsData,setShowPartsData]=useState(null)
 
 
 
@@ -35,7 +36,7 @@ const ContextProvider = ({ children }) => {
     if (viewPartId !== null || undefined || "") {
       fetchAllClaimParts(viewPartId);
     }
-  }, [resStatus,viewPartId]);
+  }, [resStatus,viewPartId,showPartsData]);
 
   return (
     <MyContext.Provider
@@ -46,7 +47,8 @@ const ContextProvider = ({ children }) => {
         fetchAllClaimParts,
         isLoading,
         updateName,
-        setUpdateName
+        setUpdateName,
+        setShowPartsData
       }}
     >
       {children}
