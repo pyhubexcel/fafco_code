@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
@@ -21,10 +21,10 @@ export default function ResetPassword() {
         try {
           const res = await axiosInstance.post('api/auth/forgot-password/', payload);
           if (res.status === 200) {
-            toast.success("mail sent successfully")
+            toast.success("mail sent successfully",{autoClose: 2000,})
           }
         } catch (error) {
-          toast.error(error?.response?.data?.detail)
+          toast.error(error?.response?.data?.detail,{autoClose: 2000,})
         } finally {
           setLoading(false)
         }
@@ -33,7 +33,7 @@ export default function ResetPassword() {
   return (
     <Box className="flex justify-center my-20">
       <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
-
+      <ToastContainer />
         <Box sx={{ padding: '20px', boxShadow: 'rgba(100, 100, 111, 0.2) 0px 5px 40px 0px' }}>
           <Typography sx={{ fontSize: '1.5rem', fontWeight: '700' }}>Password Reset</Typography>
           <Typography sx={{ fontSize: '1.05rem', fontWeight: '400', paddingY: "4px" }}>Enter your email to receive a password reset link</Typography>

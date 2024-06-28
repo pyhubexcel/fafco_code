@@ -65,6 +65,7 @@ const Header = () => {
       Cookies.remove('id')
       Cookies.remove('name')
       Cookies.remove('role')
+      localStorage.removeItem('idd')
       Navigation('/login')
       dispatch(resetReducer());
     }

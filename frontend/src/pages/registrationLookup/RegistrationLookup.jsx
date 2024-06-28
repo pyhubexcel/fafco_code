@@ -13,7 +13,7 @@ export default function RegistrationLookup() {
   const [loading, setLoading] = useState(false);
   const [userList, setUserList] = useState([]);
   const [rowUserData, setRowUserData] = useState(null);
-  const { fetchAllClaimParts } = useContext(MyContext);
+  const { fetchAllClaimParts,setShowPartsData } = useContext(MyContext);
 
   const lookupApi = async () => {
     try {
@@ -42,6 +42,7 @@ export default function RegistrationLookup() {
   }, []);
 
   const handleShowParts = (id) => {
+    setShowPartsData(true)
     localStorage.setItem("idd",id)
     fetchAllClaimParts(id);
   };

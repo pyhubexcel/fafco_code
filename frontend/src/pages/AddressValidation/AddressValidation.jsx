@@ -3,7 +3,7 @@ import axiosInstance from "../../utils/axios";
 import { Box, CircularProgress, TextField } from "@mui/material";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -61,14 +61,14 @@ export default function AddressValidation() {
       setAddressData(res);
 
       if (res.data.success === false) {
-        toast.error(res.data.message);
+        toast.error(res.data.message,{autoClose: 2000,});
         navigate("/");
       } else {
-        toast.success(res.data.message);
+        toast.success(res.data.message,{autoClose: 2000,});
         navigate("/createRegistration", { state: res.data });
       }
     } catch (error) {
-      toast.error("Address not Verified!!!");
+      toast.error("Address not Verified!!!",{autoClose: 2000,});
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,8 @@ export default function AddressValidation() {
 
   return (
     <div className="flex w-full">
-      <Toaster />
+      {/* <Toaster /> */}
+      <ToastContainer />
       <div className="bg-white w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
         <div className="text-3xl text-center text-blue-500 font-semibold ">
           Address Verification
@@ -199,7 +200,7 @@ export default function AddressValidation() {
               variant="contained"
             />
             {/* </Link> */}
-            <Toaster />
+            {/* <Toaster /> */}
           </div>
         </form>
       </div>

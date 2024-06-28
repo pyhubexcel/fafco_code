@@ -1,8 +1,10 @@
 import { Box, Card, Stack, Typography } from "@mui/material"
+import { ToastContainer } from "react-toastify"
 
 const HomeOwner = () => {
   return (
             <Card sx={{ margin:'25px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
+                <ToastContainer />
                 <Stack sx={{ padding: '5px' }} >
                     <Box gap={2} sx={{ textAlign: 'center', padding: '20px', display: "flex", flexDirection: "column" }}>
                         <Stack gap={3} >

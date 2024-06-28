@@ -40,6 +40,7 @@ export default function Footer() {
       Cookies.remove('id');
       Cookies.remove('name');
       Cookies.remove('role');
+      localStorage.removeItem('idd')
       Navigation('/login');
     }
     // if (!token && (urlPath === "/login" || urlPath !== "/register")) {

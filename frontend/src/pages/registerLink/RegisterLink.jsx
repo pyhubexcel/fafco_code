@@ -2,7 +2,7 @@ import { Box, Card, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import { useSelector } from "react-redux";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 export default function RegisterLink() {
@@ -18,17 +18,18 @@ export default function RegisterLink() {
         }
       });
       if (res.data.success) {
-        toast.success("email resend successfully");
+        toast.success("email resend successfully",{autoClose: 2000,});
       }
       else {
-        toast.error("please make registration first");
+        toast.error("please make registration first",{autoClose: 2000,});
       }
     } catch (error) {
-      toast.error("please make registration first");
+      toast.error("please make registration first",{autoClose: 2000,});
     }
   }
   return (
     <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px', margin: '20px' }}>
+      <ToastContainer />
       <Stack sx={{ padding: '10px' }} >
         <Box gap={3} sx={{ textAlign: 'center', padding: '20px', display: "flex", flexDirection: "column" }}>
           <Box sx={{ padding: '10px', }} >

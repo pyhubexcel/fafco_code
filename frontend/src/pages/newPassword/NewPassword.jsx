@@ -1,7 +1,7 @@
 import { Box, Card, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from "@mui/material";
 import CustomButton from "../../components/ui/CustomButton";
 import { useFormik } from "formik";
-import {toast} from "react-toastify"
+import {ToastContainer, toast} from "react-toastify"
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../../utils/axios";
@@ -29,12 +29,12 @@ export default function NewPassword() {
                 try {
                     const res = await axiosInstance.post('api/auth/reset/confirm/', payload);
                     if (res.status === 200) {
-                        toast.success("password updated successfully")
+                        toast.success("password updated successfully",{autoClose: 2000,})
                         navigate('/')
                     }
                 } catch (error) {
                     if (error)
-                        toast.error(error.response.data.error)
+                        toast.error(error.response.data.error,{autoClose: 2000,})
                 } finally {
                     setLoading(false)
                 }
@@ -43,7 +43,7 @@ export default function NewPassword() {
     return (
         <Box className="flex justify-center my-20">
             <Card sx={{ boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
-
+            <ToastContainer />
                 <Box sx={{ padding: '20px', boxShadow: 'rgba(100, 100, 111, 0.2) 0px 5px 40px 0px' }}>
                     <Typography sx={{ fontSize: '1.5rem', fontWeight: '700' }}>Password Reset</Typography>
                     <Typography sx={{ fontSize: '1.05rem', fontWeight: '400', paddingY: "4px" }}>Enter your email to receive a password reset link</Typography>
