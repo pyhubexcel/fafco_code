@@ -60,7 +60,7 @@ const styles = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "60%",
+  // width: "60%",
   bgcolor: "background.paper",
   boxShadow: 10,
   p: 4,
@@ -628,12 +628,17 @@ export default function ViewRegistration() {
         responseType: "blob",
       });
 
-      const reader = new FileReader();
-      reader.readAsDataURL(response.data);
+      if (data.includes(".pdf")) {
+        const url = URL.createObjectURL(response.data);
+        window.open(url);
+      } else {
+        const reader = new FileReader();
+        reader.readAsDataURL(response.data);
 
-      reader.onloadend = () => {
-        setImageData(reader.result);
-      };
+        reader.onloadend = () => {
+          setImageData(reader.result);
+        };
+      }
     } catch (error) {
       console.error("Error fetching image:", error);
     }
@@ -642,14 +647,17 @@ export default function ViewRegistration() {
 
   const handleViewParts = (data) => {
     fetchImage(data.document);
-    setOpenViewDoc(true);
+    if (data.document.includes(".pdf")) {
+      setOpenViewDoc(false);
+    } else {
+      setOpenViewDoc(true);
+    }
   };
 
   const handleViewClose = () => {
     setOpenViewDoc(false);
     setEditDocDetails(null);
     setImageData(null);
-    setNoImage("");
   };
 
   return (
@@ -1151,7 +1159,7 @@ export default function ViewRegistration() {
                             <CircularProgress size={"1rem"} />
                           </Box>
                         ) : (
-                          <img src={imageData} alt="doc" />
+                          <img src={imageData} alt="doc" width={"100%"}/>
                         )}
                       </Box>
                     </Box>
