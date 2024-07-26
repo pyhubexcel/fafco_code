@@ -14,7 +14,7 @@ export const RevsTable = ({ data }) => {
       },
       {
         accessorKey: "ramid",
-        header: "Ram Id",
+        header: "Rma Id",
       },
       {
         accessorKey: "Action",

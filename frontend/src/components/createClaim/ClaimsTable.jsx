@@ -15,7 +15,7 @@ export const ClaimsTable = ({ data }) => {
       },
       {
         accessorKey: "ramid",
-        header: "Ram Id",
+        header: "Rma Id",
       },
       {
         accessorKey: "action",

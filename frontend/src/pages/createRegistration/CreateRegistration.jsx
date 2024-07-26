@@ -41,11 +41,11 @@ const inputDataArray = [
     label: "Email",
     type: "text",
   },
-  {
-    name: "Current_dealer",
-    label: "Current Dealer",
-    type: "text",
-  },
+  // {
+  //   name: "Current_dealer",
+  //   label: "Current Dealer",
+  //   type: "text",
+  // },
 ];
 
 export default function CreateRegistration() {

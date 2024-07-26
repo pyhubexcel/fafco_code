@@ -238,7 +238,7 @@ export default function ViewRegistration() {
         }
       );
       if (res.status == 201) {
-        toast.success(res.data.message,{autoClose: 2000,});
+        toast.success(res.data.message, { autoClose: 2000 });
         getDocumentData();
         console.log(res, "------");
         // const data = {
@@ -281,7 +281,7 @@ export default function ViewRegistration() {
         },
       });
       if (res.status == 200) {
-        toast.success("Document Uploaded",{autoClose: 2000,});
+        toast.success("Document Uploaded", { autoClose: 2000 });
         setUploadState({
           uploadInput: null,
           commentInput: "",
@@ -371,7 +371,7 @@ export default function ViewRegistration() {
       );
       console.log(response.data.claims, "===+++++");
       if (response.status == 200) {
-        toast.success(response.data.message,{autoClose: 2000,});
+        toast.success(response.data.message, { autoClose: 2000 });
         getClaimedPart();
         setClaimedPartData([]);
         setShowSubmit(true);
@@ -421,11 +421,13 @@ export default function ViewRegistration() {
 
   const errorField = () => {
     if (formValues.action_id === "" && formValues.problem_id === "") {
-      toast.error("Action and Problem Fields are required",{autoClose: 2000,});
+      toast.error("Action and Problem Fields are required", {
+        autoClose: 2000,
+      });
     } else if (formValues.action_id === "") {
-      toast.error("Action Field is required",{autoClose: 2000,});
+      toast.error("Action Field is required", { autoClose: 2000 });
     } else {
-      toast.error("Problem Field is required",{autoClose: 2000,});
+      toast.error("Problem Field is required", { autoClose: 2000 });
     }
   };
 
@@ -480,7 +482,7 @@ export default function ViewRegistration() {
       });
       if (res.status == 201) {
         setShowSubmit(false);
-        toast.success("Part Uploaded",{autoClose: 2000,});
+        toast.success("Part Uploaded", { autoClose: 2000 });
         const data = {
           Action: optionDataAction[res.data.claim_action - 1].value,
           Problem: optionData[res.data.claim_action - 1].value,
@@ -524,7 +526,7 @@ export default function ViewRegistration() {
         }
       );
       if (res.status == 200) {
-        toast.success(res.data.message,{autoClose: 2000,});
+        toast.success(res.data.message, { autoClose: 2000 });
       }
     } catch (error) {
       console.log("Error:", error);
@@ -604,13 +606,13 @@ export default function ViewRegistration() {
       );
       console.log(response.data, "===+++++");
       if (response.status == 200) {
-        toast.success("Document Updated Successfully",{autoClose: 2000,});
+        toast.success("Document Updated Successfully", { autoClose: 2000 });
         getDocumentData();
       } else {
-        toast.error(response.data.message,{autoClose: 2000,});
+        toast.error(response.data.message, { autoClose: 2000 });
       }
     } catch (error) {
-      toast.error(error.response.data.document_note[0],{autoClose: 2000,});
+      toast.error(error.response.data.document_note[0], { autoClose: 2000 });
       throw new Error("Failed to submit claim. Please try again later.");
     }
     setOpenEditDoc(false);
@@ -718,9 +720,10 @@ export default function ViewRegistration() {
               onChange={handleChange}
               aria-label="basic tabs example"
             >
-              <Tab label="Show Parts" {...a11yProps(0)} />
+              <Tab label="Registered Parts" {...a11yProps(0)} />
               <Tab label="Upload Documents" {...a11yProps(1)} />
               <Tab label="Open Claim" {...a11yProps(2)} />
+              <Tab label="View Claims" {...a11yProps(3)} />
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
@@ -959,7 +962,7 @@ export default function ViewRegistration() {
                     </Stack>
                   </>
                 )}
-                <Box sx={{ overflow: "auto" }} mb={4}>
+                {/* <Box sx={{ overflow: "auto" }} mb={4}>
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claimed Part
                   </Typography>
@@ -970,10 +973,10 @@ export default function ViewRegistration() {
                   ) : (
                     <RevsTable data={claimedPartData} />
                   )}
-                </Box>
+                </Box> */}
 
-                <Box width={"100%"}>
-                  {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                {/* <Box width={"100%"}> */}
+                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
                     Add Comment:
                   </Typography>
                   <TextareaAutosize
@@ -991,7 +994,7 @@ export default function ViewRegistration() {
                     onChange={(e) => handleInputChange(e, "comment")}
                   /> */}
 
-                  <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                {/* <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
                     <CustomButton
                       buttonName="Submit Claim"
                       variant="contained"
@@ -999,8 +1002,8 @@ export default function ViewRegistration() {
                       onClick={submitClaim}
                     />
                   </Box>
-                </Box>
-                <Box sx={{ overflow: "auto" }} mb={4}>
+                </Box> */}
+                {/* <Box sx={{ overflow: "auto" }} mb={4}>
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claims
                   </Typography>
@@ -1011,7 +1014,7 @@ export default function ViewRegistration() {
                   ) : (
                     <ClaimsTable data={claimsData} />
                   )}
-                </Box>
+                </Box> */}
               </Box>
             </Card>
           </CustomTabPanel>
@@ -1159,7 +1162,7 @@ export default function ViewRegistration() {
                             <CircularProgress size={"1rem"} />
                           </Box>
                         ) : (
-                          <img src={imageData} alt="doc" width={"100%"}/>
+                          <img src={imageData} alt="doc" width={"100%"} />
                         )}
                       </Box>
                     </Box>
@@ -1176,6 +1179,63 @@ export default function ViewRegistration() {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
             <CreateClaim />
+            <Box sx={{ padding: "10px", m: 1 }}>
+              <Box sx={{ overflow: "auto" }} mb={4}>
+                <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                  *Claimed Part
+                </Typography>
+                {addPartLoading ? (
+                  <Box textAlign={"center"}>
+                    <CircularProgress size={"1rem"} />
+                  </Box>
+                ) : (
+                  <RevsTable data={claimedPartData} />
+                )}
+              </Box>
+
+              <Box width={"100%"}>
+                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                    Add Comment:
+                  </Typography>
+                  <TextareaAutosize
+                    aria-label="minimum height"
+                    minRows={4}
+                    style={{
+                      width: "100%",
+                      border: "1px solid gray",
+                      borderRadius: "5px",
+                      padding: "4px",
+                    }}
+                    placeholder="Add comment ..."
+                    name="comment"
+                    value={formValues.comment}
+                    onChange={(e) => handleInputChange(e, "comment")}
+                  /> */}
+
+                <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                  <CustomButton
+                    buttonName="Submit Claim"
+                    variant="contained"
+                    disable={showSubmit}
+                    onClick={submitClaim}
+                  />
+                </Box>
+              </Box>
+            </Box>
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={3}>
+            <Box sx={{ overflow: "auto" }} mb={4}>
+              <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                *Claims
+              </Typography>
+              {tableLoading ? (
+                <Box textAlign={"center"}>
+                  <CircularProgress size={"1rem"} />
+                </Box>
+              ) : (
+                <ClaimsTable data={claimsData} />
+              )}
+            </Box>
           </CustomTabPanel>
         </Box>
       </Card>

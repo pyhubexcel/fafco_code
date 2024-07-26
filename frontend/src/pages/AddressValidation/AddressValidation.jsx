@@ -103,7 +103,7 @@ export default function AddressValidation() {
       <ToastContainer />
       <div className="bg-white w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
         <div className="text-3xl text-center text-blue-500 font-semibold ">
-          Address Verification
+          Enter Registration Address
         </div>
         <form className="space-y-5" onSubmit={addressValidationApi}>
           <div className="space-y-1">
@@ -195,7 +195,7 @@ export default function AddressValidation() {
             {/* <Link to={addressData ? '/viewRegistration' : ''}> */}
             <CustomButton
               loading={loading}
-              buttonName="View"
+              buttonName="Use This Address"
               type="submit"
               variant="contained"
             />
