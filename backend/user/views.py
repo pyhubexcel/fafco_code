@@ -317,7 +317,7 @@ class ProfileAPI(APIView):
             if existing_profile.current_dealer.id == request.user.id:
                 return Response(
                     {"message": "This address is already registered by you"},
-                    status=status.HTTP_200_OK
+                    status=status.HTTP_400_BAD_REQUEST
                 )
             else:
                 return Response(
