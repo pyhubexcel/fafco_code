@@ -9,10 +9,10 @@ import {
 export const PartsTableView = ({ data, setSelectedPart }) => {
   const columns = useMemo(
     () => [
-      {
-        accessorKey: "id",
-        header: "Panel ID#",
-      },
+      // {
+      //   accessorKey: "id",
+      //   header: "Panel ID#",
+      // },
       {
         accessorKey: "part_number",
         header: "Part No",
@@ -29,10 +29,10 @@ export const PartsTableView = ({ data, setSelectedPart }) => {
         accessorKey: "date_installed",
         header: "Install Date",
       },
-      {
-        accessorKey: "product_line",
-        header: "Product Line",
-      },
+      // {
+      //   accessorKey: "product_line",
+      //   header: "Product Line",
+      // },
       // {
       //   accessorKey: "part_problem",
       //   header: "Part Problem",

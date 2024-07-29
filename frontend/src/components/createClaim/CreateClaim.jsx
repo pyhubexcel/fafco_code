@@ -245,9 +245,9 @@ export default function CreateClaim() {
       );
       if (res.status === 200) {
         toast.success("Added successfully", {
-          theme: "colored",
-          position: "top-center",
-          autoClose: 1000,
+          // theme: "colored",
+          // position: "top-center",
+          autoClose: 2000,
         });
         setOpen(false);
         handleShowParts();
@@ -440,7 +440,7 @@ export default function CreateClaim() {
       setResStatus("");
       console.log(res,"res")
       if (res.status === 200) {
-        toast.success("Part updated successfully");
+        toast.success("Part updated successfully",{autoClose: 2000,});
         setResStatus(res.data.status);
         setOpen(false);
       } else {
@@ -454,7 +454,7 @@ export default function CreateClaim() {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Card
         sx={{
           width: "100%",

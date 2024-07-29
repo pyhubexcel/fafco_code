@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/axios";
-import { toast } from "react-toastify";
 
 const initialState = {
   isLoading: false,

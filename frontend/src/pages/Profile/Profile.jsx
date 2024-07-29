@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CustomButton from "../../components/ui/CustomButton";
 import axiosInstance from "../../utils/axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { MyContext } from "../../context/ContextProvider";
 
 const ProfileScreen = () => {
@@ -72,16 +72,17 @@ const ProfileScreen = () => {
       if (response.status == 200) {
         Cookies.remove('name')
         Cookies.set('name', inputData.name)
-        toast.success('Profile Updated')
+        toast.success('Profile Updated',{autoClose: 2000,})
         setUpdateName(true)
       } 
     } catch (error) {
-      toast.error(error.response.data.phone[0])
+      toast.error(error.response.data.phone[0],{autoClose: 2000,})
     }
   };
 
   return (
     <div className="bg-white w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto my-6 px-4 py-3 rounded-xl space-y-3 shadow-2xl">
+      <ToastContainer />
       <div className="text-blue-500 flex justify-center">
         <AccountCircleIcon sx={{ fontSize: '130px' }} />
       </div>

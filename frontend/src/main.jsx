@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <>
     <BrowserRouter>
       <Provider store={store}>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <ContextProvider>
           <App />
         </ContextProvider>

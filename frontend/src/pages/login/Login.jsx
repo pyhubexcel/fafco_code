@@ -7,7 +7,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 import { login, resetReducer } from "../../redux/slices/LoginSlice";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Cookies from 'js-cookie';
@@ -38,18 +39,21 @@ export default function Login() {
 
   useEffect(() => {
     if (loginSliceData.success) {
-      toast.success("Login successfull");
+      toast.success("Login successfull",{autoClose: 2000,});
       // console.log('token', loginSliceData?.data?.access)
       Cookies.set('id', loginSliceData?.data?.id)
       Cookies.set('role', loginSliceData?.data?.customer_type)
       Cookies.set('name', loginSliceData?.data?.name)
       Cookies.set('token', loginSliceData?.data?.access)
- 
       dispatch(resetReducer());
       Navigate('/')
+      // setTimeout(() => {
+        
+      // }, 3000); 
+      
     }
     if (loginSliceData?.response?.data?.success === false) {
-      toast.error(loginSliceData?.response?.data?.message);
+      toast.error(loginSliceData?.response?.data?.message,{autoClose: 2000,});
       dispatch(resetReducer());
     }
   }, [loginSliceData, loginSliceData?.response?.data?.success])
@@ -57,9 +61,11 @@ export default function Login() {
 
   return (
     <div className="bg-white w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto my-6 px-4 py-3 rounded-xl space-y-3 shadow-2xl">
+     
       <div className="text-blue-500 flex justify-center ">
         <AccountCircleIcon sx={{ fontSize: '130px' }} />
       </div>
+      
       <div className="text-3xl text-center text-blue-500 font-semibold ">LOGIN HERE</div>
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-1">
@@ -79,6 +85,7 @@ export default function Login() {
           ) : null}
         </div>
         <div className="space-y-1">
+        {/* <ToastContainer /> */}
           <FormControl
             fullWidth
             variant="outlined"

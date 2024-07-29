@@ -18,7 +18,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useLocation, useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import CreateClaim from "../../components/createClaim/CreateClaim";
 import Cookies from "js-cookie";
 import { MyContext } from "../../context/ContextProvider";
@@ -60,7 +60,7 @@ const styles = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "60%",
+  // width: "60%",
   bgcolor: "background.paper",
   boxShadow: 10,
   p: 4,
@@ -80,6 +80,7 @@ function CustomTabPanel(props) {
     >
       {value === index && (
         <Box padding={{ xs: 1, sm: 3 }}>
+          <ToastContainer />
           <Box>{children}</Box>
         </Box>
       )}
@@ -136,8 +137,10 @@ export default function ViewRegistration() {
   const [openViewDoc, setOpenViewDoc] = useState(false);
 
   const [tableLoading, setTableLoading] = useState(false);
+  const [addPartLoading, setAddPartLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(true);
   const [imageData, setImageData] = useState(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
     if (uploadState.uploadInput !== null) {
@@ -235,7 +238,7 @@ export default function ViewRegistration() {
         }
       );
       if (res.status == 201) {
-        toast.success(res.data.message);
+        toast.success(res.data.message, { autoClose: 2000 });
         getDocumentData();
         console.log(res, "------");
         // const data = {
@@ -254,7 +257,6 @@ export default function ViewRegistration() {
         if (fileInput) {
           fileInput.value = null;
         }
-        
       }
     } catch (error) {
       console.log("Error:", error);
@@ -279,7 +281,7 @@ export default function ViewRegistration() {
         },
       });
       if (res.status == 200) {
-        toast.success("Document Uploaded");
+        toast.success("Document Uploaded", { autoClose: 2000 });
         setUploadState({
           uploadInput: null,
           commentInput: "",
@@ -369,7 +371,7 @@ export default function ViewRegistration() {
       );
       console.log(response.data.claims, "===+++++");
       if (response.status == 200) {
-        toast.success(response.data.message);
+        toast.success(response.data.message, { autoClose: 2000 });
         getClaimedPart();
         setClaimedPartData([]);
         setShowSubmit(true);
@@ -382,7 +384,6 @@ export default function ViewRegistration() {
         //   uploadList: "",
         //   comment: "",
         // });
-        
       }
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
@@ -418,18 +419,20 @@ export default function ViewRegistration() {
     setTableLoading(false);
   };
 
-  const errorField=()=>{
-    if(formValues.action_id === '' && formValues.problem_id === ''){
-      toast.error("Action and Problem Fields are required")
-    }else if (formValues.action_id === ''){
-      toast.error("Action Field is required")
-    }else{
-      toast.error("Problem Field is required")
+  const errorField = () => {
+    if (formValues.action_id === "" && formValues.problem_id === "") {
+      toast.error("Action and Problem Fields are required", {
+        autoClose: 2000,
+      });
+    } else if (formValues.action_id === "") {
+      toast.error("Action Field is required", { autoClose: 2000 });
+    } else {
+      toast.error("Problem Field is required", { autoClose: 2000 });
     }
-  }
+  };
 
   const handleAddPart = () => {
-    if (formValues.action_id !== '' && formValues.problem_id !== '') {
+    if (formValues.action_id !== "" && formValues.problem_id !== "") {
       const partData = {
         part_id: selectedPart.id,
         // repairDate: formValues.repairDate,
@@ -464,14 +467,14 @@ export default function ViewRegistration() {
         uploadList: "",
         comment: "",
       });
-    }else{
-      errorField()
+    } else {
+      errorField();
     }
   };
 
   const AddPartApi = async (partData) => {
     try {
-      setLoading(true);
+      setAddPartLoading(true);
       const res = await axiosInstance.post(`api/claims/add-part/`, partData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -479,7 +482,7 @@ export default function ViewRegistration() {
       });
       if (res.status == 201) {
         setShowSubmit(false);
-        toast.success("Part Uploaded");
+        toast.success("Part Uploaded", { autoClose: 2000 });
         const data = {
           Action: optionDataAction[res.data.claim_action - 1].value,
           Problem: optionData[res.data.claim_action - 1].value,
@@ -496,7 +499,7 @@ export default function ViewRegistration() {
     } catch (error) {
       console.log("Error:", error);
     } finally {
-      setLoading(false);
+      setAddPartLoading(false);
     }
   };
 
@@ -523,7 +526,7 @@ export default function ViewRegistration() {
         }
       );
       if (res.status == 200) {
-        toast.success(res.data.message);
+        toast.success(res.data.message, { autoClose: 2000 });
       }
     } catch (error) {
       console.log("Error:", error);
@@ -583,7 +586,7 @@ export default function ViewRegistration() {
     setOpenEditDoc(true);
   };
 
-  const handleUpdateParts = async () => {
+  const handleUpdateDocPool = async () => {
     console.log(uploadDocEditState, "values");
     const data = {
       document_note: uploadDocEditState.commentInput,
@@ -603,11 +606,13 @@ export default function ViewRegistration() {
       );
       console.log(response.data, "===+++++");
       if (response.status == 200) {
-        toast.success(response.data.message);
+        toast.success("Document Updated Successfully", { autoClose: 2000 });
         getDocumentData();
-        
+      } else {
+        toast.error(response.data.message, { autoClose: 2000 });
       }
     } catch (error) {
+      toast.error(error.response.data.document_note[0], { autoClose: 2000 });
       throw new Error("Failed to submit claim. Please try again later.");
     }
     setOpenEditDoc(false);
@@ -619,25 +624,36 @@ export default function ViewRegistration() {
   };
 
   const fetchImage = async (data) => {
+    setImageLoading(true);
     try {
       const response = await axiosInstance.get(data, {
         responseType: "blob",
       });
 
-      const reader = new FileReader();
-      reader.readAsDataURL(response.data);
+      if (data.includes(".pdf")) {
+        const url = URL.createObjectURL(response.data);
+        window.open(url);
+      } else {
+        const reader = new FileReader();
+        reader.readAsDataURL(response.data);
 
-      reader.onloadend = () => {
-        setImageData(reader.result);
-      };
+        reader.onloadend = () => {
+          setImageData(reader.result);
+        };
+      }
     } catch (error) {
       console.error("Error fetching image:", error);
     }
+    setImageLoading(false);
   };
 
   const handleViewParts = (data) => {
     fetchImage(data.document);
-    setOpenViewDoc(true);
+    if (data.document.includes(".pdf")) {
+      setOpenViewDoc(false);
+    } else {
+      setOpenViewDoc(true);
+    }
   };
 
   const handleViewClose = () => {
@@ -678,6 +694,7 @@ export default function ViewRegistration() {
           </Box> */}
         </div>
         <div className="flex flex-col gap-2 my-2 sm:flex-row sm:items-center">
+          {/* <ToastContainer /> */}
           <Typography sx={{ fontSize: "1.05rem", fontWeight: "600" }}>
             Owner Name:
           </Typography>
@@ -703,9 +720,10 @@ export default function ViewRegistration() {
               onChange={handleChange}
               aria-label="basic tabs example"
             >
-              <Tab label="Show Parts" {...a11yProps(0)} />
+              <Tab label="Registered Parts" {...a11yProps(0)} />
               <Tab label="Upload Documents" {...a11yProps(1)} />
               <Tab label="Open Claim" {...a11yProps(2)} />
+              <Tab label="View Claims" {...a11yProps(3)} />
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
@@ -764,7 +782,7 @@ export default function ViewRegistration() {
                           fontWeight={"bold"}
                           color={"gray"}
                         >
-                          <span style={{color:"red"}}>*</span>Action:
+                          <span style={{ color: "red" }}>*</span>Action:
                         </Typography>
                         <CommonSelect
                           name={"action_id"}
@@ -784,7 +802,7 @@ export default function ViewRegistration() {
                           fontWeight={"bold"}
                           color={"gray"}
                         >
-                          <span style={{color:"red"}}>*</span>Problem:
+                          <span style={{ color: "red" }}>*</span>Problem:
                         </Typography>
                         <CommonSelect
                           name={"problem_id"}
@@ -944,16 +962,21 @@ export default function ViewRegistration() {
                     </Stack>
                   </>
                 )}
-                <Box sx={{ overflow: "auto" }} mb={4}>
+                {/* <Box sx={{ overflow: "auto" }} mb={4}>
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claimed Part
                   </Typography>
+                  {addPartLoading ? (
+                    <Box textAlign={"center"}>
+                      <CircularProgress size={"1rem"} />
+                    </Box>
+                  ) : (
+                    <RevsTable data={claimedPartData} />
+                  )}
+                </Box> */}
 
-                  <RevsTable data={claimedPartData} />
-                </Box>
-
-                <Box width={"100%"}>
-                  {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                {/* <Box width={"100%"}> */}
+                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
                     Add Comment:
                   </Typography>
                   <TextareaAutosize
@@ -971,7 +994,7 @@ export default function ViewRegistration() {
                     onChange={(e) => handleInputChange(e, "comment")}
                   /> */}
 
-                  <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                {/* <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
                     <CustomButton
                       buttonName="Submit Claim"
                       variant="contained"
@@ -979,8 +1002,8 @@ export default function ViewRegistration() {
                       onClick={submitClaim}
                     />
                   </Box>
-                </Box>
-                <Box sx={{ overflow: "auto" }} mb={4}>
+                </Box> */}
+                {/* <Box sx={{ overflow: "auto" }} mb={4}>
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claims
                   </Typography>
@@ -991,7 +1014,7 @@ export default function ViewRegistration() {
                   ) : (
                     <ClaimsTable data={claimsData} />
                   )}
-                </Box>
+                </Box> */}
               </Box>
             </Card>
           </CustomTabPanel>
@@ -1109,7 +1132,7 @@ export default function ViewRegistration() {
                     <CustomButton buttonName={"Cancel"} onClick={handleClose} />
                     <CustomButton
                       buttonName={"update"}
-                      onClick={handleUpdateParts}
+                      onClick={handleUpdateDocPool}
                     />
                   </Box>
                 </Box>
@@ -1134,7 +1157,13 @@ export default function ViewRegistration() {
                         Preview the Doc:
                       </Typography>
                       <Box>
-                        <img src={imageData} alt="doc" />
+                        {imageLoading ? (
+                          <Box textAlign={"center"}>
+                            <CircularProgress size={"1rem"} />
+                          </Box>
+                        ) : (
+                          <img src={imageData} alt="doc" width={"100%"} />
+                        )}
                       </Box>
                     </Box>
                   </Box>
@@ -1150,6 +1179,63 @@ export default function ViewRegistration() {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
             <CreateClaim />
+            <Box sx={{ padding: "10px", m: 1 }}>
+              <Box sx={{ overflow: "auto" }} mb={4}>
+                <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                  *Claimed Part
+                </Typography>
+                {addPartLoading ? (
+                  <Box textAlign={"center"}>
+                    <CircularProgress size={"1rem"} />
+                  </Box>
+                ) : (
+                  <RevsTable data={claimedPartData} />
+                )}
+              </Box>
+
+              <Box width={"100%"}>
+                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                    Add Comment:
+                  </Typography>
+                  <TextareaAutosize
+                    aria-label="minimum height"
+                    minRows={4}
+                    style={{
+                      width: "100%",
+                      border: "1px solid gray",
+                      borderRadius: "5px",
+                      padding: "4px",
+                    }}
+                    placeholder="Add comment ..."
+                    name="comment"
+                    value={formValues.comment}
+                    onChange={(e) => handleInputChange(e, "comment")}
+                  /> */}
+
+                <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                  <CustomButton
+                    buttonName="Submit Claim"
+                    variant="contained"
+                    disable={showSubmit}
+                    onClick={submitClaim}
+                  />
+                </Box>
+              </Box>
+            </Box>
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={3}>
+            <Box sx={{ overflow: "auto" }} mb={4}>
+              <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                *Claims
+              </Typography>
+              {tableLoading ? (
+                <Box textAlign={"center"}>
+                  <CircularProgress size={"1rem"} />
+                </Box>
+              ) : (
+                <ClaimsTable data={claimsData} />
+              )}
+            </Box>
           </CustomTabPanel>
         </Box>
       </Card>

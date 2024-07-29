@@ -1,7 +1,7 @@
 import CustomButton from "../../components/ui/CustomButton";
 import { Autocomplete, Backdrop, Box, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import axiosInstance from "../../utils/axios";
 import Cookies from 'js-cookie';
 
@@ -65,13 +65,13 @@ export default function UpdateAccountInfo() {
       });
       if (res.status === 200) {
         setUpdateLoading(true);
-        toast.success(" changes saved");
+        toast.success(" changes saved",{autoClose: 2000,});
 
         Cookies.set('name', userDetails.name);
       
       }
     } catch (error) {
-      toast.error(error.response.data.address[0]);
+      toast.error(error.response.data.address[0],{autoClose: 2000,});
     } finally {
       setUpdateLoading(false);
     }
@@ -119,6 +119,7 @@ export default function UpdateAccountInfo() {
           </Backdrop>
         </div> :
         <div className="w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto bg-white my-6  px-4 py-10 rounded-xl space-y-6 shadow-2xl">
+          <ToastContainer />
           <div className="text-3xl text-center text-blue-500 font-semibold">Update Account Info</div>
           <form className="space-y-4" onSubmit={handleSubmit}>
             {signupElements.map((item, i) => (

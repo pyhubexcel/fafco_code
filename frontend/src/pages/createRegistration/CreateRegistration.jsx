@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import axiosInstance from "../../utils/axios";
 import { useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const inputDataArray = [
@@ -41,11 +41,11 @@ const inputDataArray = [
     label: "Email",
     type: "text",
   },
-  {
-    name: "Current_dealer",
-    label: "Current Dealer",
-    type: "text",
-  },
+  // {
+  //   name: "Current_dealer",
+  //   label: "Current Dealer",
+  //   type: "text",
+  // },
 ];
 
 export default function CreateRegistration() {
@@ -127,13 +127,13 @@ export default function CreateRegistration() {
       });
 
       if (res.status === 200) {
-        toast.success(res.data.message);
+        toast.success(res.data.message,{autoClose: 2000,});
         navigate("/registrationLookup");
       } else {
-        toast.error(res.data.message);
+        toast.error(res.data.message,{autoClose: 2000,});
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response.data.message,{autoClose: 2000,});
     } finally {
       setLoading(false);
     }
@@ -155,6 +155,7 @@ export default function CreateRegistration() {
   return (
     <div className="flex w-full">
       <div className="bg-white w-full sm:w-[80%] md:w-[60%] lg:w-[40%] m-auto border-1 my-14 border-black px-4 py-7 rounded-xl space-y-5 shadow-2xl">
+      <ToastContainer />
         <div className="text-3xl text-center text-blue-500 font-semibold">
           Create Registration
         </div>

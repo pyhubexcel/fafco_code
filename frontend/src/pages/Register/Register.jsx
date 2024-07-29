@@ -12,7 +12,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { useDispatch, useSelector } from "react-redux";
 import { register, resetReducer } from "../../redux/slices/RegisterSlice";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 const signupElements = [
@@ -102,23 +102,24 @@ export default function Register() {
     useEffect(() => {
         if (RegisterSliceRes?.data?.success) {
             dispatch(resetReducer())
-            toast.success("registered successfully");
+            toast.success("registered successfully",{autoClose: 2000,});
             navigate('/registerLink')
         }
 
         if (RegisterSliceRes?.data?.response?.data.email) {
             dispatch(resetReducer())
-            toast.error(RegisterSliceRes?.data?.response?.data.email[0]);
+            toast.error(RegisterSliceRes?.data?.response?.data.email[0],{autoClose: 2000,});
         }
         if (RegisterSliceRes?.data?.response?.data.phone) {
             dispatch(resetReducer())
-            toast.error(RegisterSliceRes?.data?.response?.data.phone[0]);
+            toast.error(RegisterSliceRes?.data?.response?.data.phone[0],{autoClose: 2000,});
         }
 
     }, [RegisterSliceRes?.data?.success, RegisterSliceRes?.data?.response?.status == 400])
 
     return (
         <div className="w-[90%] sm:w-[400px] md:w-[400px] lg:w-[500px] m-auto bg-white my-6  px-4 py-10 rounded-xl space-y-6 shadow-2xl">
+            <ToastContainer />
             <div className="text-3xl text-center text-blue-500 font-semibold">SIGNUP HERE</div>
             <form className="space-y-4" onSubmit={handleSubmit}>
                 {signupElements.map((item, i) => (
