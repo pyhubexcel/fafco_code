@@ -214,8 +214,7 @@ class AddPartToClaimAPIView(APIView):
             
             regid = part.registration.id
             response_data = {
-                
-                "repair_date": serializer.data["repair_date"],
+                "repair_date": serializer.data["claim_action"],
                 "ramid_id": regid,
                 "claim_action": serializer.data["claim_action"],
                 "part_problem": serializer.data["part_problem"],
