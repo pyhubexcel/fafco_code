@@ -4,7 +4,8 @@ from user.models import Customer, Profile
 
 
 class Part(models.Model):
-
+    
+    repair_date = models.DateField(null=True, blank=True)
     registration = models.ForeignKey(Profile, on_delete=models.CASCADE,blank=True,null=True)
     part_number = models.CharField(max_length=6)
     part_description = models.CharField(max_length=255)

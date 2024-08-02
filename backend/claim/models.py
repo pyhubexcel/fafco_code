@@ -51,6 +51,7 @@ class Claim(models.Model):
         (Repair, 'Repair'),
         (replace, 'replace'),
     ]
+    repair_date = models.DateField(null=True, blank=True)
     parts = models.ManyToManyField(Part, related_name='multiple_claims', blank=True,null=True)
     part_id= models.ForeignKey(Part, on_delete=models.CASCADE,blank=True,null=True)
     status = models.SmallIntegerField(choices=Claim_status,blank=True, null=True)

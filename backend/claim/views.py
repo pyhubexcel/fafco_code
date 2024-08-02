@@ -186,12 +186,21 @@ class AddPartToClaimAPIView(APIView):
         documents = request.FILES.getlist('documents', [])
         serializer = ClaimSerializer(data=request.data)
         if serializer.is_valid():
-            parts_id = request.data.get('part_id')  
+            parts_id = request.data.get('part_id')
             try:
-                part = Part.objects.get(id=parts_id)  
+                part = Part.objects.get(id=parts_id)
             except Part.DoesNotExist:
                 return Response({"error": "Part not found"}, status=status.HTTP_400_BAD_REQUEST)
             
+            existing_claim = Claim.objects.filter(part_id=part).first()
+            
+            if existing_claim:
+                if existing_claim.status == Claim.Draft:
+                    return Response({"error": "Claim already exists for this part ID"}, status=status.HTTP_400_BAD_REQUEST)
+                # Optionally handle the case where the existing claim is not in draft status
+                # e.g., return an error or handle accordingly
+
+            # Create a new claim
             claim = serializer.save(part_id=part, status=Claim.Draft)
             
             if documents:
@@ -202,20 +211,24 @@ class AddPartToClaimAPIView(APIView):
                 
                 claim.documents = document_paths
                 claim.save()
+            
             regid = part.registration.id
             response_data = {
-                "ramid_id": claim.id,
+                
+                "repair_date": serializer.data["repair_date"],
+                "ramid_id": regid,
                 "claim_action": serializer.data["claim_action"],
                 "part_problem": serializer.data["part_problem"],
                 "part_id": serializer.data["part_id"],
                 "part_number": part.part_number,
-                "regid":regid,
-                "add_comment":serializer.data["add_comment"],
-                "status":claim.status
+                "regid": regid,
+                "add_comment": serializer.data["add_comment"],
+                "status": claim.status
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
  
 
 class SubmitClaimAPIView(APIView):
