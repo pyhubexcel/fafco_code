@@ -435,7 +435,7 @@ export default function ViewRegistration() {
     if (formValues.action_id !== "" && formValues.problem_id !== "") {
       const partData = {
         part_id: selectedPart.id,
-        // repairDate: formValues.repairDate,
+        repair_date: formValues.repairDate,
         // barcode: formValues.barcode,
         claim_action: formValues.action_id,
         part_problem: formValues.problem_id,
@@ -485,7 +485,7 @@ export default function ViewRegistration() {
         toast.success("Part Uploaded", { autoClose: 2000 });
         const data = {
           Action: optionDataAction[res.data.claim_action - 1].value,
-          Problem: optionData[res.data.claim_action - 1].value,
+          Problem: optionData[res.data.part_problem - 1].value,
           PartId: res.data.part_id,
           Part: res.data.part_number,
           regid: res.data.regid,
@@ -497,6 +497,7 @@ export default function ViewRegistration() {
         setSelectedPart(null);
       }
     } catch (error) {
+      toast.error(error.response.data.error, { autoClose: 2000 });
       console.log("Error:", error);
     } finally {
       setAddPartLoading(false);
@@ -727,6 +728,168 @@ export default function ViewRegistration() {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
+          <CreateClaim />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            <Card
+              sx={{
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                marginBottom: "20px",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  bgcolor: "#1976D2",
+                  color: "white",
+                  padding: "10px",
+                  marginBottom: "10px",
+                }}
+              >
+                <Typography>Pool - Upload POP Docs</Typography>
+              </Box>
+              <Box margin={3}>
+                <Box sx={{ overflow: "auto" }}>
+                  {tableLoading ? (
+                    <Box textAlign={"center"}>
+                      <CircularProgress size={"1rem"} />
+                    </Box>
+                  ) : (
+                    <UploadDocsTable
+                      data={docDetails}
+                      handleEditParts={handleEditParts}
+                      handleViewParts={handleViewParts}
+                    />
+                  )}
+                </Box>
+                <form onSubmit={handleSubmit}>
+                  <Box width={"400px"}>
+                    <Box my={2}>
+                      <TextField
+                        type="file"
+                        ref={fileInputRef}
+                        size="small"
+                        onChange={handleFileUploadChange}
+                      />
+                    </Box>
+                    <Box display={"flex"} alignItems={"center"} gap={1}>
+                      <Typography>Comment:</Typography>
+                      <TextField
+                        size="small"
+                        fullWidth
+                        placeholder="Enter document name"
+                        value={uploadDocState.commentInput}
+                        onChange={handleUploadChange}
+                      />
+                      <CustomButton
+                        buttonName={"Upload"}
+                        type={"submit"}
+                        variant={"contained"}
+                        loading={loading}
+                      />
+                    </Box>
+                  </Box>
+                </form>
+              </Box>
+              <Modal
+                open={openEditDoc}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={style}>
+                  <form onSubmit={handleSubmit}>
+                    <Box my={2}>
+                      <Box gap={1} my={2}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontSize: "15px",
+                            fontWeight: "600",
+                            color: "gray",
+                          }}
+                        >
+                          Upload Doc:
+                        </Typography>
+                        <TextField
+                          type="file"
+                          ref={fileInputRef}
+                          size="small"
+                          onChange={handleFileUploadEditChange}
+                        />
+                      </Box>
+                      <Box gap={1}>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontSize: "15px",
+                            fontWeight: "600",
+                            color: "gray",
+                          }}
+                        >
+                          Comment:
+                        </Typography>
+                        <TextField
+                          style={{ width: "100%" }}
+                          size="small"
+                          placeholder="Enter document name"
+                          value={uploadDocEditState.commentInput}
+                          onChange={handleUploadEditChange}
+                        />
+                      </Box>
+                    </Box>
+                  </form>
+                  <Box display={"flex"} justifyContent={"end"} gap={2}>
+                    <CustomButton buttonName={"Cancel"} onClick={handleClose} />
+                    <CustomButton
+                      buttonName={"update"}
+                      onClick={handleUpdateDocPool}
+                    />
+                  </Box>
+                </Box>
+              </Modal>
+              <Modal
+                open={openViewDoc}
+                onClose={handleViewClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={styles}>
+                  <Box my={2}>
+                    <Box my={2}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          color: "gray",
+                        }}
+                      >
+                        Preview the Doc:
+                      </Typography>
+                      <Box>
+                        {imageLoading ? (
+                          <Box textAlign={"center"}>
+                            <CircularProgress size={"1rem"} />
+                          </Box>
+                        ) : (
+                          <img src={imageData} alt="doc" width={"100%"} />
+                        )}
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Box display={"flex"} justifyContent={"center"} gap={2}>
+                    <CustomButton
+                      buttonName={"Close"}
+                      onClick={handleViewClose}
+                    />
+                  </Box>
+                </Box>
+              </Modal>
+            </Card>
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={2}>        
             <Card
               sx={{
                 boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
@@ -747,7 +910,7 @@ export default function ViewRegistration() {
                 <Typography>Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: "auto" }} margin={3}>
-                {/* <Stack
+                <Stack
                   my={2}
                   direction={{ xs: "column", sm: "row" }}
                   spacing={{ xs: 1, sm: 2, md: 4 }}
@@ -764,7 +927,10 @@ export default function ViewRegistration() {
                     value={formValues.repairDate}
                     onChange={(e) => handleInputChange(e, "repairDate")}
                   />
-                </Stack> */}
+                </Stack>
+                <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                  Choose Part:
+                </Typography>
                 <PartsTableView
                   data={partsData}
                   setSelectedPart={setSelectedPart}
@@ -962,7 +1128,7 @@ export default function ViewRegistration() {
                     </Stack>
                   </>
                 )}
-                {/* <Box sx={{ overflow: "auto" }} mb={4}>
+                <Box sx={{ overflow: "auto" }} mb={4}>
                   <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
                     *Claimed Part
                   </Typography>
@@ -973,227 +1139,9 @@ export default function ViewRegistration() {
                   ) : (
                     <RevsTable data={claimedPartData} />
                   )}
-                </Box> */}
-
-                {/* <Box width={"100%"}> */}
-                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Add Comment:
-                  </Typography>
-                  <TextareaAutosize
-                    aria-label="minimum height"
-                    minRows={4}
-                    style={{
-                      width: "100%",
-                      border: "1px solid gray",
-                      borderRadius: "5px",
-                      padding: "4px",
-                    }}
-                    placeholder="Add comment ..."
-                    name="comment"
-                    value={formValues.comment}
-                    onChange={(e) => handleInputChange(e, "comment")}
-                  /> */}
-
-                {/* <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
-                    <CustomButton
-                      buttonName="Submit Claim"
-                      variant="contained"
-                      disable={showSubmit}
-                      onClick={submitClaim}
-                    />
-                  </Box>
-                </Box> */}
-                {/* <Box sx={{ overflow: "auto" }} mb={4}>
-                  <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                    *Claims
-                  </Typography>
-                  {tableLoading ? (
-                    <Box textAlign={"center"}>
-                      <CircularProgress size={"1rem"} />
-                    </Box>
-                  ) : (
-                    <ClaimsTable data={claimsData} />
-                  )}
-                </Box> */}
-              </Box>
-            </Card>
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={1}>
-            <Card
-              sx={{
-                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                marginBottom: "20px",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  bgcolor: "#1976D2",
-                  color: "white",
-                  padding: "10px",
-                  marginBottom: "10px",
-                }}
-              >
-                <Typography>Pool - Upload POP Docs</Typography>
-              </Box>
-              <Box margin={3}>
-                <Box sx={{ overflow: "auto" }}>
-                  {tableLoading ? (
-                    <Box textAlign={"center"}>
-                      <CircularProgress size={"1rem"} />
-                    </Box>
-                  ) : (
-                    <UploadDocsTable
-                      data={docDetails}
-                      handleEditParts={handleEditParts}
-                      handleViewParts={handleViewParts}
-                    />
-                  )}
                 </Box>
-                <form onSubmit={handleSubmit}>
-                  <Box width={"400px"}>
-                    <Box my={2}>
-                      <TextField
-                        type="file"
-                        ref={fileInputRef}
-                        size="small"
-                        onChange={handleFileUploadChange}
-                      />
-                    </Box>
-                    <Box display={"flex"} alignItems={"center"} gap={1}>
-                      <Typography>Comment:</Typography>
-                      <TextField
-                        size="small"
-                        fullWidth
-                        placeholder="Enter document name"
-                        value={uploadDocState.commentInput}
-                        onChange={handleUploadChange}
-                      />
-                      <CustomButton
-                        buttonName={"Upload"}
-                        type={"submit"}
-                        variant={"contained"}
-                        loading={loading}
-                      />
-                    </Box>
-                  </Box>
-                </form>
-              </Box>
-              <Modal
-                open={openEditDoc}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={style}>
-                  <form onSubmit={handleSubmit}>
-                    <Box my={2}>
-                      <Box gap={1} my={2}>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            fontSize: "15px",
-                            fontWeight: "600",
-                            color: "gray",
-                          }}
-                        >
-                          Upload Doc:
-                        </Typography>
-                        <TextField
-                          type="file"
-                          ref={fileInputRef}
-                          size="small"
-                          onChange={handleFileUploadEditChange}
-                        />
-                      </Box>
-                      <Box gap={1}>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            fontSize: "15px",
-                            fontWeight: "600",
-                            color: "gray",
-                          }}
-                        >
-                          Comment:
-                        </Typography>
-                        <TextField
-                          style={{ width: "100%" }}
-                          size="small"
-                          placeholder="Enter document name"
-                          value={uploadDocEditState.commentInput}
-                          onChange={handleUploadEditChange}
-                        />
-                      </Box>
-                    </Box>
-                  </form>
-                  <Box display={"flex"} justifyContent={"end"} gap={2}>
-                    <CustomButton buttonName={"Cancel"} onClick={handleClose} />
-                    <CustomButton
-                      buttonName={"update"}
-                      onClick={handleUpdateDocPool}
-                    />
-                  </Box>
-                </Box>
-              </Modal>
-              <Modal
-                open={openViewDoc}
-                onClose={handleViewClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={styles}>
-                  <Box my={2}>
-                    <Box my={2}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontSize: "15px",
-                          fontWeight: "600",
-                          color: "gray",
-                        }}
-                      >
-                        Preview the Doc:
-                      </Typography>
-                      <Box>
-                        {imageLoading ? (
-                          <Box textAlign={"center"}>
-                            <CircularProgress size={"1rem"} />
-                          </Box>
-                        ) : (
-                          <img src={imageData} alt="doc" width={"100%"} />
-                        )}
-                      </Box>
-                    </Box>
-                  </Box>
-                  <Box display={"flex"} justifyContent={"center"} gap={2}>
-                    <CustomButton
-                      buttonName={"Close"}
-                      onClick={handleViewClose}
-                    />
-                  </Box>
-                </Box>
-              </Modal>
-            </Card>
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={2}>
-            <CreateClaim />
-            <Box sx={{ padding: "10px", m: 1 }}>
-              <Box sx={{ overflow: "auto" }} mb={4}>
-                <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                  *Claimed Part
-                </Typography>
-                {addPartLoading ? (
-                  <Box textAlign={"center"}>
-                    <CircularProgress size={"1rem"} />
-                  </Box>
-                ) : (
-                  <RevsTable data={claimedPartData} />
-                )}
-              </Box>
 
-              <Box width={"100%"}>
+                <Box width={"100%"}>
                 {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
                     Add Comment:
                   </Typography>
@@ -1213,6 +1161,62 @@ export default function ViewRegistration() {
                   /> */}
 
                 <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
+                    <CustomButton
+                      buttonName="Submit Claim"
+                      variant="contained"
+                      disable={showSubmit}
+                      onClick={submitClaim}
+                    />
+                  </Box>
+                </Box>
+                {/* <Box sx={{ overflow: "auto" }} mb={4}>
+                  <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                    *Claims
+                  </Typography>
+                  {tableLoading ? (
+                    <Box textAlign={"center"}>
+                      <CircularProgress size={"1rem"} />
+                    </Box>
+                  ) : (
+                    <ClaimsTable data={claimsData} />
+                  )}
+                </Box> */}
+              </Box>
+            </Card>
+            {/* <Box sx={{ padding: "10px", m: 1 }}> */}
+              {/* <Box sx={{ overflow: "auto" }} mb={4}>
+                <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
+                  *Claimed Part
+                </Typography>
+                {addPartLoading ? (
+                  <Box textAlign={"center"}>
+                    <CircularProgress size={"1rem"} />
+                  </Box>
+                ) : (
+                  <RevsTable data={claimedPartData} />
+                )}
+              </Box> */}
+
+              {/* <Box width={"100%"}> */}
+                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+                    Add Comment:
+                  </Typography>
+                  <TextareaAutosize
+                    aria-label="minimum height"
+                    minRows={4}
+                    style={{
+                      width: "100%",
+                      border: "1px solid gray",
+                      borderRadius: "5px",
+                      padding: "4px",
+                    }}
+                    placeholder="Add comment ..."
+                    name="comment"
+                    value={formValues.comment}
+                    onChange={(e) => handleInputChange(e, "comment")}
+                  /> */}
+
+                {/* <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
                   <CustomButton
                     buttonName="Submit Claim"
                     variant="contained"
@@ -1220,8 +1224,8 @@ export default function ViewRegistration() {
                     onClick={submitClaim}
                   />
                 </Box>
-              </Box>
-            </Box>
+              </Box> */}
+            {/* </Box> */}
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
             <Box sx={{ overflow: "auto" }} mb={4}>

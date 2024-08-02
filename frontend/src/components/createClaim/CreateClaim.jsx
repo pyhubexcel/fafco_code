@@ -484,9 +484,9 @@ export default function CreateClaim() {
           />
         </Box> */}
         <Box sx={{ overflow: "auto" }}>
-          <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
+          {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
             Choose Part:
-          </Typography>
+          </Typography> */}
           {tableLoading? <Box textAlign={"center"}><CircularProgress size={"1rem"}/></Box>:
           <PartsTable
             handleOpen={handleOpen}
