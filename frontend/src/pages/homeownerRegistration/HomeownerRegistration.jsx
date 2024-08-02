@@ -435,7 +435,7 @@ export default function ViewRegistration() {
     if (formValues.action_id !== "" && formValues.problem_id !== "") {
       const partData = {
         part_id: selectedPart.id,
-        // repairDate: formValues.repairDate,
+        repair_date: formValues.repairDate,
         // barcode: formValues.barcode,
         claim_action: formValues.action_id,
         part_problem: formValues.problem_id,
@@ -485,7 +485,7 @@ export default function ViewRegistration() {
         toast.success("Part Uploaded", { autoClose: 2000 });
         const data = {
           Action: optionDataAction[res.data.claim_action - 1].value,
-          Problem: optionData[res.data.claim_action - 1].value,
+          Problem: optionData[res.data.part_problem - 1].value,
           PartId: res.data.part_id,
           Part: res.data.part_number,
           regid: res.data.regid,
@@ -497,6 +497,7 @@ export default function ViewRegistration() {
         setSelectedPart(null);
       }
     } catch (error) {
+      toast.error(error.response.data.error, { autoClose: 2000 });
       console.log("Error:", error);
     } finally {
       setAddPartLoading(false);
@@ -909,7 +910,7 @@ export default function ViewRegistration() {
                 <Typography>Pool Parts</Typography>
               </Box>
               <Box sx={{ overflow: "auto" }} margin={3}>
-                {/* <Stack
+                <Stack
                   my={2}
                   direction={{ xs: "column", sm: "row" }}
                   spacing={{ xs: 1, sm: 2, md: 4 }}
@@ -926,7 +927,7 @@ export default function ViewRegistration() {
                     value={formValues.repairDate}
                     onChange={(e) => handleInputChange(e, "repairDate")}
                   />
-                </Stack> */}
+                </Stack>
                 <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
                   Choose Part:
                 </Typography>
