@@ -72,7 +72,7 @@ const style = {
 export default function CreateClaim() {
   const { id } = useParams();
   const token = Cookies.get("token");
-  const { setShowPartsData } = useContext(MyContext);
+  const { setShowPartsData,setDeletePart } = useContext(MyContext);
   // const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   // const [payload, setPayload] = useState({});
@@ -233,6 +233,7 @@ export default function CreateClaim() {
 
   const handleCreateParts = async () => {
     try {
+      setShowPartsData(true)
       const res = await axiosInstance.post(
         `api/parts/part/`,
         csvPartFormValues,
@@ -287,11 +288,13 @@ export default function CreateClaim() {
       console.log(error, "error");
     }
     setTableLoading(false)
+    setShowPartsData(false)
   };
 
   useEffect(() => {
     handleShowParts();
     fetchPartNumbers();
+    setResStatus("");
   }, [resStatus]);
 
   // const handleActionChange = (event) => {
@@ -376,6 +379,7 @@ export default function CreateClaim() {
 
   const handleDeleteParts = async (registration, id) => {
     try {
+      setDeletePart(true)
       setResStatus("");
       const response = await axiosInstance.delete(
         `api/parts/part-details/${Number(registration)}/${Number(id)}`

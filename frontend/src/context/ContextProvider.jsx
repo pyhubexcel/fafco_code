@@ -6,11 +6,11 @@ const MyContext = createContext();
 
 const ContextProvider = ({ children }) => {
   const [partsData, setPartsData] = useState([]);
-  const [resStatus, setResStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const token = Cookies.get("token");
   const [updateName,setUpdateName]=useState(false);
   const [showPartsData,setShowPartsData]=useState(null)
+  const [deletePart,setDeletePart]=useState(false)
 
 
 
@@ -33,22 +33,22 @@ const ContextProvider = ({ children }) => {
 
   const viewPartId = localStorage.getItem("idd");
   useEffect(() => {
-    if (viewPartId !== null || undefined || "") {
-      fetchAllClaimParts(viewPartId);
+    if(token){
+      if (viewPartId !== null || undefined || "") {
+        fetchAllClaimParts(viewPartId);
+      }
     }
-  }, [resStatus,viewPartId,showPartsData]);
+  }, [viewPartId,showPartsData]);
 
   return (
     <MyContext.Provider
       value={{
         partsData,
-        resStatus,
-        setResStatus,
         fetchAllClaimParts,
         isLoading,
         updateName,
         setUpdateName,
-        setShowPartsData
+        setShowPartsData,deletePart,setDeletePart
       }}
     >
       {children}

@@ -103,7 +103,7 @@ function a11yProps(index) {
 
 export default function ViewRegistration() {
   const { id } = useParams();
-  const { partsData } = useContext(MyContext);
+  const { partsData,deletePart,setDeletePart } = useContext(MyContext);
   const token = Cookies.get("token");
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -187,7 +187,7 @@ export default function ViewRegistration() {
   useEffect(() => {
     getDocumentData();
     getClaimedPart();
-  }, []);
+  }, [deletePart]);
 
   const getDocumentData = async () => {
     setTableLoading(true);
@@ -414,9 +414,11 @@ export default function ViewRegistration() {
         setClaimsData(data1);
       }
     } catch (error) {
+      setClaimsData('');
       throw new Error("Failed to submit claim. Please try again later.");
     }
     setTableLoading(false);
+    setDeletePart(false)
   };
 
   const errorField = () => {
