@@ -2,36 +2,43 @@ import { useMemo } from "react";
 import { MRT_Table, useMaterialReactTable } from "material-react-table";
 
 export const ClaimsTable = ({ data }) => {
-  console.log(data,"lhgjc")
+  // console.log(data,"lhgjc")
   const columns = useMemo(
     () => [
       {
         accessorKey: "regid",
         header: "Reg Id",
+        size: 100,
       },
       {
         accessorKey: "part_id",
         header: "Part Id",
+        size: 100,
       },
       {
         accessorKey: "ramid",
         header: "Rma Id",
+        size: 100,
       },
       {
         accessorKey: "action",
         header: "Action",
+        size: 100,
       },
       {
         accessorKey: "problem",
         header: "Problem",
+        size: 100,
       },
       {
         accessorKey: "status",
         header: "Status",
+        size: 100,
       },
       {
         accessorKey: "add_comment",
         header: "Comments",
+        size: 300,
       },
     ],
     []
