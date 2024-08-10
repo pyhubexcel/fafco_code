@@ -1,10 +1,30 @@
-import { useMemo } from "react";
+import { useMemo} from "react";
 import { MRT_Table, useMaterialReactTable } from "material-react-table";
+import {IconButton, Typography } from "@mui/material";
+import { Visibility } from "@mui/icons-material";
 
-export const ClaimsTable = ({ data }) => {
-  // console.log(data,"lhgjc")
+export const ClaimsTable = ({ data,handleClaimViewParts }) => {
+
   const columns = useMemo(
     () => [
+      {
+        accessorKey: "documents",
+        header: "Uploaded photos",
+        size: 150,
+        Cell: ({ row }) => (
+          <IconButton
+          onClick={() =>
+            handleClaimViewParts(row.original)
+          }
+            sx={{ display: "flex", alignItems: "center" ,color:'#1976D2'}}
+          >
+            <Visibility />
+            <Typography variant="body2" sx={{ ml: 1,color:'#1976D2' }}  >
+              View
+            </Typography>
+          </IconButton>
+        ),
+      },
       {
         accessorKey: "regid",
         header: "Reg Id",

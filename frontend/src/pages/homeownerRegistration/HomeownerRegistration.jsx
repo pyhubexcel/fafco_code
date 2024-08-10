@@ -27,6 +27,7 @@ import RevsTable from "../../components/createClaim/RevsTable";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import ClaimsTable from "../../components/createClaim/ClaimsTable";
 import { jwtDecode } from "jwt-decode";
+import { Details } from "@mui/icons-material";
 
 const optionData = [
   { id: 1, value: "FREEZE DAMAGE" },
@@ -135,12 +136,13 @@ export default function ViewRegistration() {
   const [updateName, setUpdateName] = useState(location.state.name);
   const [openEditDoc, setOpenEditDoc] = useState(false);
   const [openViewDoc, setOpenViewDoc] = useState(false);
-
+  const [openClaimDoc, setOpenClaimDoc] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [addPartLoading, setAddPartLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(true);
   const [imageData, setImageData] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
+ 
 
   useEffect(() => {
     if (uploadState.uploadInput !== null) {
@@ -396,7 +398,6 @@ export default function ViewRegistration() {
       const response = await axiosInstance.get(
         `api/claims/retrieve-claims/${id}/`
       );
-      console.log(response, "===++++");
       if (response.status == 200) {
         const data1 = await response.data.claims.map((detail, i) => {
           const data = {
@@ -407,6 +408,7 @@ export default function ViewRegistration() {
             ramid: detail?.ramid,
             status: detail?.status,
             add_comment: detail?.add_comment,
+            documents:detail?.documents?.[0]
           };
           return data;
         });
@@ -441,7 +443,7 @@ export default function ViewRegistration() {
         // barcode: formValues.barcode,
         claim_action: formValues.action_id,
         part_problem: formValues.problem_id,
-        documents: uploadFileList,
+        documents: uploadState.uploadInput,
         //comment: formValues.comment,
         add_comment: formValues.comment,
         profile: id,
@@ -659,11 +661,25 @@ export default function ViewRegistration() {
     }
   };
 
+  const handleClaimViewParts = (data) => {
+    fetchImage(data.documents);
+    if (data.documents.includes(".pdf")) {
+      setOpenClaimDoc(false);
+    } else {
+      setOpenClaimDoc(true);
+    }
+  };
+
   const handleViewClose = () => {
     setOpenViewDoc(false);
     setEditDocDetails(null);
     setImageData(null);
   };
+
+  const handleClaimClose=()=>{
+    setOpenClaimDoc(false);
+    setImageData(null)
+  }
 
   return (
     <Box
@@ -1239,9 +1255,47 @@ export default function ViewRegistration() {
                   <CircularProgress size={"1rem"} />
                 </Box>
               ) : (
-                <ClaimsTable data={claimsData} />
+                <ClaimsTable data={claimsData} handleClaimViewParts={handleClaimViewParts}/>
               )}
             </Box>
+            <Modal
+                open={openClaimDoc}
+                onClose={handleClaimClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={styles}>
+                  <Box my={2}>
+                    <Box my={2}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          color: "gray",
+                        }}
+                      >
+                        Preview the Doc:
+                      </Typography>
+                      <Box>
+                        {imageLoading ? (
+                          <Box textAlign={"center"}>
+                            <CircularProgress size={"1rem"} />
+                          </Box>
+                        ) : (
+                          <img src={imageData} alt="doc" width={"100%"} />
+                        )}
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Box display={"flex"} justifyContent={"center"} gap={2}>
+                    <CustomButton
+                      buttonName={"Close"}
+                      onClick={handleClaimClose}
+                    />
+                  </Box>
+                </Box>
+              </Modal>
           </CustomTabPanel>
         </Box>
       </Card>
