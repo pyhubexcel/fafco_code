@@ -118,6 +118,7 @@ export default function ViewRegistration() {
     uploadInput: null,
   });
   const [uploadDocState, setUploadDocState] = useState({ uploadInput: null });
+  const [uploadClaimImageList, setUploadClaimImageList] = useState([]);
   const [uploadDocEditState, setUploadDocEditState] = useState({
     uploadInput: null,
   });
@@ -141,6 +142,7 @@ export default function ViewRegistration() {
   const [addPartLoading, setAddPartLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(true);
   const [imageData, setImageData] = useState(null);
+  const [claimImageData, setClaimImageData] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
  
 
@@ -158,7 +160,20 @@ export default function ViewRegistration() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  useEffect(() => {
+    if (uploadState.uploadInput !== null) {
+      const file = uploadState.uploadInput;
+      
+      if (file && file.type?.startsWith('image/')) {
+        if (!uploadClaimImageList.some(img => img.name === file.name)) {
+          setUploadClaimImageList((prevList) => [...prevList, file]);
+        }
+      }
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }, [uploadState]);
   const handleInputChange = (event, name) => {
     const { value, type } = event.target;
     if (type === "file") {
@@ -341,7 +356,6 @@ export default function ViewRegistration() {
       uploadInput: e.target.files[0],
     }));
   };
-
   const handleFileUploadChangeShowParts = (e) => {
     setUploadState((prevState) => ({
       ...prevState,
@@ -354,6 +368,7 @@ export default function ViewRegistration() {
     }
     // setUploadFileList([...uploadFileList, uploadState.uploadInput.name]);
   };
+
 
   const submitClaim = async () => {
     const partData = {
@@ -408,7 +423,8 @@ export default function ViewRegistration() {
             ramid: detail?.ramid,
             status: detail?.status,
             add_comment: detail?.add_comment,
-            documents:detail?.documents?.[0]
+            // documents:detail?.documents?.[0]
+            documents: detail?.documents || [],
           };
           return data;
         });
@@ -437,17 +453,27 @@ export default function ViewRegistration() {
 
   const handleAddPart = () => {
     if (formValues.action_id !== "" && formValues.problem_id !== "") {
-      const partData = {
-        part_id: selectedPart.id,
-        repair_date: formValues.repairDate,
-        // barcode: formValues.barcode,
-        claim_action: formValues.action_id,
-        part_problem: formValues.problem_id,
-        documents: uploadState.uploadInput,
-        //comment: formValues.comment,
-        add_comment: formValues.comment,
-        profile: id,
-      };
+      const partData=new FormData();
+      partData.append('part_id',selectedPart.id);
+      partData.append('repair_date',formValues.repairDate);
+      partData.append('claim_action',formValues.action_id);
+      partData.append('part_problem',formValues.problem_id);
+      for(let i=0;i<uploadClaimImageList.length;i++){
+        partData.append('documents',uploadClaimImageList[i]);
+      }
+      partData.append('add_comment',formValues.comment,);
+      partData.append('profile',id);
+      // const partData = {
+      //   part_id: selectedPart.id,
+      //   repair_date: formValues.repairDate,
+      //   // barcode: formValues.barcode,
+      //   claim_action: formValues.action_id,
+      //   part_problem: formValues.problem_id,
+      //   documents: uploadState.uploadInput,
+      //   //comment: formValues.comment,
+      //   add_comment: formValues.comment,
+      //   profile: id,
+      // };
       const element = document.getElementsByClassName(
         "css-cdprif-MuiButtonBase-root-MuiButton-root"
       );
@@ -476,13 +502,15 @@ export default function ViewRegistration() {
     }
   };
 
-  const AddPartApi = async (partData) => {
+  const AddPartApi = async (data) => {
+    console.log(data, "comming correct--------------------")
     try {
       setAddPartLoading(true);
-      const res = await axiosInstance.post(`api/claims/add-part/`, partData, {
+      const res = await axiosInstance.post(`api/claims/add-part/`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        
       });
       if (res.status == 201) {
         setShowSubmit(false);
@@ -652,6 +680,37 @@ export default function ViewRegistration() {
     setImageLoading(false);
   };
 
+  const fetchImages = async (urls) => {
+    setImageLoading(true);
+    try {
+      const imagePromises = urls.map(async (url) => {
+        const response = await axiosInstance.get(url, { responseType: "blob" });
+  
+        if (url.endsWith(".pdf")) {
+          // Handle PDFs
+          const pdfUrl = URL.createObjectURL(response.data);
+          window.open(pdfUrl);
+          return null;
+        } else {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(response.data);
+          });
+        }
+      });
+  
+      const imageDataArray = await Promise.all(imagePromises);
+      setClaimImageData(imageDataArray.filter(data => data !== null)); // Filter out null values for PDFs
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+  
+console.log(claimImageData,"yes Data getting")
   const handleViewParts = (data) => {
     fetchImage(data.document);
     if (data.document.includes(".pdf")) {
@@ -662,7 +721,7 @@ export default function ViewRegistration() {
   };
 
   const handleClaimViewParts = (data) => {
-    fetchImage(data.documents);
+    fetchImages(data.documents);
     if (data.documents.includes(".pdf")) {
       setOpenClaimDoc(false);
     } else {
@@ -674,11 +733,13 @@ export default function ViewRegistration() {
     setOpenViewDoc(false);
     setEditDocDetails(null);
     setImageData(null);
+    setClaimImageData(null)
   };
 
   const handleClaimClose=()=>{
     setOpenClaimDoc(false);
     setImageData(null)
+    setClaimImageData(null)
   }
 
   return (
@@ -703,14 +764,7 @@ export default function ViewRegistration() {
               {location.state.address}
             </Typography>
           </Box>
-          {/* <Box sx={{ display: "flex", gap: "5px" }}>
-            <Typography sx={{ fontSize: "1.05rem", fontWeight: "600" }}>
-              Assigned Dealer:
-            </Typography>
-            <Typography sx={{ fontSize: "1.05rem" }}>
-              {location.state.current_dealer}
-            </Typography>
-          </Box> */}
+        
         </div>
         <div className="flex flex-col gap-2 my-2 sm:flex-row sm:items-center">
           {/* <ToastContainer /> */}
@@ -1160,24 +1214,6 @@ export default function ViewRegistration() {
                 </Box>
 
                 <Box width={"100%"}>
-                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Add Comment:
-                  </Typography>
-                  <TextareaAutosize
-                    aria-label="minimum height"
-                    minRows={4}
-                    style={{
-                      width: "100%",
-                      border: "1px solid gray",
-                      borderRadius: "5px",
-                      padding: "4px",
-                    }}
-                    placeholder="Add comment ..."
-                    name="comment"
-                    value={formValues.comment}
-                    onChange={(e) => handleInputChange(e, "comment")}
-                  /> */}
-
                 <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
                     <CustomButton
                       buttonName="Submit Claim"
@@ -1187,63 +1223,10 @@ export default function ViewRegistration() {
                     />
                   </Box>
                 </Box>
-                {/* <Box sx={{ overflow: "auto" }} mb={4}>
-                  <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                    *Claims
-                  </Typography>
-                  {tableLoading ? (
-                    <Box textAlign={"center"}>
-                      <CircularProgress size={"1rem"} />
-                    </Box>
-                  ) : (
-                    <ClaimsTable data={claimsData} />
-                  )}
-                </Box> */}
+              
               </Box>
             </Card>
-            {/* <Box sx={{ padding: "10px", m: 1 }}> */}
-              {/* <Box sx={{ overflow: "auto" }} mb={4}>
-                <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                  *Claimed Part
-                </Typography>
-                {addPartLoading ? (
-                  <Box textAlign={"center"}>
-                    <CircularProgress size={"1rem"} />
-                  </Box>
-                ) : (
-                  <RevsTable data={claimedPartData} />
-                )}
-              </Box> */}
-
-              {/* <Box width={"100%"}> */}
-                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Add Comment:
-                  </Typography>
-                  <TextareaAutosize
-                    aria-label="minimum height"
-                    minRows={4}
-                    style={{
-                      width: "100%",
-                      border: "1px solid gray",
-                      borderRadius: "5px",
-                      padding: "4px",
-                    }}
-                    placeholder="Add comment ..."
-                    name="comment"
-                    value={formValues.comment}
-                    onChange={(e) => handleInputChange(e, "comment")}
-                  /> */}
-
-                {/* <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
-                  <CustomButton
-                    buttonName="Submit Claim"
-                    variant="contained"
-                    disable={showSubmit}
-                    onClick={submitClaim}
-                  />
-                </Box>
-              </Box> */}
-            {/* </Box> */}
+          
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
             <Box sx={{ overflow: "auto" }} mb={4}>
@@ -1283,7 +1266,7 @@ export default function ViewRegistration() {
                             <CircularProgress size={"1rem"} />
                           </Box>
                         ) : (
-                          <img src={imageData} alt="doc" width={"100%"} />
+                          <img src={claimImageData} alt="doc" width={"100%"} />
                         )}
                       </Box>
                     </Box>
