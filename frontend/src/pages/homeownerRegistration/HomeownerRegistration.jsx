@@ -28,6 +28,8 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 import ClaimsTable from "../../components/createClaim/ClaimsTable";
 import { jwtDecode } from "jwt-decode";
 import { Details } from "@mui/icons-material";
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const optionData = [
   { id: 1, value: "FREEZE DAMAGE" },
@@ -142,7 +144,7 @@ export default function ViewRegistration() {
   const [addPartLoading, setAddPartLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(true);
   const [imageData, setImageData] = useState(null);
-  const [claimImageData, setClaimImageData] = useState(null);
+  const [claimImageData, setClaimImageData] = useState([]);
   const [imageLoading, setImageLoading] = useState(false);
  
 
@@ -685,7 +687,7 @@ export default function ViewRegistration() {
     try {
       const imagePromises = urls.map(async (url) => {
         const response = await axiosInstance.get(url, { responseType: "blob" });
-  
+
         if (url.endsWith(".pdf")) {
           // Handle PDFs
           const pdfUrl = URL.createObjectURL(response.data);
@@ -700,7 +702,7 @@ export default function ViewRegistration() {
           });
         }
       });
-  
+
       const imageDataArray = await Promise.all(imagePromises);
       setClaimImageData(imageDataArray.filter(data => data !== null)); // Filter out null values for PDFs
     } catch (error) {
@@ -709,8 +711,10 @@ export default function ViewRegistration() {
       setImageLoading(false);
     }
   };
+
+ 
   
-console.log(claimImageData,"yes Data getting")
+
   const handleViewParts = (data) => {
     fetchImage(data.document);
     if (data.document.includes(".pdf")) {
@@ -741,6 +745,7 @@ console.log(claimImageData,"yes Data getting")
     setImageData(null)
     setClaimImageData(null)
   }
+
 
   return (
     <Box
@@ -1242,43 +1247,114 @@ console.log(claimImageData,"yes Data getting")
               )}
             </Box>
             <Modal
-                open={openClaimDoc}
-                onClose={handleClaimClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={styles}>
-                  <Box my={2}>
-                    <Box my={2}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontSize: "15px",
-                          fontWeight: "600",
-                          color: "gray",
+      open={openClaimDoc}
+      onClose={handleClaimClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={styles}>
+        <Box my={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: "15px",
+              fontWeight: "600",
+              color: "gray",
+            }}
+          >
+            Preview the Docs:
+          </Typography>
+          <Box>
+            {imageLoading ? (
+              <Box textAlign={"center"}>
+                <CircularProgress size={"1rem"} />
+              </Box>
+            ) : (
+              claimImageData && claimImageData.length > 0 ? (
+                <Carousel
+                  showThumbs={false}
+                  showStatus={false}
+                  infiniteLoop
+                  autoPlay
+                  interval={3000}
+                  stopOnHover
+                  renderArrowPrev={(onClickHandler, hasPrev, label) =>
+                    hasPrev && (
+                      <button
+                        type="button"
+                        onClick={onClickHandler}
+                        title={label}
+                        style={{
+                          position: 'absolute',
+                          bottom: '-50px', // Position it below the carousel
+                          left: 'calc(50% - 60px)',
+                          zIndex: 2,
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: '#888',
+                          fontSize: '24px',
                         }}
                       >
-                        Preview the Doc:
-                      </Typography>
-                      <Box>
-                        {imageLoading ? (
-                          <Box textAlign={"center"}>
-                            <CircularProgress size={"1rem"} />
-                          </Box>
-                        ) : (
-                          <img src={claimImageData} alt="doc" width={"100%"} />
-                        )}
-                      </Box>
-                    </Box>
-                  </Box>
-                  <Box display={"flex"} justifyContent={"center"} gap={2}>
-                    <CustomButton
-                      buttonName={"Close"}
-                      onClick={handleClaimClose}
-                    />
-                  </Box>
-                </Box>
-              </Modal>
+                        ←
+                      </button>
+                    )
+                  }
+                  renderArrowNext={(onClickHandler, hasNext, label) =>
+                    hasNext && (
+                      <button
+                        type="button"
+                        onClick={onClickHandler}
+                        title={label}
+                        style={{
+                          position: 'absolute',
+                          bottom: '-50px', // Position it below the carousel
+                          right: 'calc(50% - 60px)',
+                          zIndex: 2,
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: '#888',
+                          fontSize: '24px',
+                        }}
+                      >
+                        →
+                      </button>
+                    )
+                  }
+                >
+                  {claimImageData.map((image, index) => (
+                    <div key={index}>
+                      <img
+                        src={image}
+                        alt={`doc-${index}`}
+                        style={{
+                          height: '400px',
+                          width: 'auto',
+                          maxWidth: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </div>
+                  ))}
+                </Carousel>
+              ) : (
+                <Typography variant="body2" color="textSecondary">
+                  No images available.
+                </Typography>
+              )
+            )}
+          </Box>
+        </Box>
+        <Box display={"flex"} justifyContent={"center"} gap={2}>
+          <CustomButton
+            buttonName={"Close"}
+            onClick={handleClaimClose}
+          />
+        </Box>
+      </Box>
+    </Modal>
+
           </CustomTabPanel>
         </Box>
       </Card>
