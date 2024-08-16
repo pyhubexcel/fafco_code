@@ -30,6 +30,9 @@ import { jwtDecode } from "jwt-decode";
 import { Details } from "@mui/icons-material";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
+
 
 const optionData = [
   { id: 1, value: "FREEZE DAMAGE" },
@@ -1247,113 +1250,123 @@ export default function ViewRegistration() {
               )}
             </Box>
             <Modal
-      open={openClaimDoc}
-      onClose={handleClaimClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={styles}>
-        <Box my={2}>
-          <Typography
-            variant="body1"
-            sx={{
-              fontSize: "15px",
-              fontWeight: "600",
-              color: "gray",
-            }}
-          >
-            Preview the Docs:
-          </Typography>
-          <Box>
-            {imageLoading ? (
-              <Box textAlign={"center"}>
-                <CircularProgress size={"1rem"} />
-              </Box>
-            ) : (
-              claimImageData && claimImageData.length > 0 ? (
-                <Carousel
-                  showThumbs={false}
-                  showStatus={false}
-                  infiniteLoop
-                  autoPlay
-                  interval={3000}
-                  stopOnHover
-                  renderArrowPrev={(onClickHandler, hasPrev, label) =>
-                    hasPrev && (
-                      <button
-                        type="button"
-                        onClick={onClickHandler}
-                        title={label}
-                        style={{
-                          position: 'absolute',
-                          bottom: '-50px', // Position it below the carousel
-                          left: 'calc(50% - 60px)',
-                          zIndex: 2,
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: '#888',
-                          fontSize: '24px',
-                        }}
-                      >
-                        ←
-                      </button>
-                    )
-                  }
-                  renderArrowNext={(onClickHandler, hasNext, label) =>
-                    hasNext && (
-                      <button
-                        type="button"
-                        onClick={onClickHandler}
-                        title={label}
-                        style={{
-                          position: 'absolute',
-                          bottom: '-50px', // Position it below the carousel
-                          right: 'calc(50% - 60px)',
-                          zIndex: 2,
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: '#888',
-                          fontSize: '24px',
-                        }}
-                      >
-                        →
-                      </button>
-                    )
-                  }
-                >
-                  {claimImageData.map((image, index) => (
-                    <div key={index}>
-                      <img
-                        src={image}
-                        alt={`doc-${index}`}
-                        style={{
-                          height: '400px',
-                          width: 'auto',
-                          maxWidth: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                    </div>
-                  ))}
-                </Carousel>
-              ) : (
-                <Typography variant="body2" color="textSecondary">
-                  No images available.
-                </Typography>
-              )
-            )}
+  open={openClaimDoc}
+  onClose={handleClaimClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box sx={styles}>
+    <Box my={2}>
+      <Typography
+        variant="body1"
+        sx={{
+          fontSize: "15px",
+          fontWeight: "600",
+          color: "gray",
+          padding:"10px"
+        }}
+      >
+        Preview the Docs:
+      </Typography>
+      <Box>
+        {imageLoading ? (
+          <Box textAlign={"center"}>
+            <CircularProgress size={"1rem"} />
           </Box>
-        </Box>
-        <Box display={"flex"} justifyContent={"center"} gap={2}>
-          <CustomButton
-            buttonName={"Close"}
-            onClick={handleClaimClose}
-          />
-        </Box>
+        ) : (
+          claimImageData && claimImageData.length > 0 ? (
+            <Carousel
+              showThumbs={false}
+              showStatus={false}
+              infiniteLoop
+              autoPlay
+              interval={3000}
+              stopOnHover
+              renderArrowPrev={(onClickHandler, hasPrev, label) =>
+                hasPrev && (
+                  <button
+                    type="button"
+                    onClick={onClickHandler}
+                    title={label}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '10px',
+                      transform: 'translateY(-50%)',
+                      zIndex: 2,
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      borderRadius: '50%',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ArrowBackIos fontSize="medium" style={{ color: 'white',marginLeft:'3px' }} />
+                  </button>
+                )
+              }
+              renderArrowNext={(onClickHandler, hasNext, label) =>
+                hasNext && (
+                  <button
+                    type="button"
+                    onClick={onClickHandler}
+                    title={label}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: '10px',
+                      transform: 'translateY(-50%)',
+                      zIndex: 2,
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      borderRadius: '50%',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ArrowForwardIos fontSize="medium" style={{ color: 'white' }} />
+                  </button>
+                )
+              }
+            >
+              {claimImageData.map((image, index) => (
+                <div key={index} style={{ position: 'relative' }}>
+                  <img
+                    src={image}
+                    alt={`doc-${index}`}
+                    style={{
+                      width: '700px',
+                      height: '500px',
+                      maxWidth: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </div>
+              ))}
+            </Carousel>
+          ) : (
+            <Typography variant="body2" color="textSecondary">
+              No images available.
+            </Typography>
+          )
+        )}
       </Box>
-    </Modal>
+    </Box>
+    <Box display={"flex"} justifyContent={"center"} gap={2}>
+      <CustomButton
+        buttonName={"Close"}
+        onClick={handleClaimClose}
+      />
+    </Box>
+  </Box>
+</Modal>
+
 
           </CustomTabPanel>
         </Box>
