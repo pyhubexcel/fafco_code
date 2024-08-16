@@ -1304,7 +1304,7 @@ export default function ViewRegistration() {
                       justifyContent: 'center',
                     }}
                   >
-                    <ArrowBackIos fontSize="medium" style={{ color: 'white',marginLeft:'3px' }} />
+                    <ArrowBackIos fontSize="medium" style={{ color: 'white',paddingLeft:'5px' }} />
                   </button>
                 )
               }
@@ -1330,7 +1330,7 @@ export default function ViewRegistration() {
                       justifyContent: 'center',
                     }}
                   >
-                    <ArrowForwardIos fontSize="medium" style={{ color: 'white' }} />
+                    <ArrowForwardIos fontSize="medium" style={{ color: 'white' ,paddingLeft:'5px'}} />
                   </button>
                 )
               }
