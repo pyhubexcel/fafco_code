@@ -25,21 +25,21 @@ export const ClaimsTable = ({ data,handleClaimViewParts }) => {
           </IconButton>
         ),
       },
-      {
-        accessorKey: "regid",
-        header: "Reg Id",
-        size: 100,
-      },
+      // {
+      //   accessorKey: "regid",
+      //   header: "Reg Id",
+      //   size: 100,
+      // },
       {
         accessorKey: "part_id",
         header: "Part Id",
         size: 100,
       },
-      {
-        accessorKey: "ramid",
-        header: "Rma Id",
-        size: 100,
-      },
+      // {
+      //   accessorKey: "ramid",
+      //   header: "Rma Id",
+      //   size: 100,
+      // },
       {
         accessorKey: "action",
         header: "Action",
@@ -50,11 +50,11 @@ export const ClaimsTable = ({ data,handleClaimViewParts }) => {
         header: "Problem",
         size: 100,
       },
-      {
-        accessorKey: "status",
-        header: "Status",
-        size: 100,
-      },
+      // {
+      //   accessorKey: "status",
+      //   header: "Status",
+      //   size: 100,
+      // },
       {
         accessorKey: "add_comment",
         header: "Comments",
