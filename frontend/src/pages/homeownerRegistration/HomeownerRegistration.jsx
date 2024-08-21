@@ -1352,7 +1352,7 @@ export default function ViewRegistration() {
             </Carousel>
           ) : (
             <Typography variant="body2" color="textSecondary">
-              No images available.
+              No images uploaded yet.
             </Typography>
           )
         )}
