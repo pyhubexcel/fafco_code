@@ -263,14 +263,6 @@ export default function ViewRegistration() {
         toast.success(res.data.message, { autoClose: 2000 });
         getDocumentData();
         console.log(res, "------");
-        // const data = {
-        //   actionButtons: "",
-        //   regid: res.data.data.regid,
-        //   Uploaded: convertDateFormat(res.data.data.uploaded_at),
-        //   DocumentNote: res.data.data.document_note,
-        // };
-        // setDocDetails([...docDetails, data]);
-        //setDocDetails(res.data)
         setUploadDocState({
           uploadInput: null,
           commentInput: "",
@@ -428,6 +420,7 @@ export default function ViewRegistration() {
             ramid: detail?.ramid,
             status: detail?.status,
             add_comment: detail?.add_comment,
+            repair_date:detail?.repair_date,
             // documents:detail?.documents?.[0]
             documents: detail?.documents || [],
           };
@@ -508,7 +501,7 @@ export default function ViewRegistration() {
   };
 
   const AddPartApi = async (data) => {
-    console.log(data, "comming correct--------------------")
+    console.log(data, "comming I  correct--------------------")
     try {
       setAddPartLoading(true);
       const res = await axiosInstance.post(`api/claims/add-part/`, data, {
@@ -528,6 +521,7 @@ export default function ViewRegistration() {
           regid: res.data.regid,
           ramid: res.data.ramid_id,
           status: res.data.status,
+          repair_date:res.data.repair_date
           // Barcode: formValues.barcode,
         };
         setClaimedPartData([...claimedPartData, data]);
@@ -573,25 +567,7 @@ export default function ViewRegistration() {
     }
   };
 
-  // const data = [
-  //   {
-  //     actionButtons: null,
-  //     PanelId: "ABC123",
-  //     Part: "12345",
-  //     Description: "Sample description 1",
-  //     Barcode: "BAR123",
-  //     InstallDate: "2024-04-28",
-  //   },
-  //   {
-  //     actionButtons: null,
-  //     PanelId: "DEF456",
-  //     Part: "67890",
-  //     Description: "Sample description 2",
-  //     Barcode: "BAR456",
-  //     InstallDate: "2024-04-29",
-  //   },
-  // ];
-
+  
   useEffect(() => {
     if (selectedPart) {
       setFormValues((prev) => ({ ...prev, barcode: selectedPart.barcode }));
@@ -1239,7 +1215,7 @@ export default function ViewRegistration() {
           <CustomTabPanel value={value} index={3}>
             <Box sx={{ overflow: "auto" }} mb={4}>
               <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                *Claims
+                *Claims Master
               </Typography>
               {tableLoading ? (
                 <Box textAlign={"center"}>
