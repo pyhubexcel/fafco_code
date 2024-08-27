@@ -323,7 +323,7 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
         }
       );
 
-      console.log(row.regid, repairDate, response, token, "------>---these data------");
+    
 
       if (response.status === 200) {
         toast.success('Successfully updated repair date!'); // Show success notification
