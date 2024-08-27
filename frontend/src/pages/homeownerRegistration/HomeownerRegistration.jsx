@@ -423,10 +423,12 @@ export default function ViewRegistration() {
             repair_date:detail?.repair_date,
             // documents:detail?.documents?.[0]
             documents: detail?.documents || [],
+            part_description:detail?.part_description
           };
           return data;
         });
-        console.log(data1, "====working fine");
+        console.log(data1, "====working fine------")
+        console.log(id, "id aaya kya------");
         setClaimsData(data1);
       }
     } catch (error) {
