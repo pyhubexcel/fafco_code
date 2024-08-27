@@ -437,7 +437,7 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
               <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>RMAID</TableCell>
               <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Repair Date</TableCell>
               <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Status</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Edit</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -496,6 +496,9 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
                             sx={{ color: '#1976D2' }}
                           >
                             <Edit />
+                            <Typography variant="body2" sx={{ ml: 1 }}>
+            Edit
+          </Typography>
                           </IconButton>
                         )}
                       </>
