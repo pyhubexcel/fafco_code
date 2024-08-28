@@ -428,7 +428,6 @@ export default function ViewRegistration() {
           return data;
         });
         console.log(data1, "====working fine------")
-        console.log(id, "id aaya kya------");
         setClaimsData(data1);
       }
     } catch (error) {

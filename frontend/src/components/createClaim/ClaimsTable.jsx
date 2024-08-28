@@ -313,7 +313,7 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
 
     try {
       const response = await axiosInstance.patch(
-        `api/claims/claim_detail/${row.regid}/`,
+        `api/parts/part-details/${row.part_id}`,
         { repair_date: repairDate },
         {
           headers: {
