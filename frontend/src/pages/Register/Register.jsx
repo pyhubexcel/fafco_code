@@ -66,7 +66,7 @@ export default function Register() {
     const dispatch = useDispatch();
     const [countryCode, setCountryCode] = useState(null);
     const RegisterSliceRes = useSelector((state) => state.RegisterSlice);
-    console.log(RegisterSliceRes.data, 'RegisterSliceRes')
+    // console.log(RegisterSliceRes.data, 'RegisterSliceRes')
     const RegisterSliceLoading = useSelector((state) => state.RegisterSlice.isLoading);
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =

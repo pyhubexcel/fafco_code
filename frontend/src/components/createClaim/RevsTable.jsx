@@ -12,10 +12,10 @@ export const RevsTable = ({ data }) => {
         accessorKey: "PartId",
         header: "Part Id",
       },
-      // {
-      //   accessorKey: "ramid",
-      //   header: "Rma Id",
-      // },
+      {
+        accessorKey: "ramid",
+        header: "RMAID",
+      },
       {
         accessorKey: "Action",
         header: "Action",

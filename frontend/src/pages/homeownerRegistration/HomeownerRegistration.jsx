@@ -218,7 +218,7 @@ export default function ViewRegistration() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response, "===");
+      // console.log(response, "===");
       if (response.status == 200) {
         const data1 = await response.data.map((detail, i) => {
           const data = {
@@ -261,7 +261,7 @@ export default function ViewRegistration() {
       if (res.status == 201) {
         toast.success(res.data.message, { autoClose: 2000 });
         getDocumentData();
-        console.log(res, "------");
+        // console.log(res, "------");
         setUploadDocState({
           uploadInput: null,
           commentInput: "",
@@ -382,7 +382,7 @@ export default function ViewRegistration() {
           },
         }
       );
-      console.log(response.data.claims, "===+++++");
+      // console.log(response.data.claims, "===+++++");
       if (response.status == 200) {
         toast.success(response.data.message, { autoClose: 2000 });
         getClaimedPart();
@@ -426,7 +426,7 @@ export default function ViewRegistration() {
           };
           return data;
         });
-        console.log(data1, "====working fine------")
+        // console.log(data1, "====working fine------")
         setClaimsData(data1);
       }
     } catch (error) {
@@ -601,7 +601,7 @@ export default function ViewRegistration() {
   };
 
   const handleUpdateDocPool = async () => {
-    console.log(uploadDocEditState, "values");
+    // console.log(uploadDocEditState, "values");
     const data = {
       document_note: uploadDocEditState.commentInput,
       document: uploadDocEditState.uploadInput,
@@ -618,7 +618,7 @@ export default function ViewRegistration() {
           },
         }
       );
-      console.log(response.data, "===+++++");
+      // console.log(response.data, "===+++++");
       if (response.status == 200) {
         toast.success("Document Updated Successfully", { autoClose: 2000 });
         getDocumentData();

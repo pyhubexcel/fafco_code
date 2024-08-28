@@ -442,7 +442,7 @@ export default function CreateClaim() {
         }
       );
       setResStatus("");
-      console.log(res,"res")
+      // console.log(res,"res")
       if (res.status === 200) {
         toast.success("Part updated successfully",{autoClose: 2000,});
         setResStatus(res.data.status);
