@@ -66,7 +66,6 @@ const styles = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  // width: "60%",
   bgcolor: "background.paper",
   boxShadow: 10,
   p: 4,
@@ -502,7 +501,7 @@ export default function ViewRegistration() {
   };
 
   const AddPartApi = async (data) => {
-    console.log(data, "comming I  correct--------------------")
+    // console.log(data, "comming I  correct--------------------")
     try {
       setAddPartLoading(true);
       const res = await axiosInstance.post(`api/claims/add-part/`, data, {
@@ -1053,7 +1052,6 @@ export default function ViewRegistration() {
                           readOnly
                           placeholder="Barcode"
                           value={formValues.barcode}
-                          // onChange={(e) => handleInputChange(e, "barcode")}
                         />
                       </Box>
                       <Box>
@@ -1078,13 +1076,6 @@ export default function ViewRegistration() {
                                 onChange={handleFileUploadChangeShowParts}
                               />
                             </FormControl>
-                            {/* <Box sx={{ alignItems: "right" }}>
-                          <CustomButton
-                            buttonName="Upload File"
-                            variant="contained"
-                            type={"submit"}
-                          />
-                        </Box> */}
                           </Box>
                         </form>
                       </Box>
@@ -1343,8 +1334,6 @@ export default function ViewRegistration() {
     </Box>
   </Box>
 </Modal>
-
-
           </CustomTabPanel>
         </Box>
       </Card>

@@ -297,14 +297,14 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
   const [isEditing, setIsEditing] = useState(null);
   const [repairDate, setRepairDate] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const [isSaveDisabled, setIsSaveDisabled] = useState(false); // State to disable save button
+  const [isSaveDisabled, setIsSaveDisabled] = useState(false); 
   const token = Cookies.get("token");
 
   // Function to handle edit click
   const handleEditClick = (row) => {
     setIsEditing(row.part_id);
     setRepairDate(row.repair_date);
-    setIsSaveDisabled(false); // Enable save button on edit click
+    setIsSaveDisabled(false); 
   };
 
   // Function to handle save click
@@ -322,9 +322,6 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
           },
         }
       );
-
-    
-
       if (response.status === 200) {
         toast.success('Successfully updated repair date!'); // Show success notification
         setIsEditing(null); // Exit edit mode
@@ -428,7 +425,7 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
         boxShadow: 1,
       }}
     >
-      <ToastContainer /> {/* Add ToastContainer to render toasts */}
+      <ToastContainer /> 
       <TableContainer component={Paper}>
         <Table aria-label="claims table">
           <TableHead sx={{ bgcolor: '#1976D2' }}>
@@ -462,6 +459,7 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
                     {isEditing === row.part_id ? (
                       <TextField
                         variant="standard"
+                        type='date'
                         value={repairDate}
                         onChange={(e) => setRepairDate(e.target.value)}
                       />
@@ -486,7 +484,7 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
                             color="primary"
                             size="small"
                             onClick={() => handleSaveClick(row)}
-                            disabled={isSaveDisabled} // Disable save button when needed
+                            disabled={isSaveDisabled} 
                           >
                             Save
                           </Button>
@@ -516,8 +514,4 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
     </Box>
   );
 };
-
-
-
-
 export default ClaimsTable;
