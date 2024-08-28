@@ -383,13 +383,13 @@ export const ClaimsTable = ({ data, handleClaimViewParts }) => {
                 </Typography>
               </IconButton>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={2}>
               <Typography variant="body1" sx={{ marginBottom: '10px', fontWeight: 'bold' }}>
                 <strong>Part#</strong>
               </Typography>
               <Typography variant="body1">{row.part_id}</Typography>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <Typography variant="body1" sx={{ marginBottom: '10px', fontWeight: 'bold' }}>
                 <strong>Part Description:</strong>
               </Typography>
