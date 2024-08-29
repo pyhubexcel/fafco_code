@@ -369,8 +369,6 @@ export default function ViewRegistration() {
   const submitClaim = async () => {
     const partData = {
       //action: formValues.action_id,
-      //problem: formValues.problem_id,
-      // add_comment: formValues.comment,
     };
     try {
       const response = await axiosInstance.post(
@@ -388,15 +386,6 @@ export default function ViewRegistration() {
         getClaimedPart();
         setClaimedPartData([]);
         setShowSubmit(true);
-        // setFormValues({
-        //   repairDate: "",
-        //   action_id: "",
-        //   problem_id: "",
-        //   barcode: "",
-        //   uploadFile: null,
-        //   uploadList: "",
-        //   comment: "",
-        // });
       }
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
@@ -438,19 +427,24 @@ export default function ViewRegistration() {
   };
 
   const errorField = () => {
-    if (formValues.action_id === "" && formValues.problem_id === "") {
-      toast.error("Action and Problem Fields are required", {
+    if (formValues.action_id === "" && formValues.problem_id === "" && formValues.repairDate === "") {
+      toast.error("Action, Problem, and Repair Date fields are required", {
         autoClose: 2000,
       });
+    } else if (formValues.action_id === "" && formValues.problem_id === "") {
+      toast.error("Action and Problem Fields are required", { autoClose: 2000 });
     } else if (formValues.action_id === "") {
       toast.error("Action Field is required", { autoClose: 2000 });
-    } else {
+    } else if (formValues.problem_id === "") {
       toast.error("Problem Field is required", { autoClose: 2000 });
+    } else if (formValues.repairDate === "") {
+      toast.error("Repair Date Field is required", { autoClose: 2000 });
     }
   };
+  
 
   const handleAddPart = () => {
-    if (formValues.action_id !== "" && formValues.problem_id !== "") {
+    if (formValues.action_id !== "" && formValues.problem_id !== "" && formValues.repairDate !=="") {
       const partData=new FormData();
       partData.append('part_id',selectedPart.id);
       partData.append('repair_date',formValues.repairDate);
@@ -461,17 +455,6 @@ export default function ViewRegistration() {
       }
       partData.append('add_comment',formValues.comment,);
       partData.append('profile',id);
-      // const partData = {
-      //   part_id: selectedPart.id,
-      //   repair_date: formValues.repairDate,
-      //   // barcode: formValues.barcode,
-      //   claim_action: formValues.action_id,
-      //   part_problem: formValues.problem_id,
-      //   documents: uploadState.uploadInput,
-      //   //comment: formValues.comment,
-      //   add_comment: formValues.comment,
-      //   profile: id,
-      // };
       const element = document.getElementsByClassName(
         "css-cdprif-MuiButtonBase-root-MuiButton-root"
       );
@@ -690,9 +673,6 @@ export default function ViewRegistration() {
       setImageLoading(false);
     }
   };
-
- 
-  
 
   const handleViewParts = (data) => {
     fetchImage(data.document);
@@ -973,8 +953,10 @@ export default function ViewRegistration() {
                   alignItems={{ sm: "center" }}
                   width={{ xs: "100%", sm: "50%" }}
                 >
+
+
                   <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Enter Repair Date:
+                  <span style={{ color: "red" }}>*</span>  Enter Repair Date:
                   </Typography>
                   <TextField
                     type="date"
@@ -983,6 +965,7 @@ export default function ViewRegistration() {
                     value={formValues.repairDate}
                     onChange={(e) => handleInputChange(e, "repairDate")}
                   />
+
                 </Stack>
                 <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
                   Choose Part:
