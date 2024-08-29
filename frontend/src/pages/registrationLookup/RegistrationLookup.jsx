@@ -71,8 +71,6 @@ export default function RegistrationLookup() {
         </Stack>
       )}
 
-      {/* <RegisteredUsers getRowData={getRowData} userList={userList} /> */}
-
       <Box
         sx={{ width: "200px", direction: "flex", justifyContent: "flex-start" }}
         my={2}

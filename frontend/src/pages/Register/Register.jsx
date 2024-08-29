@@ -66,7 +66,6 @@ export default function Register() {
     const dispatch = useDispatch();
     const [countryCode, setCountryCode] = useState(null);
     const RegisterSliceRes = useSelector((state) => state.RegisterSlice);
-    // console.log(RegisterSliceRes.data, 'RegisterSliceRes')
     const RegisterSliceLoading = useSelector((state) => state.RegisterSlice.isLoading);
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
@@ -135,13 +134,7 @@ export default function Register() {
                                     getOptionLabel={(option) => option.label}
                                     renderOption={(props, option) => (
                                         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                            {/* <img
-                                            loading="lazy"
-                                            width="20"
-                                            srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                                            src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                                            alt=""
-                                        /> */}
+                                          
                                             {option.name}
                                         </Box>
                                     )}

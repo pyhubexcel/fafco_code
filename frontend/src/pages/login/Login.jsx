@@ -48,9 +48,6 @@ export default function Login() {
       dispatch(resetReducer());
 
       Navigate('/')
-      // setTimeout(() => {
-        
-      // }, 3000); 
       
     }
     if (loginSliceData?.response?.data?.success === false) {

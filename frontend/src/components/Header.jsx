@@ -9,6 +9,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { logOutUser, resetReducer } from "../redux/slices/LogoutSlice"
 import { MyContext } from '../context/ContextProvider';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const navbarLinks = [
   {
@@ -49,10 +51,21 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  // const handleLogout = () => {
+  //   setAnchorEl(null);
+  //   dispatch(logOutUser(token))
+  // }
+
+  const handleLogout = async () => {
     setAnchorEl(null);
-    dispatch(logOutUser(token))
-  }
+  
+    try {
+      await dispatch(logOutUser(token)).unwrap();
+      toast.success("Logged out successfully!");
+    } catch (error) {
+      toast.success("Logged out successfully!");
+    }
+  };
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -72,9 +85,7 @@ const Header = () => {
     if(updateName){
       setUpdateName(false)
     }
-    // if (!token) {
-    //     Navigation('/login');
-    // }
+   
   }, [loginSliceData, logOutState,updateName])
 
   return (
@@ -82,7 +93,9 @@ const Header = () => {
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={logOutLoding}>
         <CircularProgress color="inherit" />
+        
       </Backdrop>
+
       <nav >
         <div className="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
           <div className="flex items-center justify-between h-16 ">
@@ -283,8 +296,11 @@ const Header = () => {
                   Logout
                 </MenuItem>
               </Menu>
+            
             </div>
+            
             <Divider />
+            
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navbarLinks.map((item, i) => (
                 <NavLink key={i} to={item.link}
@@ -295,9 +311,11 @@ const Header = () => {
                 </NavLink>
               ))}
             </div>
-          </div>
+          
+          </div> 
         }
       </nav>
+      <ToastContainer />
     </div>
   )
 }

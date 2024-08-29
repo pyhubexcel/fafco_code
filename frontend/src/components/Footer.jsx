@@ -48,9 +48,7 @@ export default function Footer() {
       localStorage.removeItem("idd");
       Navigation("/login");
     }
-    // if (!token && (urlPath === "/login" || urlPath !== "/register")) {
-    //   Navigation('/login');
-    // }
+   
   }, [loginSliceSuccess, logOutState]);
 
   return (
