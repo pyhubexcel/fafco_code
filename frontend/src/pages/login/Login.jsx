@@ -46,6 +46,7 @@ export default function Login() {
       Cookies.set('name', loginSliceData?.data?.name)
       Cookies.set('token', loginSliceData?.data?.access)
       dispatch(resetReducer());
+
       Navigate('/')
       // setTimeout(() => {
         
@@ -85,7 +86,7 @@ export default function Login() {
           ) : null}
         </div>
         <div className="space-y-1">
-        {/* <ToastContainer /> */}
+        <ToastContainer />
           <FormControl
             fullWidth
             variant="outlined"
