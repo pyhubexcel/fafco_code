@@ -1,15 +1,17 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Claim, Profile , UploadClaimDocument
-from .serializers import ClaimSerializer , UploadClaimSerializer
-from rest_framework.permissions import IsAuthenticated
-from django.conf import settings
-from part.models import Part
-from rest_framework import status
 from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
+from .models import Claim, Profile , UploadClaimDocument, ClaimStatus
+from .serializers import ClaimSerializer , UploadClaimSerializer
+from django.conf import settings
+from part.models import Part
 
 
 class ClaimAPI(APIView):
@@ -70,7 +72,8 @@ class ClaimDetailAPI(APIView):
 
     def patch(self, request, pk):
         claim = get_object_or_404(Claim, pk=pk)
-        if claim.status == Claim.Denied or claim.status == Claim.Voided:
+
+        if claim.status.claim_code == 7 or claim.status.claim_code == 99:
 
             serializer = ClaimSerializer(claim, data=request.data, partial=True)
             if serializer.is_valid():
@@ -147,62 +150,31 @@ class UploadClaimeDocumentAPI(APIView):
         return Response({"error": "Profile ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # def get(self, request, pk):
-    #     claims_docs = get_object_or_404(UploadClaimDocument, pk=pk)
-    #     serializer = UploadClaimSerializer(claims_docs,context={"request": request})
-    #     document_url = serializer.get_document(claims_docs)
-    #     serializer.data['document'] = document_url
-    #     response = Response(serializer.data, status=200)
-    #     response.success_message = "Fetched Data."
-    #     return response
-
-
-# class UploadClaimeDocumentAPI(APIView):
-#     # permission_classes = [IsAuthenticated]
-
-#     def post(self,request):
-#         data =request.data
-#         serializer = UploadClaimSerializer(data=data)
-#         if not serializer.is_valid():
-#             return Response(serializer.errors)
-#         serializer.save()
-#         return Response({"message":"document is uploaded successfully"})
-
-
-
-#     def get(self, request, pk):
-#         claims_docs = get_object_or_404(UploadClaimDocument, pk=pk)
-#         serializer = UploadClaimSerializer(claims_docs,context={"request": request})
-#         document_url = serializer.get_document(claims_docs)
-#         serializer.data['document'] = document_url
-#         response = Response(serializer.data, status=200)
-#         response.success_message = "Fetched Data."
-#         return response
-
-
 class AddPartToClaimAPIView(APIView):
 
     def post(self, request):
         documents = request.FILES.getlist('documents', [])
         serializer = ClaimSerializer(data=request.data)
         if serializer.is_valid():
-            parts_id = request.data.get('part_id')
+            part_id = request.data.get('part_id')
             try:
-                part = Part.objects.get(id=parts_id)
+                part = Part.objects.get(id=part_id)              
+                repair_date = request.data.get("repair_date")
+                if repair_date:  
+                    part.repair_date = repair_date               
+                    part.save()
             except Part.DoesNotExist:
-                return Response({"error": "Part not found"}, status=status.HTTP_400_BAD_REQUEST)
-            
+                return Response({"error": "Part not found"}, status=status.HTTP_400_BAD_REQUEST)          
+            # Check if there's an existing claim for this part ID
             existing_claim = Claim.objects.filter(part_id=part).first()
             
             if existing_claim:
-                if existing_claim.status == Claim.Draft:
-                    return Response({"error": "Claim already exists for this part ID"}, status=status.HTTP_400_BAD_REQUEST)
-                # Optionally handle the case where the existing claim is not in draft status
-                # e.g., return an error or handle accordingly
-
-            # Create a new claim
-            claim = serializer.save(part_id=part, status=Claim.Draft)
+                return Response({"error": "Claim already exists for this part ID"}, status=status.HTTP_400_BAD_REQUEST)
+            statu = ClaimStatus.objects.get(claim_code=0)
+            # Create a new claim if no existing claim is found
+            claim = serializer.save(part_id=part, status=statu)
             
+            # Handle document uploads
             if documents:
                 document_paths = []
                 for document in documents:
@@ -214,40 +186,43 @@ class AddPartToClaimAPIView(APIView):
             
             regid = part.registration.id
             response_data = {
-                "repair_date": serializer.data["claim_action"],
-                "ramid_id": regid,
+                "repair_date": serializer.data["repair_date"],
+                "ramid_id": "1000"+str(regid),  
                 "claim_action": serializer.data["claim_action"],
                 "part_problem": serializer.data["part_problem"],
                 "part_id": serializer.data["part_id"],
                 "part_number": part.part_number,
                 "regid": regid,
                 "add_comment": serializer.data["add_comment"],
-                "status": claim.status
+                "status": claim.status.claim_code
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
- 
 
 class SubmitClaimAPIView(APIView):
 
     def post(self, request, profile_id):
-        parts = Part.objects.filter(registration__id=profile_id, claim__status=Claim.Draft)
+        # Get all parts related to the given profile ID with Received claims
+        parts = Part.objects.filter(registration__id=profile_id, claim__status=0)
         
         if not parts.exists():
-            return Response({"error": "No draft parts found for the given profile ID"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "No received parts found for the given profile ID"}, status=status.HTTP_400_BAD_REQUEST)
 
         part_ids = list(parts.values_list('id', flat=True))
 
-        claims_updated_count = Claim.objects.filter(part_id__in=part_ids, status=Claim.Draft).update(status=Claim.Pending)
+        # Update claim status from Received to Processed
+        claims_updated_count = Claim.objects.filter(part_id__in=part_ids, status=0).update(status=3)
 
         if claims_updated_count == 0:
-            return Response({"error": "No claims found with the specified part IDs and Draft status"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "No claims found with the specified part IDs and Received status"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the part numbers of the updated claims
+        updated_claims = Claim.objects.filter(part_id__in=part_ids, status=3)
+        part_numbers = Part.objects.filter(id__in=updated_claims.values_list('part_id', flat=True)).values_list('part_number', flat=True)
 
         add_comment = request.data.get('add_comment')
-
-        updated_claims = Claim.objects.filter(part_id__in=part_ids, status=Claim.Pending)
 
         response_data = []
 
@@ -257,16 +232,19 @@ class SubmitClaimAPIView(APIView):
 
             claim_data = {
                 "regid": claim.part_id.registration.id,
-                "ramid": claim.id,
+                "ramid": claim.part_id.registration.id,
                 "part_id": claim.part_id.id,
                 "action": claim.claim_action,
                 "problem": claim.part_problem,
-                "status": claim.get_status_display(),
+                "status": claim.status.claim_code,
                 "add_comment": claim.add_comment,
             }
             response_data.append(claim_data)
 
-        return Response({"message": f"{claims_updated_count} claims submitted successfully", "claims": response_data}, status=status.HTTP_200_OK)
+        # Join part numbers into a string for the response message
+        part_numbers_str = ', '.join(part_numbers)
+
+        return Response({"message": f"Claims for parts {part_numbers_str} submitted successfully", "claims": response_data}, status=status.HTTP_200_OK)
 
 
 class RetrieveClaimAPIView(APIView):
@@ -286,13 +264,18 @@ class RetrieveClaimAPIView(APIView):
         for claim in claims:
             claim_data = {
                 "regid": claim.part_id.registration.id,
-                "ramid": claim.id,
+                "repair_date": claim.part_id.repair_date,
+                "ramid": "1000"+str(claim.part_id.registration.id),
                 "part_id": claim.part_id.id,
+                "part_description": claim.part_id.part_description,
                 "action": claim.claim_action,
                 "problem": claim.part_problem,
-                "status": claim.status,
-                "add_comment": claim.add_comment  # Assuming 'add_comment' is a field on Claim model
+                "status": claim.status.claim_code,
+                "documents":claim.documents,
+                "add_comment": claim.add_comment  
             }
             response_data.append(claim_data)
 
         return Response({"claims": response_data}, status=status.HTTP_200_OK)
+
+

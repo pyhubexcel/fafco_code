@@ -2,27 +2,16 @@ from django.db import models
 from user.models import Customer, Profile
 from part.models import Part
 from user.models import Profile
-# from MultiFileField.field import MultiFileField
 import json
 
 
+class ClaimStatus(models.Model):
+    claim_code = models.IntegerField(unique= True, primary_key=True)
+    stext = models.CharField(null=True, max_length=50)
+    Active = models.BooleanField(default=True)
+
+
 class Claim(models.Model):
-
-    Draft = 0
-    Submitted = 1
-    Pending = 3
-    Credited = 6
-    Denied = 7
-    Voided = 99
-
-    Claim_status = [
-        (Draft, 'Draft'),
-        (Submitted, 'Submitted'),
-        (Pending, 'Pending'),
-        (Credited, 'Credited'),
-        (Denied, 'Denied'),
-        (Voided, 'Voided')
-    ]
 
     FREEZE_DAMAGE = 1
     DIMPLE_LEAK_REV_ONLY = 2
@@ -54,11 +43,10 @@ class Claim(models.Model):
     repair_date = models.DateField(null=True, blank=True)
     parts = models.ManyToManyField(Part, related_name='multiple_claims', blank=True,null=True)
     part_id= models.ForeignKey(Part, on_delete=models.CASCADE,blank=True,null=True)
-    status = models.SmallIntegerField(choices=Claim_status,blank=True, null=True)
+    status = models.ForeignKey(ClaimStatus, on_delete=models.PROTECT, blank=True, null=True)
     add_comment = models.TextField(blank=True, null=True)
     claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION, blank=True, null=True)
     part_problem = models.PositiveSmallIntegerField(choices=PART_PROBLEM,blank=True,null=True)
-    # documents = models.FileField(upload_to='documents/', blank=True, null=True)
     documents = models.JSONField(default=list, blank=True)
 
     def __str__(self) -> str:
@@ -75,3 +63,4 @@ class UploadClaimDocument(models.Model):
         Profile, on_delete=models.CASCADE,null=True,blank=True,
         related_name='profile'
     )
+

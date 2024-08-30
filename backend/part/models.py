@@ -1,7 +1,5 @@
 from django.db import models
 from user.models import Customer, Profile
-# from claim.models import Claim
-
 
 class Part(models.Model):
     
@@ -17,8 +15,6 @@ class Part(models.Model):
     barcode = models.CharField(max_length=16,blank=True, null=True)
     active = models.BooleanField(default=True)
     problem_code = models.CharField(max_length=255, blank=True, null=True)
-    # claim_action = models.PositiveSmallIntegerField(choices=CLAIM_ACTION, blank=True, null=True)
-    # part_problem = models.PositiveSmallIntegerField(choices=PART_PROBLEM,blank=True,null=True)
 
 
     def __str__(self) -> str:

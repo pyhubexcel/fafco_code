@@ -1,45 +1,17 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
-from .models import Part, Profile,Partcsv
-from .serializers import PartSerializer, PartcsvSerializer
 from rest_framework.permissions import IsAuthenticated
 
+from .models import Part, Profile,Partcsv
+from .serializers import PartSerializer, PartcsvSerializer
 
 
 class PartAPI(APIView):
     permission_classes = [IsAuthenticated]
-
     
-    # def get(self, request,profile_id):
-    #     print('ttttttttttttttttttttttttttttttttt')
-    #     print(profile_id,'deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
-    #     parts = Part.objects.filter(registration=profile_id)  
-    #     print(parts)    
-    #     serializer = PartSerializer(parts, many=True)
-    #     response = Response(serializer.data, status=200)
-    #     response.success_message = "Fetched Data."
-    #     return response
-    # def post(self, request):
-    #     data = request.data
-    #     parts = get_object_or_404(Profile, customer=request.user.id,
-    #                               pk=data["profile_id"])
-        
-        
-    #     data["registration"] = parts.id
-    #     serializer = PartSerializer(data=data)
-    #     serializer.id and serializer.part_number 
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         response = Response(serializer.data, status=200)
-    #         response.success_message = "Part created successfully"
-    #         return response
-    #     response = Response(serializer.errors, status=200)
-    #     response.success_message = "Error occured."
-    #     return response
-    
-
 
     def post(self, request):
         data = request.data
@@ -134,12 +106,7 @@ class PartupdatedeleteAPI(APIView):
         response = Response(serializer.errors, status=200)
         response.success_message = "Error Occurred."
         return response
-    #         response = Response(serializer.data, status=200)
-    #         response.success_message = "Updated Data Successfully"
-    #         return response
-    #     response = Response(serializer.errors, status=200)
-    #     response.success_message = "Error Occured."
-    #     return response
+
 
     def delete(self, request, profile_id, part_id):
         part = get_object_or_404(Part, pk=part_id, registration=profile_id)
@@ -153,3 +120,17 @@ class PartcsvListView(APIView):
         parts = Partcsv.objects.all()
         serializer = PartcsvSerializer(parts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class PartupdateAPI(APIView):
+    def patch(self, request, part_id):
+        part = get_object_or_404(Part, pk=part_id)
+
+        serializer = PartSerializer(part, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data, status=200)
+            response.success_message = "Updated Data."
+            return response
+        response = Response(serializer.errors, status=200)
+        response.success_message = "Error Occured."
+        return response
