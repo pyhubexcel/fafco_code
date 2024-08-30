@@ -46,16 +46,15 @@ export default function Login() {
       Cookies.set('name', loginSliceData?.data?.name)
       Cookies.set('token', loginSliceData?.data?.access)
       dispatch(resetReducer());
+
       Navigate('/')
-      // setTimeout(() => {
-        
-      // }, 3000); 
       
     }
     if (loginSliceData?.response?.data?.success === false) {
       toast.error(loginSliceData?.response?.data?.message,{autoClose: 2000,});
       dispatch(resetReducer());
     }
+   
   }, [loginSliceData, loginSliceData?.response?.data?.success])
 
 
@@ -85,7 +84,7 @@ export default function Login() {
           ) : null}
         </div>
         <div className="space-y-1">
-        {/* <ToastContainer /> */}
+        <ToastContainer />
           <FormControl
             fullWidth
             variant="outlined"

@@ -27,6 +27,12 @@ import RevsTable from "../../components/createClaim/RevsTable";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import ClaimsTable from "../../components/createClaim/ClaimsTable";
 import { jwtDecode } from "jwt-decode";
+import { Details } from "@mui/icons-material";
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
+
 
 const optionData = [
   { id: 1, value: "FREEZE DAMAGE" },
@@ -60,7 +66,6 @@ const styles = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  // width: "60%",
   bgcolor: "background.paper",
   boxShadow: 10,
   p: 4,
@@ -103,7 +108,7 @@ function a11yProps(index) {
 
 export default function ViewRegistration() {
   const { id } = useParams();
-  const { partsData } = useContext(MyContext);
+  const { partsData,deletePart,setDeletePart } = useContext(MyContext);
   const token = Cookies.get("token");
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -117,6 +122,7 @@ export default function ViewRegistration() {
     uploadInput: null,
   });
   const [uploadDocState, setUploadDocState] = useState({ uploadInput: null });
+  const [uploadClaimImageList, setUploadClaimImageList] = useState([]);
   const [uploadDocEditState, setUploadDocEditState] = useState({
     uploadInput: null,
   });
@@ -135,12 +141,14 @@ export default function ViewRegistration() {
   const [updateName, setUpdateName] = useState(location.state.name);
   const [openEditDoc, setOpenEditDoc] = useState(false);
   const [openViewDoc, setOpenViewDoc] = useState(false);
-
+  const [openClaimDoc, setOpenClaimDoc] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [addPartLoading, setAddPartLoading] = useState(false);
   const [showSubmit, setShowSubmit] = useState(true);
   const [imageData, setImageData] = useState(null);
+  const [claimImageData, setClaimImageData] = useState([]);
   const [imageLoading, setImageLoading] = useState(false);
+ 
 
   useEffect(() => {
     if (uploadState.uploadInput !== null) {
@@ -156,7 +164,20 @@ export default function ViewRegistration() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  useEffect(() => {
+    if (uploadState.uploadInput !== null) {
+      const file = uploadState.uploadInput;
+      
+      if (file && file.type?.startsWith('image/')) {
+        if (!uploadClaimImageList.some(img => img.name === file.name)) {
+          setUploadClaimImageList((prevList) => [...prevList, file]);
+        }
+      }
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }, [uploadState]);
   const handleInputChange = (event, name) => {
     const { value, type } = event.target;
     if (type === "file") {
@@ -187,7 +208,7 @@ export default function ViewRegistration() {
   useEffect(() => {
     getDocumentData();
     getClaimedPart();
-  }, []);
+  }, [deletePart]);
 
   const getDocumentData = async () => {
     setTableLoading(true);
@@ -197,7 +218,7 @@ export default function ViewRegistration() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response, "===");
+      // console.log(response, "===");
       if (response.status == 200) {
         const data1 = await response.data.map((detail, i) => {
           const data = {
@@ -240,15 +261,7 @@ export default function ViewRegistration() {
       if (res.status == 201) {
         toast.success(res.data.message, { autoClose: 2000 });
         getDocumentData();
-        console.log(res, "------");
-        // const data = {
-        //   actionButtons: "",
-        //   regid: res.data.data.regid,
-        //   Uploaded: convertDateFormat(res.data.data.uploaded_at),
-        //   DocumentNote: res.data.data.document_note,
-        // };
-        // setDocDetails([...docDetails, data]);
-        //setDocDetails(res.data)
+        // console.log(res, "------");
         setUploadDocState({
           uploadInput: null,
           commentInput: "",
@@ -339,7 +352,6 @@ export default function ViewRegistration() {
       uploadInput: e.target.files[0],
     }));
   };
-
   const handleFileUploadChangeShowParts = (e) => {
     setUploadState((prevState) => ({
       ...prevState,
@@ -353,11 +365,10 @@ export default function ViewRegistration() {
     // setUploadFileList([...uploadFileList, uploadState.uploadInput.name]);
   };
 
+
   const submitClaim = async () => {
     const partData = {
       //action: formValues.action_id,
-      //problem: formValues.problem_id,
-      // add_comment: formValues.comment,
     };
     try {
       const response = await axiosInstance.post(
@@ -369,21 +380,12 @@ export default function ViewRegistration() {
           },
         }
       );
-      console.log(response.data.claims, "===+++++");
+      // console.log(response.data.claims, "===+++++");
       if (response.status == 200) {
         toast.success(response.data.message, { autoClose: 2000 });
         getClaimedPart();
         setClaimedPartData([]);
         setShowSubmit(true);
-        // setFormValues({
-        //   repairDate: "",
-        //   action_id: "",
-        //   problem_id: "",
-        //   barcode: "",
-        //   uploadFile: null,
-        //   uploadList: "",
-        //   comment: "",
-        // });
       }
     } catch (error) {
       throw new Error("Failed to submit claim. Please try again later.");
@@ -396,7 +398,6 @@ export default function ViewRegistration() {
       const response = await axiosInstance.get(
         `api/claims/retrieve-claims/${id}/`
       );
-      console.log(response, "===++++");
       if (response.status == 200) {
         const data1 = await response.data.claims.map((detail, i) => {
           const data = {
@@ -407,43 +408,53 @@ export default function ViewRegistration() {
             ramid: detail?.ramid,
             status: detail?.status,
             add_comment: detail?.add_comment,
+            repair_date:detail?.repair_date,
+            // documents:detail?.documents?.[0]
+            documents: detail?.documents || [],
+            part_description:detail?.part_description
           };
           return data;
         });
-        console.log(data1, "====working fine");
+        // console.log(data1, "====working fine------")
         setClaimsData(data1);
       }
     } catch (error) {
+      setClaimsData('');
       throw new Error("Failed to submit claim. Please try again later.");
     }
     setTableLoading(false);
+    setDeletePart(false)
   };
 
   const errorField = () => {
-    if (formValues.action_id === "" && formValues.problem_id === "") {
-      toast.error("Action and Problem Fields are required", {
+    if (formValues.action_id === "" && formValues.problem_id === "" && formValues.repairDate === "") {
+      toast.error("Action, Problem, and Repair Date fields are required", {
         autoClose: 2000,
       });
+    } else if (formValues.action_id === "" && formValues.problem_id === "") {
+      toast.error("Action and Problem Fields are required", { autoClose: 2000 });
     } else if (formValues.action_id === "") {
       toast.error("Action Field is required", { autoClose: 2000 });
-    } else {
+    } else if (formValues.problem_id === "") {
       toast.error("Problem Field is required", { autoClose: 2000 });
+    } else if (formValues.repairDate === "") {
+      toast.error("Repair Date Field is required", { autoClose: 2000 });
     }
   };
+  
 
   const handleAddPart = () => {
-    if (formValues.action_id !== "" && formValues.problem_id !== "") {
-      const partData = {
-        part_id: selectedPart.id,
-        repair_date: formValues.repairDate,
-        // barcode: formValues.barcode,
-        claim_action: formValues.action_id,
-        part_problem: formValues.problem_id,
-        documents: uploadFileList,
-        //comment: formValues.comment,
-        add_comment: formValues.comment,
-        profile: id,
-      };
+    if (formValues.action_id !== "" && formValues.problem_id !== "" && formValues.repairDate !=="") {
+      const partData=new FormData();
+      partData.append('part_id',selectedPart.id);
+      partData.append('repair_date',formValues.repairDate);
+      partData.append('claim_action',formValues.action_id);
+      partData.append('part_problem',formValues.problem_id);
+      for(let i=0;i<uploadClaimImageList.length;i++){
+        partData.append('documents',uploadClaimImageList[i]);
+      }
+      partData.append('add_comment',formValues.comment,);
+      partData.append('profile',id);
       const element = document.getElementsByClassName(
         "css-cdprif-MuiButtonBase-root-MuiButton-root"
       );
@@ -472,13 +483,15 @@ export default function ViewRegistration() {
     }
   };
 
-  const AddPartApi = async (partData) => {
+  const AddPartApi = async (data) => {
+    // console.log(data, "comming I  correct--------------------")
     try {
       setAddPartLoading(true);
-      const res = await axiosInstance.post(`api/claims/add-part/`, partData, {
+      const res = await axiosInstance.post(`api/claims/add-part/`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        
       });
       if (res.status == 201) {
         setShowSubmit(false);
@@ -491,6 +504,7 @@ export default function ViewRegistration() {
           regid: res.data.regid,
           ramid: res.data.ramid_id,
           status: res.data.status,
+          repair_date:res.data.repair_date
           // Barcode: formValues.barcode,
         };
         setClaimedPartData([...claimedPartData, data]);
@@ -536,25 +550,7 @@ export default function ViewRegistration() {
     }
   };
 
-  // const data = [
-  //   {
-  //     actionButtons: null,
-  //     PanelId: "ABC123",
-  //     Part: "12345",
-  //     Description: "Sample description 1",
-  //     Barcode: "BAR123",
-  //     InstallDate: "2024-04-28",
-  //   },
-  //   {
-  //     actionButtons: null,
-  //     PanelId: "DEF456",
-  //     Part: "67890",
-  //     Description: "Sample description 2",
-  //     Barcode: "BAR456",
-  //     InstallDate: "2024-04-29",
-  //   },
-  // ];
-
+  
   useEffect(() => {
     if (selectedPart) {
       setFormValues((prev) => ({ ...prev, barcode: selectedPart.barcode }));
@@ -588,7 +584,7 @@ export default function ViewRegistration() {
   };
 
   const handleUpdateDocPool = async () => {
-    console.log(uploadDocEditState, "values");
+    // console.log(uploadDocEditState, "values");
     const data = {
       document_note: uploadDocEditState.commentInput,
       document: uploadDocEditState.uploadInput,
@@ -605,7 +601,7 @@ export default function ViewRegistration() {
           },
         }
       );
-      console.log(response.data, "===+++++");
+      // console.log(response.data, "===+++++");
       if (response.status == 200) {
         toast.success("Document Updated Successfully", { autoClose: 2000 });
         getDocumentData();
@@ -648,6 +644,36 @@ export default function ViewRegistration() {
     setImageLoading(false);
   };
 
+  const fetchImages = async (urls) => {
+    setImageLoading(true);
+    try {
+      const imagePromises = urls.map(async (url) => {
+        const response = await axiosInstance.get(url, { responseType: "blob" });
+
+        if (url.endsWith(".pdf")) {
+          // Handle PDFs
+          const pdfUrl = URL.createObjectURL(response.data);
+          window.open(pdfUrl);
+          return null;
+        } else {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(response.data);
+          });
+        }
+      });
+
+      const imageDataArray = await Promise.all(imagePromises);
+      setClaimImageData(imageDataArray.filter(data => data !== null)); // Filter out null values for PDFs
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
   const handleViewParts = (data) => {
     fetchImage(data.document);
     if (data.document.includes(".pdf")) {
@@ -657,11 +683,28 @@ export default function ViewRegistration() {
     }
   };
 
+  const handleClaimViewParts = (data) => {
+    fetchImages(data.documents);
+    if (data.documents.includes(".pdf")) {
+      setOpenClaimDoc(false);
+    } else {
+      setOpenClaimDoc(true);
+    }
+  };
+
   const handleViewClose = () => {
     setOpenViewDoc(false);
     setEditDocDetails(null);
     setImageData(null);
+    setClaimImageData(null)
   };
+
+  const handleClaimClose=()=>{
+    setOpenClaimDoc(false);
+    setImageData(null)
+    setClaimImageData(null)
+  }
+
 
   return (
     <Box
@@ -685,14 +728,7 @@ export default function ViewRegistration() {
               {location.state.address}
             </Typography>
           </Box>
-          {/* <Box sx={{ display: "flex", gap: "5px" }}>
-            <Typography sx={{ fontSize: "1.05rem", fontWeight: "600" }}>
-              Assigned Dealer:
-            </Typography>
-            <Typography sx={{ fontSize: "1.05rem" }}>
-              {location.state.current_dealer}
-            </Typography>
-          </Box> */}
+        
         </div>
         <div className="flex flex-col gap-2 my-2 sm:flex-row sm:items-center">
           {/* <ToastContainer /> */}
@@ -917,8 +953,10 @@ export default function ViewRegistration() {
                   alignItems={{ sm: "center" }}
                   width={{ xs: "100%", sm: "50%" }}
                 >
+
+
                   <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Enter Repair Date:
+                  <span style={{ color: "red" }}>*</span>  Enter Repair Date:
                   </Typography>
                   <TextField
                     type="date"
@@ -927,6 +965,7 @@ export default function ViewRegistration() {
                     value={formValues.repairDate}
                     onChange={(e) => handleInputChange(e, "repairDate")}
                   />
+
                 </Stack>
                 <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
                   Choose Part:
@@ -996,7 +1035,6 @@ export default function ViewRegistration() {
                           readOnly
                           placeholder="Barcode"
                           value={formValues.barcode}
-                          // onChange={(e) => handleInputChange(e, "barcode")}
                         />
                       </Box>
                       <Box>
@@ -1021,13 +1059,6 @@ export default function ViewRegistration() {
                                 onChange={handleFileUploadChangeShowParts}
                               />
                             </FormControl>
-                            {/* <Box sx={{ alignItems: "right" }}>
-                          <CustomButton
-                            buttonName="Upload File"
-                            variant="contained"
-                            type={"submit"}
-                          />
-                        </Box> */}
                           </Box>
                         </form>
                       </Box>
@@ -1142,24 +1173,6 @@ export default function ViewRegistration() {
                 </Box>
 
                 <Box width={"100%"}>
-                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Add Comment:
-                  </Typography>
-                  <TextareaAutosize
-                    aria-label="minimum height"
-                    minRows={4}
-                    style={{
-                      width: "100%",
-                      border: "1px solid gray",
-                      borderRadius: "5px",
-                      padding: "4px",
-                    }}
-                    placeholder="Add comment ..."
-                    name="comment"
-                    value={formValues.comment}
-                    onChange={(e) => handleInputChange(e, "comment")}
-                  /> */}
-
                 <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
                     <CustomButton
                       buttonName="Submit Claim"
@@ -1169,77 +1182,141 @@ export default function ViewRegistration() {
                     />
                   </Box>
                 </Box>
-                {/* <Box sx={{ overflow: "auto" }} mb={4}>
-                  <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                    *Claims
-                  </Typography>
-                  {tableLoading ? (
-                    <Box textAlign={"center"}>
-                      <CircularProgress size={"1rem"} />
-                    </Box>
-                  ) : (
-                    <ClaimsTable data={claimsData} />
-                  )}
-                </Box> */}
+              
               </Box>
             </Card>
-            {/* <Box sx={{ padding: "10px", m: 1 }}> */}
-              {/* <Box sx={{ overflow: "auto" }} mb={4}>
-                <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                  *Claimed Part
-                </Typography>
-                {addPartLoading ? (
-                  <Box textAlign={"center"}>
-                    <CircularProgress size={"1rem"} />
-                  </Box>
-                ) : (
-                  <RevsTable data={claimedPartData} />
-                )}
-              </Box> */}
-
-              {/* <Box width={"100%"}> */}
-                {/* <Typography pb={"3px"} fontWeight={"bold"} color={"gray"}>
-                    Add Comment:
-                  </Typography>
-                  <TextareaAutosize
-                    aria-label="minimum height"
-                    minRows={4}
-                    style={{
-                      width: "100%",
-                      border: "1px solid gray",
-                      borderRadius: "5px",
-                      padding: "4px",
-                    }}
-                    placeholder="Add comment ..."
-                    name="comment"
-                    value={formValues.comment}
-                    onChange={(e) => handleInputChange(e, "comment")}
-                  /> */}
-
-                {/* <Box sx={{ display: "flex", justifyContent: "end" }} my={2}>
-                  <CustomButton
-                    buttonName="Submit Claim"
-                    variant="contained"
-                    disable={showSubmit}
-                    onClick={submitClaim}
-                  />
-                </Box>
-              </Box> */}
-            {/* </Box> */}
+          
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
             <Box sx={{ overflow: "auto" }} mb={4}>
               <Typography pb={"3px"} fontWeight={"bold"} color={"#4a4d4a"}>
-                *Claims
+                *Claims Master
               </Typography>
               {tableLoading ? (
                 <Box textAlign={"center"}>
                   <CircularProgress size={"1rem"} />
                 </Box>
               ) : (
-                <ClaimsTable data={claimsData} />
+                <ClaimsTable data={claimsData} handleClaimViewParts={handleClaimViewParts}/>
               )}
             </Box>
+            <Modal
+  open={openClaimDoc}
+  onClose={handleClaimClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box sx={styles}>
+    <Box my={2}>
+      <Typography
+        variant="body1"
+        sx={{
+          fontSize: "15px",
+          fontWeight: "600",
+          color: "gray",
+          padding:"10px"
+        }}
+      >
+        Preview the Docs:
+      </Typography>
+      <Box>
+        {imageLoading ? (
+          <Box textAlign={"center"}>
+            <CircularProgress size={"1rem"} />
+          </Box>
+        ) : (
+          claimImageData && claimImageData.length > 0 ? (
+            <Carousel
+              showThumbs={false}
+              showStatus={false}
+              infiniteLoop
+              autoPlay
+              interval={3000}
+              stopOnHover
+              renderArrowPrev={(onClickHandler, hasPrev, label) =>
+                hasPrev && (
+                  <button
+                    type="button"
+                    onClick={onClickHandler}
+                    title={label}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '10px',
+                      transform: 'translateY(-50%)',
+                      zIndex: 2,
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      borderRadius: '50%',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ArrowBackIos fontSize="medium" style={{ color: 'white',paddingLeft:'5px' }} />
+                  </button>
+                )
+              }
+              renderArrowNext={(onClickHandler, hasNext, label) =>
+                hasNext && (
+                  <button
+                    type="button"
+                    onClick={onClickHandler}
+                    title={label}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: '10px',
+                      transform: 'translateY(-50%)',
+                      zIndex: 2,
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      borderRadius: '50%',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ArrowForwardIos fontSize="medium" style={{ color: 'white' ,paddingLeft:'5px'}} />
+                  </button>
+                )
+              }
+            >
+              {claimImageData.map((image, index) => (
+                <div key={index} style={{ position: 'relative' }}>
+                  <img
+                    src={image}
+                    alt={`doc-${index}`}
+                    style={{
+                      width: '700px',
+                      height: '500px',
+                      maxWidth: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </div>
+              ))}
+            </Carousel>
+          ) : (
+            <Typography variant="body2" color="textSecondary">
+              No images uploaded yet.
+            </Typography>
+          )
+        )}
+      </Box>
+    </Box>
+    <Box display={"flex"} justifyContent={"center"} gap={2}>
+      <CustomButton
+        buttonName={"Close"}
+        onClick={handleClaimClose}
+      />
+    </Box>
+  </Box>
+</Modal>
           </CustomTabPanel>
         </Box>
       </Card>
