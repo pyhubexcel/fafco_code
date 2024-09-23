@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dx-texteditor-container {
+  cursor: pointer;
+  border: 1px solid black
+}
+
+.dx-button-has-text .dx-button-content {
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+.dx-checkbox-icon {
+  border: 1px solid black;
+}
+
+
+.dx-theme-generic-typography a {
+  color: #ffffff;
+}
+
+.MuiBox-root .css-1tbggly{
+  /* border:1px solid black; */
+  /* display: none; */
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* .MuiBox-root .css-di3982{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+} */
+.MuiBox-root .css-wsew38{
+justify-content: start !important;
+}
+/* .css-1eqt7o7-MuiInputBase-root-MuiOutlinedInput-root .MuiInputBase-input{
+ color: rgba(0, 0, 0, 0.6)
+} */
+.linkEffect::before{
+  content: "";
+  position: absolute;
+  background-color: rebeccapurple;
+  height: 3px ;
+  width: 0;
+  left: 0;
+  bottom: -10px;
+ 
+  width: 0px;
+   
+}
+.linkEffect:hover{
+  border-bottom: 4px solid #1976D2;
+  transition: all 0.6s ease;
+  border-radius: 0;
+   transition: 0.3s;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+.example {
+  width: calc(100% + 17px); /* Adjust to account for scrollbar width */
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 17px; /* Adjust to account for scrollbar width */
+}
+
+/* Custom scrollbar style */
+.example::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+.example::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the track */
+}
+
+.example::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the thumb */
+  border-radius: 10px; /* Rounded corners */
+}
+
+.example::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the thumb on hover */
+}
+
+.css-4ohuce-MuiTypography-root{
+  max-width: 100% !important;
+}

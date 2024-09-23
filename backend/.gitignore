@@ -1,0 +1,10 @@
+.env
+venv
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+__pycache__
+nohup.out
+env
+media
+docker-compose.yml
